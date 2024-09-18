@@ -122,7 +122,7 @@ export default {
 
     uploadToServer() {
       if (!this.isFileLoaded) {
-        alert("ไฟล์ไม่ถูกอัปโหลด");
+        alert("ไฟล์ยังไม่ถูกอัปโหลด");
         return;
       }
 
@@ -141,7 +141,7 @@ export default {
           },
         })
         .then((response) => {
-          alert(`อัปโหลดข้อมูลเสร็จสิ้น: ${response.status}`);
+          alert(`อัปโหลดข้อมูลเสร็จสิ้น: ${response}`);
           window.location.reload();
           this.isUploading = false;
         })
@@ -182,9 +182,9 @@ body {
   flex-direction: column;
   align-items: center;
   padding-top: 70px;
-  width: 100vw; /* กำหนดความกว้างเต็มจอ */
-  height: 100vh; /* กำหนดความสูงเต็มจอ */
-  box-sizing: border-box; /* เพื่อรวม padding ในขนาดขององค์ประกอบ */
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 .NavBar {
@@ -194,42 +194,43 @@ body {
 .table-container {
   width: 100%;
   height: 90%;
-  max-width: 1200px; /* ปรับตามความต้องการ */
+  margin-top: 15px;
+  max-width: 1200px;
   padding-left: 15px;
   padding-right: 15px;
-  box-sizing: border-box; /* เพื่อรวม padding ในขนาดขององค์ประกอบ */
+  box-sizing: border-box;
   display: flex;
-  justify-content: center; /* จัดกึ่งกลางตารางในแนวนอน */
+  justify-content: center;
 }
 
 .table {
-  width: 100%; /* ให้ตารางขยายเต็มความกว้างของ container */
-  border-collapse: collapse; /* รวมขอบของเซลล์ให้ดูเป็นขอบเดียว */
-  text-align: center; /* จัดกึ่งกลางข้อความในแต่ละเซลล์ */
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
 }
 
 .table th,
 .table td {
-  padding: 8px; /* เพิ่ม padding เพื่อให้ข้อมูลอ่านง่าย */
+  padding: 8px;
 }
 
 .table td {
-  text-align: center; /* จัดกึ่งกลางข้อความในแต่ละเซลล์ */
-  vertical-align: middle; /* จัดกึ่งกลางข้อความในแนวตั้ง */
+  text-align: center;
+  vertical-align: middle;
 }
 
 .table .btn-container {
   display: flex;
-  justify-content: center; /* จัดกึ่งกลางปุ่มในแนวนอน */
+  justify-content: center;
 }
 
 .table th {
-  background-color: #f2f2f2; /* Optional: Add a background color to the headers */
+  background-color: #f2f2f2;
 }
 
 .file-upload-container {
   position: fixed;
-  bottom: 60px;
+  bottom: 30px;
   right: 470px;
 }
 
@@ -240,7 +241,7 @@ body {
 
 .save-data {
   position: fixed;
-  bottom: 60px;
+  bottom: 30px;
   right: 370px;
 }
 
