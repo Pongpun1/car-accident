@@ -14,7 +14,7 @@
             <th>ลองจิจูด</th>
             <th>จำนวนผู้บาดเจ็บ</th>
             <th>จำนวนผู้เสียชีวิต</th>
-            <th>เวลาเกิดเหตุ</th>
+            <th>วันและเวลาเกิดเหตุ</th>
             <th>จัดการ</th>
           </tr>
         </thead>
@@ -30,8 +30,18 @@
             <td>{{ item.accdate }}</td>
             <td>
               <div class="btn-container">
-                <button class="btn btn-primary btn-sm mx-2">แก้ไข</button>
-                <button class="btn btn-danger btn-sm mx-2">ลบ</button>
+                <button
+                  @click="editData(item.id)"
+                  class="btn btn-primary btn-sm mx-2"
+                >
+                  แก้ไข
+                </button>
+                <button
+                  @click="deleteData(item.id)"
+                  class="btn btn-danger btn-sm mx-2"
+                >
+                  ลบ
+                </button>
               </div>
             </td>
           </tr>
@@ -130,9 +140,6 @@ export default {
         alert("ไม่มีข้อมูลในไฟล์ที่จะอัปโหลด");
         return;
       }
-
-      this.isUploading = true;
-
       axios
         .post("http://localhost:8080/api/data", this.excelData, {
           withCredentials: true,
@@ -149,6 +156,24 @@ export default {
           console.error("There was an error uploading the data!", error);
           this.isUploading = false;
         });
+    },
+
+    deleteData(id) {
+      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+        axios
+          .delete(`http://localhost:8080/api/data/${id}`)
+          .then(() => {
+            alert("ลบข้อมูลเสร็จสิ้น");
+            this.fetchData();
+          })
+          .catch((error) => {
+            console.error("There was an error deleting the data!", error);
+          });
+      }
+    },
+
+    editData(id) {
+      this.$router.push(`/data/edit/${id}`);
     },
   },
 

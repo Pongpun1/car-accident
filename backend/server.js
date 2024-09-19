@@ -6,7 +6,7 @@ const port = 8080;
 app.use(
   cors({
     origin: "http://10.203.70.225:8080",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type"],
     credentials: true,
   })
@@ -35,10 +35,6 @@ app.post("/api/data", (req, res) => {
   console.log("Received body:", req.body);
 
   const excelData = req.body;
-
-  // ตรวจสอบโครงสร้างของ excelData
-  console.log("Excel Data Type:", typeof excelData);
-  console.log("Excel Data isArray:", Array.isArray(excelData));
 
   if (!Array.isArray(excelData) || excelData.length === 0) {
     return res.status(400).send({ message: "No data received" });
@@ -72,24 +68,116 @@ app.post("/api/data", (req, res) => {
   });
 });
 
+app.get("/api/data", async (req, res) => {
+  let sql = "SELECT * FROM accidentdata";
+  await conn.execute(sql, (err, result) => {
+    if (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+      return;
+    }
+    res.status(200).json({
+      message: "เรียกข้อมูลสำเร็จ",
+      data: result,
+    });
+  });
+});
 
-app.get('/api/data', async (req, res) => {
-    let sql = "SELECT * FROM accidentdata"  
-    await conn.execute(sql,
-        (err, result) => {
-            if (err) {
-                res.status(500).json({
-                    message : err.message
-                })
-                return
-            }
-            res.status(200).json({
-                message : "เรียกข้อมูลสำเร็จ",
-                data : result
-            })    
-        }
-    )
-})
+app.delete("/api/data/:id", async (req, res) => {
+  const { id } = req.params;
+
+  // Check if ID is provided and is a valid number
+  if (!id || isNaN(id)) {
+    return res.status(400).json({
+      message: "Invalid ID provided",
+    });
+  }
+
+  const sql = "DELETE FROM accidentdata WHERE id = ?";
+
+  conn.execute(sql, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting data:", err.message);
+      return res.status(500).json({
+        message: "Error deleting data",
+        error: err.message,
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        message: `No record found with id ${id}`,
+      });
+    }
+
+    res.status(200).json({
+      message: `Record with id ${id} deleted successfully`,
+    });
+  });
+});
+
+app.get("/api/data/:id", async (req, res) => {
+  const { id } = req.params;
+  let sql = "SELECT * FROM accidentdata WHERE id = ?";
+  conn.execute(sql, [id], (err, result) => {
+    if (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+      return;
+    }
+    res.status(200).json({
+      message: "เรียกข้อมูลสำเร็จ",
+      data: result,
+    });
+  });
+});
+
+app.put("/api/data/:id", (req, res) => {
+  const { id } = req.params;
+  const { acclocation, latitude, longitude, numinjur, numdeath, accdate } =
+    req.body;
+  if (
+    !acclocation ||
+    !latitude ||
+    !longitude ||
+    numinjur === undefined ||
+    numdeath === undefined ||
+    !accdate
+  ) {
+    return res.status(400).json({
+      message: "กรุณาให้ข้อมูลที่ครบถ้วน",
+    });
+  }
+
+  const updateQuery = `
+    UPDATE accidentdata
+    SET acclocation = ?, latitude = ?, longitude = ?, numinjur = ?, numdeath = ?, accdate = ?
+    WHERE id = ?
+  `;
+  conn.execute(
+    updateQuery,
+    [acclocation, latitude, longitude, numinjur, numdeath, accdate, id],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating data:", err.message);
+        return res.status(500).json({
+          message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล",
+          error: err.message,
+        });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          message: `ไม่พบข้อมูลที่มี id ${id}`,
+        });
+      }
+      res.status(200).json({
+        message: `อัปเดตข้อมูลของ id ${id} สำเร็จแล้ว`,
+      });
+    }
+  );
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

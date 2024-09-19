@@ -117,37 +117,3 @@
 //         }
 //     )
 // })
-
-<div>
-      <table class="table w-full">
-        <!-- head -->
-        <thead>
-          <tr>
-            <th>ลำดับ</th>
-            <th>สถานที่เกิดเหตุ</th>
-            <th>ละติจูด</th>
-            <th>ลองจิจูด</th>
-            <th>จำนวนผู้บาดเจ็บ</th>
-            <th>จำนวนผู้เสียชีวิต</th>
-            <th>เวลาเกิดเหตุ</th>
-            <th>จัดการ</th>
-          </tr>
-        </thead>
-        <!-- body -->
-        <tbody>
-          <tr v-for="(item, index) in excelData" :key="index">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <button class="btn btn-success btn-sm mx-2">แก้ไข</button>
-              <button class="btn btn-danger btn-sm mx-2">ลบ</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
