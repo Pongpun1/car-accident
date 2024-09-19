@@ -31,6 +31,7 @@ conn.connect((err) => {
   console.log("Connected to MySQL");
 });
 
+// ------------------------------------------เพิ่มข้อมูล-------------------------------------------
 app.post("/api/data", (req, res) => {
   console.log("Received body:", req.body);
 
@@ -39,10 +40,6 @@ app.post("/api/data", (req, res) => {
   if (!Array.isArray(excelData) || excelData.length === 0) {
     return res.status(400).send({ message: "No data received" });
   }
-
-  excelData.forEach((row, index) => {
-    console.log(`Row ${index}:`, row);
-  });
 
   const values = excelData.map((row) => [
     row.ลำดับ,
@@ -54,20 +51,30 @@ app.post("/api/data", (req, res) => {
     row.วันเกิดเหตุ,
   ]);
 
-  console.log("Values to insert:", values);
+  const insertOrUpdateQuery = `
+  INSERT INTO accidentdata (id, acclocation, latitude, longitude, numinjur, numdeath, accdate)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
+  ON DUPLICATE KEY UPDATE
+    acclocation = VALUES(acclocation),
+    numinjur = VALUES(numinjur),
+    numdeath = VALUES(numdeath),
+    accdate = VALUES(accdate)
+`;
 
-  const insertQuery =
-    "INSERT INTO `accidentdata`(`id`, `acclocation`, `latitude`, `longitude`, `numinjur`, `numdeath`, `accdate`) VALUES ?";
-
-  conn.query(insertQuery, [values], (err, result) => {
-    if (err) {
-      console.error("Error inserting data:", err.code, err.message);
-      return res.status(500).send({ message: "Error inserting data" });
-    }
-    res.status(200).send({ message: "Data saved successfully!" });
+  values.forEach((value) => {
+    conn.execute(insertOrUpdateQuery, value, (err, result) => {
+      if (err) {
+        console.error("Error inserting or updating data:", err.message);
+        return res
+          .status(500)
+          .send({ message: "Error inserting or updating data" });
+      }
+    });
   });
-});
 
+  res.status(200).send({ message: "Data processed successfully!" });
+});
+// ------------------------------------------แสดงข้อมูล-------------------------------------------
 app.get("/api/data", async (req, res) => {
   let sql = "SELECT * FROM accidentdata";
   await conn.execute(sql, (err, result) => {
@@ -84,6 +91,7 @@ app.get("/api/data", async (req, res) => {
   });
 });
 
+// ------------------------------------------ลบข้อมูล-------------------------------------------
 app.delete("/api/data/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -117,6 +125,7 @@ app.delete("/api/data/:id", async (req, res) => {
   });
 });
 
+// ------------------------------------------แสดงข้อมูลแยกตัว-------------------------------------------
 app.get("/api/data/:id", async (req, res) => {
   const { id } = req.params;
   let sql = "SELECT * FROM accidentdata WHERE id = ?";
@@ -134,6 +143,7 @@ app.get("/api/data/:id", async (req, res) => {
   });
 });
 
+// ------------------------------------------อัพเดทข้อมูล-------------------------------------------
 app.put("/api/data/:id", (req, res) => {
   const { id } = req.params;
   const { acclocation, latitude, longitude, numinjur, numdeath, accdate } =

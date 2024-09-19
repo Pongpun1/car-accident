@@ -256,7 +256,8 @@ body {
 .file-upload-container {
   position: fixed;
   bottom: 30px;
-  right: 470px;
+  right: 490px;
+  z-index: 1000;
 }
 
 .file-input {
@@ -267,8 +268,10 @@ body {
 .save-data {
   position: fixed;
   bottom: 30px;
-  right: 370px;
+  right: 375px;
+  z-index: 1000;
 }
+
 
 .pagination-controls {
   margin-top: 20px;
