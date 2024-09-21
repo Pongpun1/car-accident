@@ -3,6 +3,7 @@
     <div class="NavBar">
       <NavTopBar />
     </div>
+
     <div class="table-container">
       <table class="table w-full">
         <!-- head -->
@@ -34,13 +35,13 @@
                   @click="editData(item.id)"
                   class="btn btn-primary btn-sm mx-2"
                 >
-                  แก้ไข
+                  <b-icon icon="pencil-square" font-scale="1.5"></b-icon>
                 </button>
                 <button
                   @click="deleteData(item.id)"
                   class="btn btn-danger btn-sm mx-2"
                 >
-                  ลบ
+                  <b-icon icon="trash" font-scale="1.5"></b-icon>
                 </button>
               </div>
             </td>
@@ -60,6 +61,9 @@
       ></b-pagination>
     </div>
 
+    <b-button @click="addData" size="sm" variant="secondary" class="add-button">
+      เพิ่มข้อมูล
+    </b-button>
     <div class="file-upload-container">
       <b-form-file @change="onFileChange" class="file-input" />
     </div>
@@ -138,6 +142,7 @@ export default {
 
       if (this.excelData.length === 0) {
         alert("ไม่มีข้อมูลในไฟล์ที่จะอัปโหลด");
+        window.location.reload();
         return;
       }
       axios
@@ -163,7 +168,6 @@ export default {
         axios
           .delete(`http://localhost:8080/api/data/${id}`)
           .then(() => {
-            alert("ลบข้อมูลเสร็จสิ้น");
             this.fetchData();
           })
           .catch((error) => {
@@ -174,6 +178,10 @@ export default {
 
     editData(id) {
       this.$router.push(`/data/edit/${id}`);
+    },
+
+    addData() {
+      this.$router.push("/data/add");
     },
   },
 
@@ -217,6 +225,7 @@ body {
 }
 
 .table-container {
+  position: relative;
   width: 100%;
   height: 90%;
   margin-top: 15px;
@@ -272,7 +281,6 @@ body {
   z-index: 1000;
 }
 
-
 .pagination-controls {
   margin-top: 20px;
   display: flex;
@@ -287,5 +295,13 @@ body {
 
 .pagination-controls span {
   font-size: 0.9rem;
+}
+
+.add-button {
+  position: fixed;
+  width: 200px;
+  bottom: 40px;
+  left: 380px;
+  z-index: 1000;
 }
 </style>

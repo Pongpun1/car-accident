@@ -5,7 +5,7 @@ const port = 8080;
 
 app.use(
   cors({
-    origin: "http://10.203.70.225:8080",
+    origin: "http://172.20.10.4:8081",
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type"],
     credentials: true,
@@ -31,7 +31,7 @@ conn.connect((err) => {
   console.log("Connected to MySQL");
 });
 
-// ------------------------------------------เพิ่มข้อมูล-------------------------------------------
+// ------------------------------------------เพิ่มข้อมูลแบบไฟล์---------------------------------------
 app.post("/api/data", (req, res) => {
   console.log("Received body:", req.body);
 
@@ -55,10 +55,8 @@ app.post("/api/data", (req, res) => {
   INSERT INTO accidentdata (id, acclocation, latitude, longitude, numinjur, numdeath, accdate)
   VALUES (?, ?, ?, ?, ?, ?, ?)
   ON DUPLICATE KEY UPDATE
-    acclocation = VALUES(acclocation),
     numinjur = VALUES(numinjur),
     numdeath = VALUES(numdeath),
-    accdate = VALUES(accdate)
 `;
 
   values.forEach((value) => {
@@ -74,6 +72,51 @@ app.post("/api/data", (req, res) => {
 
   res.status(200).send({ message: "Data processed successfully!" });
 });
+
+// ------------------------------------------เพิ่มข้อมูลแยกตัว---------------------------------------
+app.post("/api/data/single", (req, res) => {
+  const { acclocation, latitude, longitude, numinjur, numdeath, accdate } =
+    req.body;
+
+  if (!acclocation || !latitude || !longitude || !accdate) {
+    return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
+  }
+
+  const checkQuery = `
+    SELECT * FROM accidentdata WHERE acclocation = ? AND latitude = ? AND longitude = ? AND numinjur = ? AND numdeath = ?  AND accdate = ?
+  `;
+
+  conn.execute(checkQuery, [acclocation, accdate], (err, results) => {
+    if (err) {
+      console.error("Error checking data:", err.message);
+      return res
+        .status(500)
+        .json({ message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล" });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ message: "ข้อมูลนี้มีอยู่แล้ว" });
+    }
+
+    const insertQuery = `
+      INSERT INTO accidentdata (acclocation, latitude, longitude, numinjur, numdeath, accdate)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    conn.execute(
+      insertQuery,
+      [acclocation, latitude, longitude, numinjur, numdeath, accdate],
+      (err, result) => {
+        if (err) {
+          console.error("Error inserting data:", err.message);
+          return res.status(500).json({ message: "Error inserting data" });
+        }
+        res.status(200).json({ message: "บันทึกข้อมูลสำเร็จ" });
+      }
+    );
+  });
+});
+
 // ------------------------------------------แสดงข้อมูล-------------------------------------------
 app.get("/api/data", async (req, res) => {
   let sql = "SELECT * FROM accidentdata";

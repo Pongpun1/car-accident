@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../views/LoginUser.vue'
 import Data from '../views/Accident-data.vue'
 import Edit from '../views/EditData.vue'
+import Add from '../views/AddData.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,12 @@ const routes = [
     path: '/data/edit/:id',
     name: 'edit',
     component: Edit,
+    props: true,
+  },
+  {
+    path: '/data/add',
+    name: 'add',
+    component: Add,
     props: true,
   }
 ]
