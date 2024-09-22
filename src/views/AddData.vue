@@ -88,7 +88,7 @@ export default {
       }
 
       axios
-        .post("http://172.20.10.4:8080/api/data/single", this.formData, {
+        .post("http://localhost:8080/api/data/single", this.formData, {
           headers: {
             "Content-Type": "application/json",
           },

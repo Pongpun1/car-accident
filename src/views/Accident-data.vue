@@ -265,7 +265,7 @@ body {
 .file-upload-container {
   position: fixed;
   bottom: 30px;
-  right: 490px;
+  right: 25%;
   z-index: 1000;
 }
 
@@ -277,7 +277,7 @@ body {
 .save-data {
   position: fixed;
   bottom: 30px;
-  right: 375px;
+  right: 20%;
   z-index: 1000;
 }
 
@@ -301,7 +301,7 @@ body {
   position: fixed;
   width: 200px;
   bottom: 40px;
-  left: 380px;
+  left: 20%;
   z-index: 1000;
 }
 </style>
