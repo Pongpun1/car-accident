@@ -24,8 +24,8 @@ app.use(
 // routers
 const dataRoutes = require("./routes/DataServer");
 app.use("/api/data", dataRoutes);
-// const LoginRoutes = require("./routes/Login");
-// app.use("/login", LoginRoutes);
+const UserRoutes = require("./routes/User");
+app.use("/users", UserRoutes);
 
 
 app.listen(8080, () => {

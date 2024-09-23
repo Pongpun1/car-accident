@@ -1,7 +1,7 @@
 const express = require("express");
 const conn = require("../config");
-
 const router = express.Router();  
+
   // ------------------------------------------เพิ่มข้อมูลแบบไฟล์---------------------------------------
   router.post("/", (req, res) => {
     console.log("Received body:", req.body);

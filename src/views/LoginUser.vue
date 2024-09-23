@@ -1,27 +1,73 @@
 <template>
   <div class="main">
     <div class="form-container">
-      <form>
-        <img src="../assets/gps1.png" class="logo1" alt="GPS Logo" />
-        <h2>Sign In</h2>
+      <form @submit.prevent="login">
+        <!-- <img src="../assets/gps1.png" class="logo1" alt="GPS Logo" /> -->
+        <h3>เข้าสู่ระบบ</h3>
         <br />
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="ID" />
-        </div>
+        <b-form-group :state="usernameState" invalid-feedback="กรุณากรอกชื่อผู้ใช้งาน" label-cols-sm="12"
+          class="form-group-custom">
+          <b-form-input id="username-input" v-model="username" :state="usernameState" placeholder="ชื่อผู้ใช้"
+            class="form-control" />
+        </b-form-group>
 
-        <div class="form-group">
-          <input type="password" class="form-control" placeholder="Password" />
-        </div>
+        <b-form-group :state="passwordState" invalid-feedback="กรุณากรอกรหัสผ่าน" label-cols-sm="12"
+          class="form-group-custom">
+          <b-form-input id="password-input" type="password" v-model="password" :state="passwordState"
+            placeholder="รหัสผ่าน" class="form-control" />
+        </b-form-group>
 
         <button class="btn login-button">Login</button>
+
+        <p v-if="errorMessage" class="error-box">
+          <span class="error">{{ errorMessage }}</span>
+        </p>
       </form>
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "LoginUser",
+  data() {
+    return {
+      username: "",
+      password: "",
+      errorMessage: "",
+    };
+  },
+  computed: {
+    usernameState() {
+      return this.username.length > 0 ? true : null;
+    },
+    passwordState() {
+      return this.password.length > 0 ? true : null;
+    },
+  },
+  methods: {
+    async login() {
+      if (!this.username || !this.password) {
+        this.errorMessage = "กรุณากรอกข้อมูลให้ครบถ้วน";
+        return;
+      }
+
+      try {
+        const response = await axios.post("http://localhost:8080/users/login", {
+          username: this.username,
+          password: this.password,
+        });
+
+        if (response.data.message === "เข้าสู่ระบบสำเร็จ") {
+          this.$router.push("/data");
+        }
+      } catch (error) {
+        this.errorMessage = error.response.data.message || "ไม่พบข้อมูล";
+      }
+    },
+  },
 };
 </script>
 
@@ -44,13 +90,13 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.3); /* Black with 30% opacity */
-  z-index: 1; /* Make sure it sits above the background image but below content */
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 1;
 }
 
-.main > * {
+.main>* {
   position: relative;
-  z-index: 2; /* Ensure content sits above the overlay */
+  z-index: 2;
 }
 
 .image-container {
@@ -60,67 +106,83 @@ export default {
   align-items: center;
 }
 
-.login-image {
-  max-width: 100%;
-  height: auto;
-}
-
 .form-container {
   position: fixed;
-  top: 50%; /* ตั้งให้ตำแหน่งเริ่มที่กลางหน้าจอ */
+  top: 50%;
   right: 0;
-  transform: translateY(-50%); /* เลื่อนขึ้นครึ่งหนึ่งของความสูงฟอร์ม */
+  transform: translateY(-50%);
   height: 100vh;
-  width: 450px; /* กำหนดความกว้างของฟอร์ม */
+  width: 450px;
   padding: 20px;
   background-color: #f9efdf;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-  border-radius: 0 0 0 10px;
-  display: flex; /* ใช้ Flexbox */
-  flex-direction: column; /* ตั้งค่าเป็นแนวตั้ง */
-  justify-content: center; /* จัดแนวกลางในแนวตั้ง */
-  align-items: center; /* จัดแนวกลางในแนวนอน */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 form {
-  text-align: center; /* จัดข้อความและเนื้อหาให้อยู่ตรงกลาง */
+  text-align: left;
+  margin-left: 20px;
 }
 
-h2 {
-  margin-top: 20px; /* ปรับระยะห่างด้านบนให้เหมาะสม */
-  text-align: left; /* จัดข้อความให้อยู่ทางซ้าย */
-  width: 100%; /* ให้ข้อความขยายเต็มความกว้างของฟอร์ม */
+h3 {
+  margin-bottom: -20px;
+  text-align: left;
+  width: 100%;
 }
 
-.logo1 {
+/* .logo1 {
   width: 250px;
-  margin-bottom: 10px; /* ลด margin-bottom ให้เล็กลง */
-  margin-top: -80px; /* ปรับ margin-top เพื่อให้โลโก้ไม่ติดกับด้านบน */
-  display: block; /* จัดให้อยู่กึ่งกลาง */
+  margin-bottom: 10px;
+  margin-top: -80px;
+  display: block;
   margin-left: auto;
   margin-right: auto;
-}
+} */
 
 .form-group {
-  margin-bottom: 25px;
-  width: 350px;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.form-group-custom {
+  text-align: left;
+  width: 100%;
 }
 
 .form-control {
-  border-radius: 15px; /* ทำมุมให้โค้งมน */
-  height: 45px;
-  width: 100%; /* ทำให้ช่องกรอกข้อมูลขยายให้เต็มความกว้างของฟอร์ม */
-  padding: 12px 20px; /* เพิ่ม padding ให้ดูใหญ่ขึ้น */
-  font-size: 16px; /* ขนาดฟอนต์ที่ใหญ่ขึ้น */
+  height: 40px;
+  width: 90%;
+  padding: 12px 20px;
+  font-size: 16px;
 }
 
 .login-button {
-  width: 100%; /* ทำให้ปุ่มขยายเต็มความกว้างของฟอร์ม */
-  padding: 12px; /* เพิ่ม padding ให้ปุ่ม */
-  font-size: 16px; /* ขนาดฟอนต์ที่ใหญ่ขึ้น */
-  color: #ffffff; /* สีฟอนต์ */
-  background-color: #9a7b4f; /* สีพื้นหลังของปุ่ม */
-  border: none; /* ลบเส้นขอบปุ่ม */
-  border-radius: 10px; /* ทำมุมให้โค้งมน */
+  margin-top: 15px;
+  height: 50px;
+  width: 90%;
+  padding: 12px;
+  font-size: 17px;
+  color: #ffffff;
+  background-color: #9a7b4f;
+  border: none;
+  border-radius: 10px;
+}
+
+.error-box {
+  background-color: #f8d7da;
+  border: 1px solid #f5c2c7;
+  color: #842029;
+  padding: 10px;
+  width: 90%;
+  border-radius: 5px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.error {
+  font-size: 14px;
 }
 </style>
