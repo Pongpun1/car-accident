@@ -15,12 +15,8 @@ vue ui
 
 รันหน้าบ้าน
 
-run front-end
-
 npm run serve
 
 รันหลังบ้าน
-
-run back-end
 
 npm run dev
