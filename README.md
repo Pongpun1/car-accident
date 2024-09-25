@@ -8,6 +8,8 @@ npm i cors
 
 npm install vuex@3 --save
 
+npm install jsonwebtoken dotenvhttp
+
 ติดตั้ง bootstrap
 
 vue ui
