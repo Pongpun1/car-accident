@@ -1,6 +1,6 @@
 # car-accident
 
-ติดตั้งให้ครบ
+# ติดตั้งให้ครบ
 
 npm i express bcrypt mysql2 nodemon
 
@@ -10,15 +10,15 @@ npm install vuex@3 --save
 
 npm install jsonwebtoken dotenvhttp
 
-ติดตั้ง bootstrap
+# ติดตั้ง bootstrap
 
 vue ui
-แล้วติดตั้ง vue bootstrap
+แล้วติดตั้ง vue bootstrap 
 
-รันหน้าบ้าน
+# รันหน้าบ้าน
 
 npm run serve
 
-รันหลังบ้าน
+# รันหลังบ้าน
 
 npm run dev
