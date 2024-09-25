@@ -14,11 +14,14 @@ export default {
 html, body, #app {
   margin: 0;
   padding: 0;
-  height: 100vh; /* ความสูงเต็มจอ */
-  width: 100vw; /* ความกว้างเต็มจอ */
+  height: 100vh;
+  width: 100vw;
   display: flex;
   justify-content: center;
-  align-items: center; /* จัดให้อยู่กลางหน้าจอ */
+  align-items: center;
   box-sizing: border-box;
+  font-family: "Sarabun", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 </style>

@@ -78,7 +78,7 @@ export default {
     showSingleData() {
       const id = this.$route.params.id;
       axios
-        .get(`http://localhost:8080/api/data/${id}`)
+        .get(`http://localhost:8081/api/data/${id}`)
         .then((response) => {
           this.formData = response.data.data[0];
         })
@@ -90,7 +90,7 @@ export default {
     updateData() {
       const id = this.$route.params.id;
       axios
-        .put(`http://localhost:8080/api/data/${id}`, this.formData)
+        .put(`http://localhost:8081/api/data/${id}`, this.formData)
         .then(() => {
           alert("ข้อมูลได้รับการอัปเดตเรียบร้อยแล้ว");
           this.$router.push("/data");
@@ -112,14 +112,8 @@ export default {
   width: 100%;
 }
 
-.MainContent {
-  position: absolute;
-  top: 5%;
-  left: 20px;
-  padding: 20px;
-}
-
 .MainContent h2 {
+  margin-top: 5%;
   margin-bottom: 10px;
 }
 

@@ -5,19 +5,38 @@
         <!-- <img src="../assets/gps1.png" class="logo1" alt="GPS Logo" /> -->
         <h3>เข้าสู่ระบบ</h3>
         <br />
-        <b-form-group :state="usernameState" invalid-feedback="กรุณากรอกชื่อผู้ใช้งาน" label-cols-sm="12"
-          class="form-group-custom">
-          <b-form-input id="username-input" v-model="username" :state="usernameState" placeholder="ชื่อผู้ใช้"
-            class="form-control" />
+        <b-form-group
+          :state="usernameState"
+          invalid-feedback="กรุณากรอกชื่อผู้ใช้งาน"
+          label-cols-sm="12"
+          class="form-group-custom"
+        >
+          <b-form-input
+            id="username-input"
+            v-model="username"
+            :state="usernameState"
+            placeholder="ชื่อผู้ใช้"
+            class="form-control"
+          />
         </b-form-group>
 
-        <b-form-group :state="passwordState" invalid-feedback="กรุณากรอกรหัสผ่าน" label-cols-sm="12"
-          class="form-group-custom">
-          <b-form-input id="password-input" type="password" v-model="password" :state="passwordState"
-            placeholder="รหัสผ่าน" class="form-control" />
+        <b-form-group
+          :state="passwordState"
+          invalid-feedback="กรุณากรอกรหัสผ่าน"
+          label-cols-sm="12"
+          class="form-group-custom"
+        >
+          <b-form-input
+            id="password-input"
+            type="password"
+            v-model="password"
+            :state="passwordState"
+            placeholder="รหัสผ่าน"
+            class="form-control"
+          />
         </b-form-group>
 
-        <button class="btn login-button">Login</button>
+        <button class="btn login-button">เข้าสู่ระบบ</button>
 
         <p v-if="errorMessage" class="error-box">
           <span class="error">{{ errorMessage }}</span>
@@ -55,16 +74,25 @@ export default {
       }
 
       try {
-        const response = await axios.post("http://localhost:8080/users/login", {
+        const response = await axios.post("http://localhost:8081/users/login", {
           username: this.username,
           password: this.password,
         });
 
         if (response.data.message === "เข้าสู่ระบบสำเร็จ") {
-          this.$router.push("/data");
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("username", response.data.user.username);
+          // this.login({ username: response.data.user.username });
+          this.$store.dispatch("initializeStore");  
+          await this.$router.push("/data");
+          
+        } else {
+          this.errorMessage = "การเข้าสู่ระบบล้มเหลว";
         }
       } catch (error) {
-        this.errorMessage = error.response.data.message || "ไม่พบข้อมูล";
+        this.errorMessage = error.response?.data?.message || "ไม่พบข้อมูล";
+      } finally {
+        this.$store.dispatch("initializeStore");
       }
     },
   },
@@ -94,7 +122,7 @@ export default {
   z-index: 1;
 }
 
-.main>* {
+.main > * {
   position: relative;
   z-index: 2;
 }
@@ -167,7 +195,6 @@ h3 {
   font-size: 17px;
   color: #ffffff;
   background-color: #9a7b4f;
-  border: none;
   border-radius: 10px;
 }
 

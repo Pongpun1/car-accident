@@ -1,8 +1,9 @@
 const express = require("express");
 const conn = require("../config");
 const router = express.Router();
-
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 // ------------------------------------------เพิ่มบัญชี---------------------------------------
 router.post("/", async (req, res) => {
@@ -76,9 +77,16 @@ router.post("/login", async (req, res) => {
             message: "รหัสผ่านไม่ถูกต้อง",
           });
         }
+        
+        const token = jwt.sign(
+          { id: user.id, username: user.username },
+          process.env.JWT_SECRET,
+          { expiresIn: process.env.JWT_EXPIRES_IN }
+        );
   
         res.status(200).json({
           message: "เข้าสู่ระบบสำเร็จ",
+          token,
           user: {
             id: user.id,
             email: user.email,
@@ -93,5 +101,5 @@ router.post("/login", async (req, res) => {
       });
     }
   });
-
-module.exports = router;
+  
+  module.exports = router;

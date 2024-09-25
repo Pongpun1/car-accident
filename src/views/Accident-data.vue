@@ -6,16 +6,36 @@
 
     <div class="table-container">
       <table class="table w-full">
-        <!-- head -->
         <thead>
           <tr>
             <th>ลำดับ</th>
             <th>สถานที่เกิดเหตุ</th>
             <th>ละติจูด</th>
             <th>ลองจิจูด</th>
-            <th>จำนวนผู้บาดเจ็บ</th>
-            <th>จำนวนผู้เสียชีวิต</th>
-            <th>วันและเวลาเกิดเหตุ</th>
+            <th @click="sortData('numinjur')">
+              จำนวนผู้บาดเจ็บ
+              <b-icon
+                v-if="sortKey === 'numinjur'"
+                :icon="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
+                font-scale="1"
+              ></b-icon>
+            </th>
+            <th @click="sortData('numdeath')">
+              จำนวนผู้เสียชีวิต
+              <b-icon
+                v-if="sortKey === 'numdeath'"
+                :icon="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
+                font-scale="1"
+              ></b-icon>
+            </th>
+            <th @click="sortData('accdate')">
+              วันและเวลาเกิดเหตุ
+              <b-icon
+                v-if="sortKey === 'accdate'"
+                :icon="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
+                font-scale="1"
+              ></b-icon>
+            </th>
             <th>จัดการ</th>
           </tr>
         </thead>
@@ -95,19 +115,33 @@ export default {
       excelData: [],
       isUploading: false,
       isFileLoaded: false,
+      sortKey: "",
+      sortOrder: "asc",
     };
   },
 
   methods: {
     fetchData() {
       axios
-        .get("http://localhost:8080/api/data")
+        .get("http://localhost:8081/api/data")
         .then((response) => {
           this.excelData = response.data.data;
         })
         .catch((error) => {
           console.error("Error fetching data from API:", error);
         });
+    },
+
+    sortData(key) {
+      this.sortKey = key;
+      this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc"; // สลับลำดับการจัดเรียง
+      this.excelData.sort((a, b) => {
+        if (this.sortOrder === "asc") {
+          return a[key] > b[key] ? 1 : -1;
+        } else {
+          return a[key] < b[key] ? 1 : -1;
+        }
+      });
     },
 
     onFileChange(event) {
@@ -142,11 +176,11 @@ export default {
 
       if (this.excelData.length === 0) {
         alert("ไม่มีข้อมูลในไฟล์ที่จะอัปโหลด");
-        window.location.reload();
+        this.fetchData();
         return;
       }
       axios
-        .post("http://localhost:8080/api/data", this.excelData, {
+        .post("http://localhost:8081/api/data", this.excelData, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
@@ -154,19 +188,17 @@ export default {
         })
         .then((response) => {
           alert(`อัปโหลดข้อมูลเสร็จสิ้น: ${response}`);
-          window.location.reload();
-          this.isUploading = false;
+          this.fetchData();
         })
         .catch((error) => {
           console.error("There was an error uploading the data!", error);
-          this.isUploading = false;
         });
     },
 
     deleteData(id) {
       if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
         axios
-          .delete(`http://localhost:8080/api/data/${id}`)
+          .delete(`http://localhost:8081/api/data/${id}`)
           .then(() => {
             this.fetchData();
           })
@@ -207,7 +239,6 @@ body {
   background-color: #f9efdf;
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
 }
 
 .main-container {
@@ -299,7 +330,9 @@ body {
 
 .add-button {
   position: fixed;
-  width: 200px;
+  width: 180px;
+  height: 34px;
+  font-size: 17px;
   bottom: 40px;
   left: 20%;
   z-index: 1000;
