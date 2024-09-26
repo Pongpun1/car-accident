@@ -1,14 +1,12 @@
 # car-accident
 
-# ติดตั้งให้ครบ
+# Clone เสร็จ
 
-# ของหน้าบ้าน
+npm install ทั้ง back และ front
 
-npm install
+# Dependency ที่ใช้
 
 npm install router
-
-# ของหลังบ้าน
 
 npm i express bcrypt mysql2 cors nodemon
 
