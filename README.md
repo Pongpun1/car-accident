@@ -6,9 +6,7 @@ npm install -g @vue/cli
 
 npm install router
 
-npm i express bcrypt mysql2 nodemon
-
-npm i cors
+npm i express bcrypt mysql2 cors nodemon
 
 npm install vuex@3 --save
 
