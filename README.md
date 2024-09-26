@@ -2,9 +2,15 @@
 
 # ติดตั้งให้ครบ
 
-npm install -g @vue/cli
+# ของหน้าบ้าน
+
+npm intit vue@latest
+
+npm install
 
 npm install router
+
+# ของหลังบ้าน
 
 npm i express bcrypt mysql2 cors nodemon
 
