@@ -2,6 +2,8 @@
 
 # ติดตั้งให้ครบ
 
+npm install -g @vue/cli
+
 npm i express bcrypt mysql2 nodemon
 
 npm i cors
