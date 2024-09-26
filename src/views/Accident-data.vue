@@ -123,7 +123,7 @@ export default {
   methods: {
     fetchData() {
       axios
-        .get("http://localhost:8081/api/data")
+        .get("http://localhost:3000/api/data")
         .then((response) => {
           this.excelData = response.data.data;
         })
@@ -180,7 +180,7 @@ export default {
         return;
       }
       axios
-        .post("http://localhost:8081/api/data", this.excelData, {
+        .post("http://localhost:3000/api/data", this.excelData, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
@@ -198,7 +198,7 @@ export default {
     deleteData(id) {
       if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
         axios
-          .delete(`http://localhost:8081/api/data/${id}`)
+          .delete(`http://localhost:3000/api/data/${id}`)
           .then(() => {
             this.fetchData();
           })

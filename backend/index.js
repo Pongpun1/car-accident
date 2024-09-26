@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-const allowedOrigins = ["http://localhost:8081", "http://10.203.70.225:8081"];
+const allowedOrigins = ["http://localhost:8080", "http://10.203.70.225:8080"];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -27,6 +27,6 @@ app.use("/api/data", dataRoutes);
 const UserRoutes = require("./routes/User");
 app.use("/users", UserRoutes);
 
-app.listen(8081, () => {
-  console.log(`Server is running on port 8081`);
+app.listen(3000, () => {
+  console.log(`Server is running on port 3000`);
 });
