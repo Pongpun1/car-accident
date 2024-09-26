@@ -4,6 +4,8 @@
 
 npm install -g @vue/cli
 
+npm install router
+
 npm i express bcrypt mysql2 nodemon
 
 npm i cors
