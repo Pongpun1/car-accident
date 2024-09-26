@@ -4,8 +4,6 @@
 
 # ของหน้าบ้าน
 
-npm intit vue@latest
-
 npm install
 
 npm install router
