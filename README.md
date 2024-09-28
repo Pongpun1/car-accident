@@ -14,6 +14,8 @@ npm install vuex@3 --save
 
 npm install jsonwebtoken dotenvhttp
 
+npm install vue2-google-maps
+
 # ติดตั้ง bootstrap
 
 vue ui
