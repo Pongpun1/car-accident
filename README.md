@@ -16,6 +16,8 @@ npm install jsonwebtoken dotenvhttp
 
 npm install vue2-google-maps
 
+npm install date-fns
+
 # ติดตั้ง bootstrap
 
 vue ui
