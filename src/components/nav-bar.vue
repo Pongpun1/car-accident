@@ -2,8 +2,7 @@
   <div>
     <b-navbar fixed="top" expand="lg" variant="faded" type="light" class="bg-blue d-flex justify-content-between">
       <b-navbar-brand href="#">
-        <!-- <img src="../assets/gps1.png" class="logo d-inline-block align-top" alt="GPS Logo"> -->
-        <span class="navbar-text ml-3 text-white"> ระบบจัดการอุบัติเหตุ </span>
+        <span class="navbar-text ml-3 text-white"> ระบบจัดการเหตุการณ์และอุบัติเหตุ </span>
       </b-navbar-brand>
       <div v-if="isAuthenticated" class="navbar-user">
         <span class="navbar-text text-white">ยินดีต้อนรับ, {{ username }}</span>
@@ -41,15 +40,6 @@ export default {
   width: 100%;
   padding: 0;
 }
-
-/* .logo {
-  width: 50px;
-  height: 50px;
-  margin-top: 0;
-  margin-left: 30px;
-  padding-top: 0;
-  vertical-align: middle;
-} */
 
 .navbar-text {
   font-size: 25px;

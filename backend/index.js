@@ -26,6 +26,8 @@ const dataRoutes = require("./routes/DataServer");
 app.use("/api/data", dataRoutes);
 const UserRoutes = require("./routes/User");
 app.use("/users", UserRoutes);
+const GeoRoutes = require("./routes/Geo");
+app.use("/geocode", GeoRoutes);
 
 app.listen(3000, () => {
   console.log(`Server is running on port 3000`);

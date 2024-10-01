@@ -4,6 +4,52 @@
       <NavTopBar />
     </div>
 
+    <div class="controls-container">
+      <div class="left-controls">
+        <b-button
+          @click="addData"
+          size="sm"
+          variant="secondary"
+          class="add-button"
+        >
+          เพิ่มข้อมูล
+          <b-icon icon="plus-circle-fill"></b-icon>
+        </b-button>
+      </div>
+
+      <div class="right-controls">
+        <b-button title="Export file" @click="exportToExcel" variant="warning">
+          Export
+          <b-icon icon="cloud-download" aria-hidden="true"></b-icon>
+        </b-button>
+
+        <b-button title="Import file" @click="triggerFileUpload" variant="info">
+          Import
+          <b-icon icon="cloud-upload" aria-hidden="true"></b-icon>
+        </b-button>
+        <input
+          type="file"
+          ref="fileInput"
+          @change="onFileChange"
+          class="file-input"
+          style="display: none"
+        />
+
+        <span v-if="fileName" class="filename">{{ fileName }}</span>
+
+        <b-button
+          v-if="isFileLoaded"
+          @click="uploadToServer"
+          size="sm"
+          variant="primary"
+          class="save-data"
+        >
+          อัปโหลด
+          <b-icon icon="upload"></b-icon>
+        </b-button>
+      </div>
+    </div>
+
     <div class="table-container">
       <table class="table w-full">
         <thead>
@@ -12,30 +58,9 @@
             <th>สถานที่เกิดเหตุ</th>
             <th>ละติจูด</th>
             <th>ลองจิจูด</th>
-            <th @click="sortData('numinjur')">
-              จำนวนผู้บาดเจ็บ
-              <b-icon
-                v-if="sortKey === 'numinjur'"
-                :icon="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
-                font-scale="1"
-              ></b-icon>
-            </th>
-            <th @click="sortData('numdeath')">
-              จำนวนผู้เสียชีวิต
-              <b-icon
-                v-if="sortKey === 'numdeath'"
-                :icon="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
-                font-scale="1"
-              ></b-icon>
-            </th>
-            <th @click="sortData('accdate')">
-              วันและเวลาเกิดเหตุ
-              <b-icon
-                v-if="sortKey === 'accdate'"
-                :icon="sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'"
-                font-scale="1"
-              ></b-icon>
-            </th>
+            <th @click="sortData('numinjur')">จำนวนผู้บาดเจ็บ</th>
+            <th @click="sortData('numdeath')">จำนวนผู้เสียชีวิต</th>
+            <th @click="sortData('accdate')">วันและเวลาเกิดเหตุ</th>
             <th>จัดการ</th>
           </tr>
         </thead>
@@ -80,21 +105,6 @@
         pills
       ></b-pagination>
     </div>
-
-    <b-button @click="addData" size="sm" variant="secondary" class="add-button">
-      เพิ่มข้อมูล
-    </b-button>
-    <div class="file-upload-container">
-      <b-form-file @change="onFileChange" class="file-input" />
-    </div>
-    <b-button
-      @click="uploadToServer"
-      size="sm"
-      variant="secondary"
-      class="save-data"
-    >
-      บันทึกข้อมูล
-    </b-button>
   </div>
 </template>
 
@@ -117,10 +127,15 @@ export default {
       isFileLoaded: false,
       sortKey: "",
       sortOrder: "asc",
+      fileName: "",
     };
   },
 
   methods: {
+    triggerFileUpload() {
+      this.$refs.fileInput.click();
+    },
+
     fetchData() {
       axios
         .get("http://localhost:3000/api/data")
@@ -149,10 +164,12 @@ export default {
       if (!file) {
         this.excelData = [];
         this.isFileLoaded = false;
+        this.fileName = "";
         return;
       }
 
       this.isFileLoaded = true;
+      this.fileName = file.name;
 
       const reader = new FileReader();
 
@@ -170,7 +187,7 @@ export default {
 
     uploadToServer() {
       if (!this.isFileLoaded) {
-        alert("ไฟล์ยังไม่ถูกอัปโหลด");
+        alert("กรุณาอัปโหลดไฟล์");
         return;
       }
 
@@ -186,13 +203,29 @@ export default {
             "Content-Type": "application/json",
           },
         })
-        .then((response) => {
-          alert(`อัปโหลดข้อมูลเสร็จสิ้น: ${response}`);
+        .then(() => {
+          alert(`อัปโหลดข้อมูลเสร็จสิ้น`);
           this.fetchData();
+          this.clearFileInput();
+          this.fileName = "";
         })
         .catch((error) => {
           console.error("There was an error uploading the data!", error);
         });
+    },
+
+    clearFileInput() {
+      this.$refs.fileInput.value = null;
+      this.isFileLoaded = false;
+    },
+
+    exportToExcel() {
+      const worksheet = XLSX.utils.json_to_sheet(this.excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+      // สร้างไฟล์ Excel
+      XLSX.writeFile(workbook, "data.xlsx");
     },
 
     deleteData(id) {
@@ -256,21 +289,13 @@ body {
 }
 
 .table-container {
-  position: relative;
+  margin-top: 10px;
   width: 100%;
-  height: 90%;
-  margin-top: 15px;
   max-width: 1200px;
-  padding-left: 15px;
-  padding-right: 15px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse;
   text-align: center;
 }
 
@@ -293,27 +318,54 @@ body {
   background-color: #f2f2f2;
 }
 
-.file-upload-container {
-  position: fixed;
-  bottom: 30px;
-  right: 25%;
-  z-index: 1000;
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 10px;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.left-controls {
+  display: flex;
+}
+
+.right-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .file-input {
   width: 250px;
-  font-size: 0.8rem;
+}
+
+.filename {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
 }
 
 .save-data {
-  position: fixed;
-  bottom: 30px;
-  right: 20%;
+  font-size: 0.8rem;
+  width: 90px;
+  height: 30px;
+  top: 30px;
   z-index: 1000;
 }
 
+.add-button {
+  font-size: 1.1rem;
+  width: 180px;
+  height: 35px;
+}
+
 .pagination-controls {
-  margin-top: 20px;
+  margin-top: 8px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -328,13 +380,21 @@ body {
   font-size: 0.9rem;
 }
 
-.add-button {
-  position: fixed;
-  width: 180px;
-  height: 34px;
-  font-size: 17px;
-  bottom: 40px;
-  left: 20%;
-  z-index: 1000;
+@media (max-width: 768px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .left-controls,
+  .right-controls {
+    width: 100%;
+    justify-content: space-around;
+  }
+  .file-input,
+  .add-button,
+  .save-data {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }
 </style>

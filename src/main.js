@@ -7,12 +7,19 @@ import App from './App.vue'
 import axios from "axios";
 import store from './store';
 import router from './router'
+import * as VueGoogleMaps from "vue2-google-maps";
 
 store.dispatch("initializeStore");
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.config.productionTip = false
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyC-ucYUMX0Ci1nUtBSOgZaJZHXZqHwRFeM',
+    libraries: 'places',
+  },
+});
 
 axios.interceptors.request.use(
   (config) => {
