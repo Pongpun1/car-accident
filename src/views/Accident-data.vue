@@ -15,6 +15,15 @@
           เพิ่มข้อมูล
           <b-icon icon="plus-circle-fill"></b-icon>
         </b-button>
+        <b-button
+          v-if="selectedItems.length > 0"
+          @click="deleteSelected"
+          variant="danger"
+          class="deleteAll"
+        >
+          ลบ {{ selectedItems.length }} รายการ
+          <b-icon icon="trash" aria-hidden="true"></b-icon>
+        </b-button>
       </div>
 
       <div class="right-controls">
@@ -54,26 +63,36 @@
       <table class="table w-full">
         <thead>
           <tr>
+            <th>
+              <input
+                type="checkbox"
+                @change="toggleSelectAll"
+                :checked="isAllSelected"
+              />
+            </th>
             <th>ลำดับ</th>
             <th>สถานที่เกิดเหตุ</th>
             <th>ละติจูด</th>
             <th>ลองจิจูด</th>
             <th @click="sortData('numinjur')">จำนวนผู้บาดเจ็บ</th>
             <th @click="sortData('numdeath')">จำนวนผู้เสียชีวิต</th>
-            <th @click="sortData('accdate')">วันและเวลาเกิดเหตุ</th>
+            <th>วันเกิดเหตุ</th>
             <th>จัดการ</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-for="(item, index) in paginatedData" :key="index">
+            <td>
+              <input type="checkbox" v-model="selectedItems" :value="item.id" />
+            </td>
             <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
             <td>{{ item.acclocation }}</td>
             <td>{{ item.latitude }}</td>
             <td>{{ item.longitude }}</td>
             <td>{{ item.numinjur }}</td>
             <td>{{ item.numdeath }}</td>
-            <td>{{ item.accdate }}</td>
+            <td>{{ formatDate(item.accdate) }}</td>
             <td>
               <div class="btn-container">
                 <button
@@ -112,6 +131,8 @@
 import NavTopBar from "../components/nav-bar.vue";
 import * as XLSX from "xlsx";
 import axios from "axios";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
 
 export default {
   components: {
@@ -123,6 +144,7 @@ export default {
       currentPage: 1,
       rowsPerPage: 14,
       excelData: [],
+      selectedItems: [],
       isUploading: false,
       isFileLoaded: false,
       sortKey: "",
@@ -131,11 +153,23 @@ export default {
     };
   },
 
-  methods: {
-    triggerFileUpload() {
-      this.$refs.fileInput.click();
+  computed: {
+    paginatedData() {
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      return this.excelData.slice(start, end);
     },
 
+    totalRows() {
+      return this.excelData.length;
+    },
+
+    isAllSelected() {
+      return this.selectedItems.length === this.excelData.length;
+    },
+  },
+
+  methods: {
     fetchData() {
       axios
         .get("http://localhost:3000/api/data")
@@ -145,18 +179,6 @@ export default {
         .catch((error) => {
           console.error("Error fetching data from API:", error);
         });
-    },
-
-    sortData(key) {
-      this.sortKey = key;
-      this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc"; // สลับลำดับการจัดเรียง
-      this.excelData.sort((a, b) => {
-        if (this.sortOrder === "asc") {
-          return a[key] > b[key] ? 1 : -1;
-        } else {
-          return a[key] < b[key] ? 1 : -1;
-        }
-      });
     },
 
     onFileChange(event) {
@@ -224,7 +246,6 @@ export default {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
 
-      // สร้างไฟล์ Excel
       XLSX.writeFile(workbook, "data.xlsx");
     },
 
@@ -241,6 +262,27 @@ export default {
       }
     },
 
+    deleteSelected() {
+      if (
+        confirm(
+          `คุณต้องการลบ ${this.selectedItems.length} รายการนี้จริงหรือไม่?`
+        )
+      ) {
+        const deletePromises = this.selectedItems.map((id) =>
+          axios.delete(`http://localhost:3000/api/data/${id}`)
+        );
+
+        Promise.all(deletePromises)
+          .then(() => {
+            this.fetchData();
+            this.selectedItems = [];
+          })
+          .catch((error) => {
+            console.error("There was an error deleting the data!", error);
+          });
+      }
+    },
+
     editData(id) {
       this.$router.push(`/data/edit/${id}`);
     },
@@ -248,16 +290,33 @@ export default {
     addData() {
       this.$router.push("/data/add");
     },
-  },
 
-  computed: {
-    paginatedData() {
-      const start = (this.currentPage - 1) * this.rowsPerPage;
-      const end = start + this.rowsPerPage;
-      return this.excelData.slice(start, end);
+    formatDate(date) {
+      return format(new Date(date), "d MMMM yyyy", { locale: th });
     },
-    totalRows() {
-      return this.excelData.length;
+
+    triggerFileUpload() {
+      this.$refs.fileInput.click();
+    },
+
+    sortData(key) {
+      this.sortKey = key;
+      this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+      this.excelData.sort((a, b) => {
+        if (this.sortOrder === "asc") {
+          return a[key] > b[key] ? 1 : -1;
+        } else {
+          return a[key] < b[key] ? 1 : -1;
+        }
+      });
+    },
+
+    toggleSelectAll(event) {
+      if (event.target.checked) {
+        this.selectedItems = this.excelData.map((item) => item.id);
+      } else {
+        this.selectedItems = [];
+      }
     },
   },
 
@@ -270,8 +329,6 @@ export default {
 <style>
 body {
   background-color: #f9efdf;
-  margin: 0;
-  padding: 0;
 }
 
 .main-container {
@@ -330,6 +387,7 @@ body {
 
 .left-controls {
   display: flex;
+  align-items: center;
 }
 
 .right-controls {
@@ -359,9 +417,20 @@ body {
 }
 
 .add-button {
-  font-size: 1.1rem;
-  width: 180px;
-  height: 35px;
+  font-size: 1rem;
+  width: 130px;
+  height: 30px;
+  padding-bottom: 25px;
+}
+
+.deleteAll {
+  margin-left: 10px;
+  font-size: 1rem;
+  width: 150px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pagination-controls {

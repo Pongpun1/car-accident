@@ -44,18 +44,24 @@
         <b-input-group size="lg" prepend="วันและเวลาเกิดเหตุ" class="input">
           <b-form-input
             id="example-input"
-            v-model="formData.accdate"
+            v-model="formattedAccdate"
             type="text"
-            placeholder="YYYY-MM-DD"
+            placeholder="เลือกวันเกิดเหตุ"
             autocomplete="off"
+          readonly
           ></b-form-input>
           <b-input-group-append>
             <b-form-datepicker
               v-model="formData.accdate"
               button-only
               right
-              locale="th-US"
+              locale="th"
               aria-controls="example-input"
+              :date-format-options="{
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }"
             ></b-form-datepicker>
           </b-input-group-append>
         </b-input-group>
@@ -89,6 +95,8 @@
 import NavTopBar from "../components/nav-bar.vue";
 import axios from "axios";
 import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
 
 export default {
   components: {
@@ -119,6 +127,14 @@ export default {
     "formData.longitude": "updateMapCenter",
   },
 
+  computed: {
+    formattedAccdate() {
+      return this.formData.accdate
+        ? format(new Date(this.formData.accdate), "d MMMM yyyy", { locale: th })
+        : "";
+    },
+  },
+
   methods: {
     AddData() {
       if (
@@ -131,15 +147,20 @@ export default {
         return;
       }
 
+      const formattedDate = new Date(this.formData.accdate).toISOString();
+
       axios
-        .post("http://localhost:3000/api/data/single", this.formData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
+        .post(
+          "http://localhost:3000/api/data/single",
+          { ...this.formData, accdate: formattedDate },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
         .then(() => {
           alert("บันทึกข้อมูลสำเร็จ");
-
           this.$router.push("/data");
           this.formData = {
             acclocation: "",

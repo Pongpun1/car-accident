@@ -45,18 +45,24 @@
         <b-input-group size="lg" prepend="วันและเวลาเกิดเหตุ" class="input">
           <b-form-input
             id="example-input"
-            v-model="formData.accdate"
+            v-model="formattedAccdate"
             type="text"
-            placeholder="YYYY-MM-DD"
+            placeholder="เลือกวันและเวลา"
             autocomplete="off"
+            readonly
           ></b-form-input>
           <b-input-group-append>
             <b-form-datepicker
               v-model="formData.accdate"
               button-only
               right
-              locale="th-US"
+              locale="th"
               aria-controls="example-input"
+              :date-format-options="{
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }"
             ></b-form-datepicker>
           </b-input-group-append>
         </b-input-group>
@@ -92,6 +98,8 @@
 import NavTopBar from "../components/nav-bar.vue";
 import axios from "axios";
 import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
 
 export default {
   components: {
@@ -117,9 +125,12 @@ export default {
     };
   },
 
-  watch: {
-    "formData.latitude": "updateMapCenter",
-    "formData.longitude": "updateMapCenter",
+  computed: {
+    formattedAccdate() {
+      return this.formData.accdate
+        ? format(new Date(this.formData.accdate), "d MMMM yyyy", { locale: th })
+        : "";
+    },
   },
 
   methods: {
@@ -146,30 +157,44 @@ export default {
     },
 
     async searchLocation() {
-    const location = this.formData.acclocation;
-    if (location) {
-      const geocodeUrl = `http://localhost:3000/geocode?address=${encodeURIComponent(
-        location
-      )}&language=th`;
+      const location = this.formData.acclocation;
+      if (location) {
+        const geocodeUrl = `http://localhost:3000/geocode?address=${encodeURIComponent(
+          location
+        )}&language=th`;
 
-      try {
-        const response = await axios.get(geocodeUrl);
-        if (response.data.results.length) {
-          const { lat, lng } = response.data.results[0].geometry.location;
-          this.formData.latitude = lat;
-          this.formData.longitude = lng;
-          this.updateMapCenter();
-        } else {
-          alert("ไม่พบตำแหน่งที่ระบุ");
+        try {
+          const response = await axios.get(geocodeUrl);
+          if (response.data.results.length) {
+            const { lat, lng } = response.data.results[0].geometry.location;
+            this.formData.latitude = lat;
+            this.formData.longitude = lng;
+            this.updateMapCenter();
+          } else {
+            alert("ไม่พบตำแหน่งที่ระบุ");
+          }
+        } catch (error) {
+          console.error("Error fetching location:", error);
+          alert("เกิดข้อผิดพลาดในการค้นหาสถานที่");
         }
-      } catch (error) {
-        console.error("Error fetching location:", error);
-        alert("เกิดข้อผิดพลาดในการค้นหาสถานที่");
+      } else {
+        alert("กรุณากรอกสถานที่เกิดเหตุ");
       }
-    } else {
-      alert("กรุณากรอกสถานที่เกิดเหตุ");
-    }
-  },
+    },
+
+    updateData() {
+      const id = this.$route.params.id;
+      axios
+        .put(`http://localhost:3000/api/data/${id}`, this.formData)
+        .then(() => {
+          alert("ข้อมูลได้รับการอัปเดต");
+          this.$router.push("/data");
+        })
+        .catch((error) => {
+          console.error("Error updating data:", error);
+          alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
+        });
+    },
 
     async onMapClick(event) {
       const lat = event.latLng.lat().toFixed(7);
@@ -188,20 +213,6 @@ export default {
         console.error("Error fetching location:", error);
       }
     },
-
-    updateData() {
-      const id = this.$route.params.id;
-      axios
-        .put(`http://localhost:3000/api/data/${id}`, this.formData)
-        .then(() => {
-          alert("ข้อมูลได้รับการอัปเดตเรียบร้อยแล้ว");
-          this.$router.push("/data");
-        })
-        .catch((error) => {
-          console.error("Error updating data:", error);
-          alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
-        });
-    },
   },
 
   mounted() {
@@ -211,6 +222,7 @@ export default {
 </script>
 
 <style>
+/* CSS ที่ใช้สำหรับจัดหน้า */
 .NavBar {
   width: 100%;
 }

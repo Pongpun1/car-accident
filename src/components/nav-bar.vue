@@ -2,11 +2,12 @@
   <div>
     <b-navbar fixed="top" expand="lg" variant="faded" type="light" class="bg-blue d-flex justify-content-between">
       <b-navbar-brand href="#">
-        <span class="navbar-text ml-3 text-white"> ระบบจัดการเหตุการณ์และอุบัติเหตุ </span>
+        <span class="navbar-text ml-3 text-white"><strong>ระบบจัดการเหตุการณ์และอุบัติเหตุ</strong></span>
       </b-navbar-brand>
       <div v-if="isAuthenticated" class="navbar-user">
-        <span class="navbar-text text-white">ยินดีต้อนรับ, {{ username }}</span>
-        <button @click="logoutUser" variant="secondary" class="btn btn-outline-light btn-sm ml-3">ออกจากระบบ</button>
+        <b-icon icon="person-circle" font-scale="2.5" style="color: white;"></b-icon>
+        <span class="navbar-text text-white">{{ username }}</span>
+        <button @click="logoutUser" variant="secondary" class="btn btn-outline-light btn-xs ml-3 custom-small-btn">ออกจากระบบ</button>
       </div>
     </b-navbar>
   </div>
@@ -43,10 +44,11 @@ export default {
 
 .navbar-text {
   font-size: 25px;
-  margin-left: 20px;
+  margin-left: 10px;
+  font-weight: bold;
 }
 
-.text-white {
+.header-text {
   color: white;
 }
 
@@ -56,14 +58,10 @@ export default {
   margin-right: 30px;
 }
 
-.navbar-user button {
-  margin-left: 15px;
+.custom-small-btn {
+  font-size: 13px;
+  padding: 2px 6px;
+  height: 28px;
 }
 
-body {
-  background-color: #f9efdf;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-}
 </style>
