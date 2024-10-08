@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-const allowedOrigins = ["http://localhost:8080", "http://10.203.70.225:8080"];
+const allowedOrigins = ["http://localhost:8080", "http://172.20.10.4:8080", "http://10.203.70.225:8080"];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -21,7 +21,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// routers
 const dataRoutes = require("./routes/DataServer");
 app.use("/api/data", dataRoutes);
 const UserRoutes = require("./routes/User");

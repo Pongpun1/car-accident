@@ -6,14 +6,28 @@
 
     <div class="controls-container">
       <div class="left-controls">
+
+        <b-input-group style="width: 400px;">
+          
+          <b-form-input
+            id="filter-input"
+            v-model="filter"
+            type="search"
+            placeholder="ค้นหา.."
+            @input="filterData"
+          ></b-form-input><b-input-group-append is-text>
+            <b-icon icon="search"></b-icon>
+          </b-input-group-append>
+        </b-input-group>
+
         <b-button
           @click="addData"
           size="sm"
           variant="secondary"
           class="add-button"
         >
-          เพิ่มข้อมูล
-          <b-icon icon="plus-circle-fill"></b-icon>
+          <strong>เพิ่มข้อมูล</strong>
+          <b-icon icon="plus-circle" class="ml-2"></b-icon>
         </b-button>
         <b-button
           v-if="selectedItems.length > 0"
@@ -21,20 +35,20 @@
           variant="danger"
           class="deleteAll"
         >
-          ลบ {{ selectedItems.length }} รายการ
-          <b-icon icon="trash" aria-hidden="true"></b-icon>
+          <strong>ลบ {{ selectedItems.length }} รายการ </strong>
+          <b-icon icon="trash" aria-hidden="true" class="ml-2"></b-icon>
         </b-button>
       </div>
 
       <div class="right-controls">
-        <b-button title="Export file" @click="exportToExcel" variant="warning">
-          Export
-          <b-icon icon="cloud-download" aria-hidden="true"></b-icon>
-        </b-button>
-
-        <b-button title="Import file" @click="triggerFileUpload" variant="info">
-          Import
-          <b-icon icon="cloud-upload" aria-hidden="true"></b-icon>
+        <b-button
+          title="Import file"
+          @click="triggerFileUpload"
+          variant="info"
+          class="btn-hover"
+        >
+          <strong>Import</strong>
+          <b-icon icon="cloud-upload" aria-hidden="true" class="ml-1"></b-icon>
         </b-button>
         <input
           type="file"
@@ -53,14 +67,35 @@
           variant="primary"
           class="save-data"
         >
-          อัปโหลด
-          <b-icon icon="upload"></b-icon>
+          <strong>อัปโหลด</strong>
+          <b-icon icon="upload" class="ml-1"></b-icon>
+        </b-button>
+
+        <b-button
+          title="Export file"
+          @click="exportToExcel"
+          variant="warning"
+          class="btn-hover"
+        >
+          <strong>Export</strong>
+          <b-icon
+            icon="cloud-download"
+            aria-hidden="true"
+            class="ml-1"
+          ></b-icon>
         </b-button>
       </div>
     </div>
 
     <div class="table-container">
-      <table class="table w-full">
+      <b-skeleton-table
+        v-if="isLoading"
+        :rows="14"
+        :columns="9"
+        animation="Fade"
+      ></b-skeleton-table>
+
+      <table v-else class="table w-full">
         <thead>
           <tr>
             <th>
@@ -96,14 +131,20 @@
             <td>
               <div class="btn-container">
                 <button
+                  @click="showInfoModal(item)"
+                  class="btn btn-info btn-sm mx-1 btn-hover"
+                >
+                  <b-icon icon="info-circle" font-scale="1.5"></b-icon>
+                </button>
+                <button
                   @click="editData(item.id)"
-                  class="btn btn-primary btn-sm mx-2"
+                  class="btn btn-primary btn-sm mx-1 btn-hover"
                 >
                   <b-icon icon="pencil-square" font-scale="1.5"></b-icon>
                 </button>
                 <button
                   @click="deleteData(item.id)"
-                  class="btn btn-danger btn-sm mx-2"
+                  class="btn btn-danger btn-sm mx-1 btn-hover"
                 >
                   <b-icon icon="trash" font-scale="1.5"></b-icon>
                 </button>
@@ -124,6 +165,34 @@
         pills
       ></b-pagination>
     </div>
+
+    <b-modal
+      scrollable
+      hide-footer
+      v-model="isInfoModalVisible"
+      title="รายละเอียดเหตุการณ์"
+      class="InfoModal"
+    >
+      <p><strong>สถานที่เกิดเหตุ:</strong> {{ selectedItem.acclocation }}</p>
+      <p><strong>ละติจูด:</strong> {{ selectedItem.latitude }}</p>
+      <p><strong>ลองจิจูด:</strong> {{ selectedItem.longitude }}</p>
+      <p><strong>จำนวนผู้บาดเจ็บ:</strong> {{ selectedItem.numinjur }} ราย</p>
+      <p><strong>จำนวนผู้เสียชีวิต:</strong> {{ selectedItem.numdeath }} ราย</p>
+      <p>
+        <strong>วันเกิดเหตุ:</strong>
+        {{
+          selectedItem.accdate
+            ? formatDate(selectedItem.accdate)
+            : "ไม่ทราบวันที่"
+        }}
+      </p>
+      <p>
+        <strong>รายละเอียด: </strong
+        ><span>{{
+          selectedItem.accinfo ? selectedItem.accinfo : "-- ไม่ได้ระบุ --"
+        }}</span>
+      </p>
+    </b-modal>
   </div>
 </template>
 
@@ -143,13 +212,18 @@ export default {
     return {
       currentPage: 1,
       rowsPerPage: 14,
-      excelData: [],
-      selectedItems: [],
       isUploading: false,
       isFileLoaded: false,
-      sortKey: "",
+      isInfoModalVisible: false,
+      selectedItemIndex: null,
+      isLoading: true,
       sortOrder: "asc",
+      filter: "",
+      sortKey: "",
       fileName: "",
+      excelData: [],
+      selectedItems: [],
+      selectedItem: {},
     };
   },
 
@@ -157,27 +231,52 @@ export default {
     paginatedData() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
       const end = start + this.rowsPerPage;
-      return this.excelData.slice(start, end);
+      return this.filteredData.slice(start, end); // เปลี่ยนแหล่งข้อมูลเป็น filteredData
     },
 
     totalRows() {
-      return this.excelData.length;
+      return this.filteredData.length; // เปลี่ยนแหล่งข้อมูลเป็น filteredData
     },
 
     isAllSelected() {
       return this.selectedItems.length === this.excelData.length;
     },
+
+    filteredData() {
+      if (!this.filter) {
+        return this.excelData;
+      }
+      return this.excelData.filter((item) => {
+        return (
+          item.acclocation.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          this.formatDate(item.accdate).includes(this.filter)
+        );
+      });
+    },
   },
 
   methods: {
+    showInfoModal(item) {
+      this.selectedItem = item;
+      this.selectedItemIndex = this.excelData.indexOf(item) + 1;
+      this.isInfoModalVisible = true;
+    },
+
     fetchData() {
+      this.isLoading = true;
       axios
         .get("http://localhost:3000/api/data")
         .then((response) => {
           this.excelData = response.data.data;
+          this.isLoading = false;
         })
         .catch((error) => {
           console.error("Error fetching data from API:", error);
+          this.isLoading = false;
         });
     },
 
@@ -331,6 +430,10 @@ body {
   background-color: #f9efdf;
 }
 
+.NavBar {
+  width: 100%;
+}
+
 .main-container {
   display: flex;
   flex-direction: column;
@@ -339,21 +442,22 @@ body {
   width: 100vw;
   height: 100vh;
   box-sizing: border-box;
-}
-
-.NavBar {
-  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table-container {
   margin-top: 10px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
+  display: flex;
+  justify-content: center; /* จัดให้อยู่ตรงกลางแนวนอน */
+  align-items: center;
 }
 
 .table {
-  width: 100%;
+  width: 140%;
   text-align: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table th,
@@ -377,9 +481,9 @@ body {
 
 .controls-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1430px;
   margin-top: 10px;
   padding: 0 15px;
   box-sizing: border-box;
@@ -388,6 +492,7 @@ body {
 .left-controls {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .right-controls {
@@ -395,6 +500,7 @@ body {
   gap: 10px;
   align-items: center;
   justify-content: space-between;
+  margin-left: auto;
 }
 
 .file-input {
@@ -408,30 +514,62 @@ body {
   color: #333;
 }
 
+/* ---------------------CSS ของปุ่ม-------------------------- */
 .save-data {
   font-size: 0.8rem;
   width: 90px;
   height: 30px;
   top: 30px;
   z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.save-data:hover {
+  transform: scale(1.05);
 }
 
 .add-button {
   font-size: 1rem;
-  width: 130px;
-  height: 30px;
-  padding-bottom: 25px;
+  width: 170px;
+  height: 33px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.add-button:hover {
+  transform: scale(1.05);
+}
+
+.ImportButt:hover {
+  transform: scale(1.05);
+}
+
+.ExportButt:hover {
+  transform: scale(1.05);
 }
 
 .deleteAll {
-  margin-left: 10px;
   font-size: 1rem;
-  width: 150px;
-  height: 30px;
+  width: 160px;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease;
 }
+
+.deleteAll:hover {
+  transform: scale(1.05);
+}
+
+.btn-hover {
+  transition: transform 0.3s ease;
+}
+
+.btn-hover:hover {
+  transform: scale(1.05);
+}
+/* ---------------------------------------------------------- */
 
 .pagination-controls {
   margin-top: 8px;
@@ -452,7 +590,8 @@ body {
 @media (max-width: 768px) {
   .controls-container {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    gap: 15px;
   }
   .left-controls,
   .right-controls {
@@ -464,6 +603,14 @@ body {
   .save-data {
     width: 100%;
     margin-bottom: 10px;
+  }
+  .controls-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .pagination-controls {
+    flex-direction: column;
   }
 }
 </style>

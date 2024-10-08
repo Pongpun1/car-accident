@@ -18,11 +18,12 @@ router.post("/", (req, res) => {
     row.จำนวนผู้บาดเจ็บ,
     row.จำนวนผู้เสียชีวิต,
     row.วันเกิดเหตุ,
+    row.รายละเอียด,
   ]);
 
   const insertOrUpdateQuery = `
-      INSERT INTO accidentdata (id, acclocation, latitude, longitude, numinjur, numdeath, accdate)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO accidentdata (id, acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         numinjur = VALUES(numinjur),
         numdeath = VALUES(numdeath)
@@ -52,52 +53,77 @@ router.post("/", (req, res) => {
 
 // ------------------------------------------เพิ่มข้อมูลแยกตัว---------------------------------------
 router.post("/single", (req, res) => {
-  console.log("Received request body:", req.body); // Log request body
-  const { acclocation, latitude, longitude, numinjur, numdeath, accdate } =
-    req.body;
+  console.log("Received request body:", req.body);
+  const {
+    acclocation,
+    latitude,
+    longitude,
+    numinjur,
+    numdeath,
+    accdate,
+    accinfo,
+  } = req.body;
 
   if (!acclocation || !latitude || !longitude || !accdate) {
     console.log("Missing required fields");
     return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }
 
-  const checkQuery = `
-      SELECT * FROM accidentdata WHERE acclocation = ? AND latitude = ? AND longitude = ? AND numinjur = ? AND numdeath = ?  AND accdate = ?
+  const maxIdQuery = "SELECT MAX(id) as maxId FROM accidentdata";
+
+  conn.execute(maxIdQuery, (err, result) => {
+    if (err) {
+      console.error("Error fetching max ID:", err.message);
+      return res.status(500).json({ message: "Error fetching max ID" });
+    }
+
+    const newId = result[0].maxId ? result[0].maxId + 1 : 1;
+
+    const checkQuery = `
+      SELECT * FROM accidentdata WHERE acclocation = ? AND latitude = ? AND longitude = ? AND numinjur = ? AND numdeath = ? AND accdate = ?
     `;
 
-  conn.execute(
-    checkQuery,
-    [acclocation, latitude, longitude, numinjur, numdeath, accdate],
-    (err, results) => {
-      if (err) {
-        console.error("Error checking data:", err.message);
-        return res
-          .status(500)
-          .json({ message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล" });
-      }
-
-      if (results.length > 0) {
-        return res.status(400).json({ message: "ข้อมูลนี้มีอยู่แล้วในระบบ" });
-      }
-
-      const insertQuery = `
-        INSERT INTO accidentdata (acclocation, latitude, longitude, numinjur, numdeath, accdate)
-        VALUES (?, ?, ?, ?, ?, ?)
-      `;
-
-      conn.execute(
-        insertQuery,
-        [acclocation, latitude, longitude, numinjur, numdeath, accdate],
-        (err, result) => {
-          if (err) {
-            console.error("Error inserting data:", err.message);
-            return res.status(500).json({ message: "Error inserting data" });
-          }
-          res.status(200).json({ message: "บันทึกข้อมูลสำเร็จ" });
+    conn.execute(
+      checkQuery,
+      [acclocation, latitude, longitude, numinjur, numdeath, accdate],
+      (err, results) => {
+        if (err) {
+          console.error("Error checking data:", err.message);
+          return res.status(500).json({ message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล" });
         }
-      );
-    }
-  );
+
+        if (results.length > 0) {
+          return res.status(400).json({ message: "ข้อมูลนี้มีอยู่แล้วในระบบ" });
+        }
+
+        const insertQuery = `
+          INSERT INTO accidentdata (id, acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        conn.execute(
+          insertQuery,
+          [
+            newId,
+            acclocation,
+            latitude,
+            longitude,
+            numinjur,
+            numdeath,
+            accdate,
+            accinfo || null,
+          ],
+          (err, result) => {
+            if (err) {
+              console.error("Error inserting data:", err.message);
+              return res.status(500).json({ message: "Error inserting data" });
+            }
+            res.status(200).json({ message: "บันทึกข้อมูลสำเร็จ" });
+          }
+        );
+      }
+    );
+  });
 });
 
 // ------------------------------------------แสดงข้อมูล-------------------------------------------
@@ -172,9 +198,17 @@ router.get("/:id", async (req, res) => {
 // ------------------------------------------อัพเดทข้อมูล-------------------------------------------
 router.put("/:id", (req, res) => {
   const { id } = req.params;
-  const { acclocation, latitude, longitude, numinjur, numdeath, accdate } = req.body;
+  const { acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo } =
+    req.body;
 
-  if (!acclocation || !latitude || !longitude || numinjur === undefined || numdeath === undefined || !accdate) {
+  if (
+    !acclocation ||
+    !latitude ||
+    !longitude ||
+    numinjur === undefined ||
+    numdeath === undefined ||
+    !accdate
+  ) {
     return res.status(400).json({
       message: "กรุณาให้ข้อมูลที่ครบถ้วน",
     });
@@ -183,47 +217,54 @@ router.put("/:id", (req, res) => {
     SELECT * FROM accidentdata WHERE latitude = ? AND longitude = ? AND accdate = ? AND id != ?
   `;
 
-  conn.execute(checkQuery, [latitude, longitude, accdate, id], (err, results) => {
-    if (err) {
-      console.error("Error checking data:", err.message);
-      return res.status(500).json({
-        message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล",
-      });
-    }
+  conn.execute(
+    checkQuery,
+    [latitude, longitude, accdate, id],
+    (err, results) => {
+      if (err) {
+        console.error("Error checking data:", err.message);
+        return res.status(500).json({
+          message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล",
+        });
+      }
 
-    if (results.length > 0) {
-      return res.status(400).json({
-        message: "ข้อมูลนี้มีอยู่แล้ว",
-      });
-    }
+      if (results.length > 0) {
+        return res.status(400).json({
+          message: "ข้อมูลนี้มีอยู่แล้ว",
+        });
+      }
 
-    const updateQuery = `
+      const updateQuery = `
       UPDATE accidentdata
-      SET acclocation = ?, latitude = ?, longitude = ?, numinjur = ?, numdeath = ?, accdate = ?
+      SET acclocation = ?, latitude = ?, longitude = ?, numinjur = ?, numdeath = ?, accdate = ?, accinfo = ?
       WHERE id = ?
     `;
 
-    conn.execute(updateQuery, [acclocation, latitude, longitude, numinjur, numdeath, accdate, id], (err, result) => {
-      if (err) {
-        console.error("Error updating data:", err.message);
-        return res.status(500).json({
-          message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล",
-          error: err.message,
-        });
-      }
+      conn.execute(
+        updateQuery,
+        [acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo, id],
+        (err, result) => {
+          if (err) {
+            console.error("Error updating data:", err.message);
+            return res.status(500).json({
+              message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล",
+              error: err.message,
+            });
+          }
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          message: `ไม่พบข้อมูลที่มี id ${id}`,
-        });
-      }
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              message: `ไม่พบข้อมูลที่มี id ${id}`,
+            });
+          }
 
-      // ส่งข้อความว่าอัปเดตข้อมูลสำเร็จ
-      res.status(200).json({
-        message: `อัปเดตข้อมูลของ id ${id} สำเร็จแล้ว`,
-      });
-    });
-  });
+          res.status(200).json({
+            message: `อัปเดตข้อมูลของ id ${id} สำเร็จแล้ว`,
+          });
+        }
+      );
+    }
+  );
 });
 
 module.exports = router;

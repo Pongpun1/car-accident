@@ -12,6 +12,7 @@
           <b-form-input
             v-model="formData.acclocation"
             type="text"
+            placeholder="ระบุสถานที่เกิดเหตุ"
           ></b-form-input>
           <b-input-group-append>
             <b-button @click="searchLocation">
@@ -20,22 +21,22 @@
           </b-input-group-append>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ละติจูด" class="input">
+        <b-input-group size="lg" prepend="ละติจูด" placeholder="กรอกค่าละติจูด" class="input">
           <b-form-input v-model="formData.latitude"></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ลองจิจูด" class="input">
+        <b-input-group size="lg" prepend="ลองจิจูด" placeholder="กรอกค่าลองจิจูด" class="input">
           <b-form-input v-model="formData.longitude"></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้บาดเจ็บ" class="input">
+        <b-input-group size="lg" prepend="จำนวนผู้บาดเจ็บ" append="ราย" class="input">
           <b-form-input
             v-model="formData.numinjur"
             type="number"
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้เสียชีวิต" class="input">
+        <b-input-group size="lg" prepend="จำนวนผู้เสียชีวิต" append="ราย" class="input">
           <b-form-input
             v-model="formData.numdeath"
             type="number"
@@ -65,6 +66,15 @@
               }"
             ></b-form-datepicker>
           </b-input-group-append>
+        </b-input-group>
+
+        <b-input-group size="lg" class="input">
+          <b-form-textarea
+            v-model="formData.accinfo"
+            rows="5"
+            max-rows="8"
+            placeholder="กรอกรายละเอียดเพิ่มเติมที่นี่"
+          ></b-form-textarea>
         </b-input-group>
 
         <b-button-group size="lg" class="Editbutton">
@@ -222,7 +232,6 @@ export default {
 </script>
 
 <style>
-/* CSS ที่ใช้สำหรับจัดหน้า */
 .NavBar {
   width: 100%;
 }
@@ -259,6 +268,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: transform 0.3s ease;
+}
+.Editbutton:hover {
+  transform: scale(1.05);
 }
 
 .map-container {

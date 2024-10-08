@@ -7,7 +7,7 @@
       <div v-if="isAuthenticated" class="navbar-user">
         <b-icon icon="person-circle" font-scale="2.5" style="color: white;"></b-icon>
         <span class="navbar-text text-white">{{ username }}</span>
-        <button @click="logoutUser" variant="secondary" class="btn btn-outline-light btn-xs ml-3 custom-small-btn">ออกจากระบบ</button>
+        <b-button @click="logoutUser" variant="danger" class="btn btn-xs ml-3 custom-small-btn"><strong>ออกจากระบบ</strong></b-button>
       </div>
     </b-navbar>
   </div>
@@ -62,6 +62,11 @@ export default {
   font-size: 13px;
   padding: 2px 6px;
   height: 28px;
+  transition: transform 0.3s ease;
+}
+
+.custom-small-btn:hover{
+  transform: scale(1.05);
 }
 
 </style>

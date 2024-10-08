@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 26, 2024 at 08:41 AM
+-- Generation Time: Oct 06, 2024 at 12:40 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.26
 
@@ -34,35 +34,36 @@ CREATE TABLE `accidentdata` (
   `longitude` double NOT NULL,
   `numinjur` int(11) NOT NULL,
   `numdeath` int(11) NOT NULL,
-  `accdate` date NOT NULL
+  `accdate` date NOT NULL,
+  `accinfo` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `accidentdata`
 --
 
-INSERT INTO `accidentdata` (`id`, `acclocation`, `latitude`, `longitude`, `numinjur`, `numdeath`, `accdate`) VALUES
-(4, 'ลาดกระบัง', 11.876576, 21.4545, 5, 0, '2024-06-14'),
-(13, 'ลาดกระบัง', 12.4634867, 17.786221, 5, 0, '2024-06-14'),
-(15, 'บางเมือง', 12.468486, 11.8789678, 2, 4, '2024-08-12'),
-(11, 'ประเวศ', 12.6787987, 15.486486, 1, 1, '2024-05-20'),
-(5, 'ประเวศ', 12.7867675, 22.79837, 1, 1, '2024-05-20'),
-(8, 'ประเวศ', 13.4878, 17.4563456, 1, 1, '2024-05-20'),
-(6, 'บางเมือง', 13.78754, 13.4876, 2, 4, '2024-08-12'),
-(7, 'ลาดกระบัง', 15.7542, 12.8767, 5, 0, '2024-06-14'),
-(3, 'บางเมือง', 15.8916, 16.181165, 2, 4, '2024-08-12'),
-(9, 'บางเมือง', 17.43435, 16.78768, 2, 4, '2024-08-12'),
-(12, 'บางเมือง', 17.456874, 12.678, 2, 4, '2024-08-12'),
-(14, 'ประเวศ', 18.18646884, 13.67878, 1, 1, '2024-05-20'),
-(2, 'ประเวศ', 18.54941, 19.4891, 1, 1, '2024-05-20'),
-(10, 'ลาดกระบัง', 19.156489, 14.7874, 5, 0, '2024-06-14'),
-(1, 'ลาดกระบัง', 19.65612, 20.15447, 0, 1, '2024-06-14'),
-(16, 'ลาดกระบัง', 20.4867886, 12.67687, 5, 0, '2024-06-14'),
-(17, 'ประเวศ', 21.7865786, 13.8942634, 1, 1, '2024-05-20'),
-(18, 'บางเมือง', 22.4867468, 14.4896987, 2, 4, '2024-08-12'),
-(19, 'บางเมือง', 22.4867468, 14.4896987, 2, 4, '2024-08-15'),
-(20, 'บางเมือง', 22.4867468, 15.4896987, 2, 4, '2024-08-15'),
-(0, 'ระยอง', 25.1891, 12.78678, 10, 4, '2024-05-14');
+INSERT INTO `accidentdata` (`id`, `acclocation`, `latitude`, `longitude`, `numinjur`, `numdeath`, `accdate`, `accinfo`) VALUES
+(13, 'ลาดกระบัง', 12.4634867, 17.786221, 5, 0, '2024-06-13', ''),
+(11, 'ประเวศ', 12.6787987, 15.486486, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(5, 'ประเวศ', 12.7867675, 22.79837, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(8, 'ประเวศ', 13.4878, 17.4563456, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(4, 'บางพลี', 13.6117233, 100.7323332, 5, 0, '2024-06-11', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(6, 'บางเมือง', 13.78754, 13.4876, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(15, 'สำโรง', 14.9887214, 104.7754307, 5, 2, '2020-08-04', 'ไม่บอกอย่าหลอกถาม'),
+(7, 'ลาดกระบัง', 15.7542, 12.8767, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(3, 'บางเมือง', 15.8916, 16.181165, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(9, 'บางเมือง', 17.43435, 16.78768, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(12, 'บางเมือง', 17.456874, 12.678, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(14, 'ประเวศ', 18.18646884, 13.67878, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(2, 'ประเวศ', 18.54941, 19.4891, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(10, 'ลาดกระบัง', 19.156489, 14.7874, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(1, 'ลาดกระบัง', 19.65612, 20.15447, 0, 1, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(0, 'แม่สาย', 20.4389131, 99.9049441, 3, 1, '2024-10-06', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(16, 'ลาดกระบัง', 20.4867886, 12.67687, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(17, 'ประเวศ', 21.7865786, 13.8942634, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(18, 'บางเมือง', 22.4867468, 14.4896987, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(19, 'บางเมือง', 22.4867468, 14.4896987, 2, 4, '2024-08-15', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
+(20, 'บางเมือง', 22.4867468, 15.4896987, 2, 4, '2024-08-15', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.');
 
 -- --------------------------------------------------------
 
