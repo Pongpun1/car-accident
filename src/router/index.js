@@ -4,6 +4,7 @@ import Login from "../views/LoginUser.vue";
 import Data from "../views/Accident-data.vue";
 import Edit from "../views/EditData.vue";
 import Add from "../views/AddData.vue";
+import Statistics from "../views/Statistics-View.vue";
 
 Vue.use(VueRouter);
 
@@ -31,6 +32,13 @@ const routes = [
     path: "/data/add",
     name: "add",
     component: Add,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/statistics",
+    name: "statistics",
+    component: Statistics,
     props: true,
     meta: { requiresAuth: true },
   },

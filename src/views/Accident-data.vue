@@ -6,18 +6,18 @@
 
     <div class="controls-container">
       <div class="left-controls">
-
-        <b-input-group style="width: 400px;">
-          
+        <b-input-group style="width: 600px">
+          <b-input-group-prepend is-text>
+            <b-icon icon="search"></b-icon>
+          </b-input-group-prepend>
           <b-form-input
             id="filter-input"
             v-model="filter"
             type="search"
             placeholder="ค้นหา.."
             @input="filterData"
-          ></b-form-input><b-input-group-append is-text>
-            <b-icon icon="search"></b-icon>
-          </b-input-group-append>
+            style="border-radius: 0px 20px 20px 0px"
+          ></b-form-input>
         </b-input-group>
 
         <b-button
@@ -26,9 +26,14 @@
           variant="secondary"
           class="add-button"
         >
-          <strong>เพิ่มข้อมูล</strong>
-          <b-icon icon="plus-circle" class="ml-2"></b-icon>
+          <strong>เพิ่ม</strong>
+          <b-icon icon="plus-lg" class="ml-1" font-scale="1.1"></b-icon>
         </b-button>
+
+        <b-button @click="refreshData" class="refresh-btn-hover">
+          <b-icon icon="arrow-counterclockwise" font-scale="1.7"></b-icon>
+        </b-button>
+
         <b-button
           v-if="selectedItems.length > 0"
           @click="deleteSelected"
@@ -90,7 +95,7 @@
     <div class="table-container">
       <b-skeleton-table
         v-if="isLoading"
-        :rows="14"
+        :rows="19"
         :columns="9"
         animation="Fade"
       ></b-skeleton-table>
@@ -231,11 +236,11 @@ export default {
     paginatedData() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
       const end = start + this.rowsPerPage;
-      return this.filteredData.slice(start, end); // เปลี่ยนแหล่งข้อมูลเป็น filteredData
+      return this.filteredData.slice(start, end);
     },
 
     totalRows() {
-      return this.filteredData.length; // เปลี่ยนแหล่งข้อมูลเป็น filteredData
+      return this.filteredData.length;
     },
 
     isAllSelected() {
@@ -391,7 +396,8 @@ export default {
     },
 
     formatDate(date) {
-      return format(new Date(date), "d MMMM yyyy", { locale: th });
+      const year = new Date(date).getFullYear() + 543; // เพิ่ม 543
+      return format(new Date(date), `d MMMM ${year}`, { locale: th });
     },
 
     triggerFileUpload() {
@@ -417,6 +423,11 @@ export default {
         this.selectedItems = [];
       }
     },
+
+    refreshData() {
+      this.isLoading = true;
+      this.fetchData();
+    },
   },
 
   mounted() {
@@ -432,25 +443,28 @@ body {
 
 .NavBar {
   width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 .main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 70px;
+  padding-top: 50px;
   width: 100vw;
   height: 100vh;
   box-sizing: border-box;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
-
 .table-container {
   margin-top: 10px;
   width: 100%;
   max-width: 1400px;
   display: flex;
-  justify-content: center; /* จัดให้อยู่ตรงกลางแนวนอน */
+  justify-content: center;
   align-items: center;
 }
 
@@ -484,7 +498,7 @@ body {
   justify-content: flex-start;
   width: 100%;
   max-width: 1430px;
-  margin-top: 10px;
+  margin-top: 30px;
   padding: 0 15px;
   box-sizing: border-box;
 }
@@ -521,6 +535,7 @@ body {
   height: 30px;
   top: 30px;
   z-index: 1000;
+  border-radius: 20px;
   transition: transform 0.3s ease;
 }
 
@@ -530,10 +545,11 @@ body {
 
 .add-button {
   font-size: 1rem;
-  width: 170px;
+  width: 80px;
   height: 33px;
   text-align: center;
   transition: transform 0.3s ease;
+  border-radius: 20px;
 }
 
 .add-button:hover {
@@ -555,6 +571,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 20px;
   transition: transform 0.3s ease;
 }
 
@@ -564,9 +581,22 @@ body {
 
 .btn-hover {
   transition: transform 0.3s ease;
+  border-radius: 30px;
 }
 
 .btn-hover:hover {
+  transform: scale(1.05);
+}
+
+.refresh-btn-hover {
+  width: 40px;
+  transition: transform 0.3s ease;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.refresh-btn-hover:hover {
   transform: scale(1.05);
 }
 /* ---------------------------------------------------------- */

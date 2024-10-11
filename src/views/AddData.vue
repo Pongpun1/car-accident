@@ -4,7 +4,7 @@
       <NavTopBar />
     </div>
 
-    <h2 class="AddHeader">เพิ่มข้อมูล</h2>
+    <h2 class="AddHeader"><strong>เพิ่มข้อมูล</strong></h2>
     <div class="input-form-container">
       <div class="input-form">
         <b-input-group size="lg" prepend="สถานที่เกิดเหตุ" class="input">
@@ -107,8 +107,6 @@
 import NavTopBar from "../components/nav-bar.vue";
 import axios from "axios";
 import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
-import { format } from "date-fns";
-import { th } from "date-fns/locale";
 
 export default {
   components: {
@@ -141,10 +139,13 @@ export default {
 
   computed: {
     formattedAccdate() {
-      return this.formData.accdate
-        ? format(new Date(this.formData.accdate), "d MMMM yyyy", { locale: th })
-        : "";
-    },
+    if (this.formData.accdate) {
+      const date = new Date(this.formData.accdate);
+      const buddhistYear = date.getFullYear() + 543; // เพิ่ม 543 ปี
+      return `${date.getDate()} ${date.toLocaleString("th-TH", { month: "long" })} ${buddhistYear}`;
+    }
+    return "";
+  },
   },
 
   methods: {
@@ -263,16 +264,12 @@ export default {
 
 .AddHeader {
   margin-left: 30px;
-  margin-top: 60px;
+  margin-top: 30px;
 }
 
 .input-form-container {
   display: flex;
   justify-content: space-between;
-}
-
-.input-form .input {
-  margin-bottom: 15px;
 }
 
 .input-form {
@@ -281,7 +278,7 @@ export default {
 }
 
 .Addbutton {
-  width: 300px;
+  width: 530px;
   margin: 1% auto;
   display: flex;
   justify-content: center;
@@ -295,5 +292,6 @@ export default {
 .map-container {
   width: 65%;
   height: 800px;
+  margin-top: -50px;
 }
 </style>

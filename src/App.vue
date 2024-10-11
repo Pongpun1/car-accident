@@ -16,12 +16,8 @@ html, body, #app {
   padding: 0;
   height: 100vh;
   width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   box-sizing: border-box;
   font-family: "Sarabun", sans-serif;
   font-weight: 400;
-  font-style: normal;
 }
 </style>

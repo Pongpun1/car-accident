@@ -4,7 +4,7 @@
       <NavTopBar />
     </div>
 
-    <h2 class="EditHeader">แก้ไขข้อมูล</h2>
+    <h2 class="EditHeader"><strong>แก้ไขข้อมูล</strong></h2>
 
     <div class="input-form-container">
       <div class="input-form">
@@ -21,22 +21,42 @@
           </b-input-group-append>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ละติจูด" placeholder="กรอกค่าละติจูด" class="input">
+        <b-input-group
+          size="lg"
+          prepend="ละติจูด"
+          placeholder="กรอกค่าละติจูด"
+          class="input"
+        >
           <b-form-input v-model="formData.latitude"></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ลองจิจูด" placeholder="กรอกค่าลองจิจูด" class="input">
+        <b-input-group
+          size="lg"
+          prepend="ลองจิจูด"
+          placeholder="กรอกค่าลองจิจูด"
+          class="input"
+        >
           <b-form-input v-model="formData.longitude"></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้บาดเจ็บ" append="ราย" class="input">
+        <b-input-group
+          size="lg"
+          prepend="จำนวนผู้บาดเจ็บ"
+          append="ราย"
+          class="input"
+        >
           <b-form-input
             v-model="formData.numinjur"
             type="number"
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้เสียชีวิต" append="ราย" class="input">
+        <b-input-group
+          size="lg"
+          prepend="จำนวนผู้เสียชีวิต"
+          append="ราย"
+          class="input"
+        >
           <b-form-input
             v-model="formData.numdeath"
             type="number"
@@ -108,8 +128,6 @@
 import NavTopBar from "../components/nav-bar.vue";
 import axios from "axios";
 import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
-import { format } from "date-fns";
-import { th } from "date-fns/locale";
 
 export default {
   components: {
@@ -137,9 +155,14 @@ export default {
 
   computed: {
     formattedAccdate() {
-      return this.formData.accdate
-        ? format(new Date(this.formData.accdate), "d MMMM yyyy", { locale: th })
-        : "";
+      if (this.formData.accdate) {
+        const date = new Date(this.formData.accdate);
+        const buddhistYear = date.getFullYear() + 543; // เพิ่ม 543 ปี
+        return `${date.getDate()} ${date.toLocaleString("th-TH", {
+          month: "long",
+        })} ${buddhistYear}`; // รูปแบบวันที่ที่ต้องการ
+      }
+      return "";
     },
   },
 
@@ -245,7 +268,7 @@ export default {
 
 .EditHeader {
   margin-left: 30px;
-  margin-top: 60px;
+  margin-top: 30px;
 }
 
 .input-form-container {
@@ -263,13 +286,14 @@ export default {
 }
 
 .Editbutton {
-  width: 300px;
+  width: 530px;
   margin: 1% auto;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: transform 0.3s ease;
 }
+
 .Editbutton:hover {
   transform: scale(1.05);
 }
@@ -277,5 +301,6 @@ export default {
 .map-container {
   width: 65%;
   height: 800px;
+  margin-top: -50px;
 }
 </style>
