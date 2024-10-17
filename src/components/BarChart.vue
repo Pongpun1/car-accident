@@ -1,6 +1,12 @@
 <template>
   <div>
-    <Bar :data="chartData" :width="600" :height="400" />
+    <Bar
+      :key="chartData.labels.length"
+      :data="chartData"
+      :options="chartOptions"
+      :width="600"
+      :height="400"
+    />
   </div>
 </template>
 
@@ -15,11 +21,14 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import axios from "axios";
 
 ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  ChartDataLabels,
   BarElement,
   CategoryScale,
   LinearScale
@@ -32,23 +41,106 @@ export default {
   data() {
     return {
       chartData: {
-        labels: ["Red", "Blue", "Yellow"],
+        labels: [],
         datasets: [
           {
-            label: "Votes",
-            data: [12, 19, 3],
-            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+            label: "จำนวนผู้เสียชีวิต",
+            data: [],
+            backgroundColor: "#FF6384",
+          },
+          {
+            label: "จำนวนผู้บาดเจ็บ",
+            data: [],
+            backgroundColor: "#FFCE56",
           },
         ],
       },
+
+      chartOptions: {
+        plugins: {
+          datalabels: {
+            color: "white",
+            anchor: "end",
+            align: "start",
+            font: {
+              weight: "bold",
+            },
+            formatter: (value) => {
+              return value;
+            },
+          },
+        },
+        responsive: true,
+        scales: {
+          x: {
+            ticks: {
+              color: "black",
+              font: {
+                weight: "bold",
+              },
+            },
+          },
+          y: {
+            ticks: {
+              color: "black",
+              font: {
+                weight: "bold",
+              },
+            },
+          },
+        },
+      },
     };
+  },
+  mounted() {
+    this.fetchData();
+  },
+  methods: {
+    fetchData() {
+      axios
+        .get("http://localhost:3000/api/data/")
+        .then((response) => {
+          const accidents = response.data.data;
+
+          const aggregatedData = {};
+
+          accidents.forEach((accident) => {
+            if (aggregatedData[accident.acclocation]) {
+              aggregatedData[accident.acclocation].numdeath +=
+                accident.numdeath;
+              aggregatedData[accident.acclocation].numinjur +=
+                accident.numinjur;
+            } else {
+              aggregatedData[accident.acclocation] = {
+                numdeath: accident.numdeath,
+                numinjur: accident.numinjur,
+              };
+            }
+          });
+
+          const labels = Object.keys(aggregatedData);
+          const deathData = labels.map(
+            (location) => aggregatedData[location].numdeath
+          );
+          const injuryData = labels.map(
+            (location) => aggregatedData[location].numinjur
+          );
+
+          this.chartData.labels = labels;
+          this.chartData.datasets[0].data = deathData;
+          this.chartData.datasets[1].data = injuryData;
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    },
   },
 };
 </script>
 
 <style scoped>
 canvas {
-  width: 600px !important;
-  height: 400px !important;
+  max-width: 100% !important;
+  height: auto !important;
 }
 </style>

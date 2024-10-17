@@ -177,6 +177,7 @@
       v-model="isInfoModalVisible"
       title="รายละเอียดเหตุการณ์"
       class="InfoModal"
+
     >
       <p><strong>สถานที่เกิดเหตุ:</strong> {{ selectedItem.acclocation }}</p>
       <p><strong>ละติจูด:</strong> {{ selectedItem.latitude }}</p>

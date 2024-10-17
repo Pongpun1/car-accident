@@ -147,7 +147,6 @@ router.get("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
-  // Check if ID is provided and is a valid number
   if (!id || isNaN(id)) {
     return res.status(400).json({
       message: "Invalid ID provided",
@@ -266,5 +265,6 @@ router.put("/:id", (req, res) => {
     }
   );
 });
+
 
 module.exports = router;
