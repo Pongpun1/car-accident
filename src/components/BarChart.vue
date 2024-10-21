@@ -46,12 +46,12 @@ export default {
           {
             label: "จำนวนผู้เสียชีวิต",
             data: [],
-            backgroundColor: "#FF6384",
+            backgroundColor: "rgba(255, 0, 0, 0.6)",
           },
           {
             label: "จำนวนผู้บาดเจ็บ",
             data: [],
-            backgroundColor: "#FFCE56",
+            backgroundColor: "rgba(76, 175, 80, 0.6)",
           },
         ],
       },
@@ -77,6 +77,7 @@ export default {
               color: "black",
               font: {
                 weight: "bold",
+                size: "14",
               },
             },
           },
@@ -85,6 +86,7 @@ export default {
               color: "black",
               font: {
                 weight: "bold",
+                size: "13",
               },
             },
           },

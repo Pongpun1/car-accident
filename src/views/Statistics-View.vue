@@ -3,20 +3,35 @@
     <div class="NavBar">
       <NavTopBar />
     </div>
-    <div class="chart-container"> <!-- เพิ่ม container รอบ charts -->
+
+    <div class="chart-container">
       <div class="charts">
         <BarChart />
         <PieChart />
       </div>
     </div>
-    <div class="statistics">
-      <h3>ค่าเฉลี่ยสำหรับผู้เสียชีวิตและผู้บาดเจ็บ</h3>
-      <p>ค่าเฉลี่ยผู้เสียชีวิตของทุกสถานที่: {{ deathMean }}</p>
-      <p>ผู้เสียชีวิตมากที่สุด: {{ deathMax }} </p>
-      <p>ผู้เสียชีวิตน้อยที่สุด: {{ deathMin }} </p>
-      <p>ค่าเฉลี่ยผู้บาดเจ็บทุกสถานที่: {{ injuryMean }}</p>
-      <p>ผู้บาดเจ็บมากที่สุด: {{ injuryMax }}</p>
-      <p>ผู้บาดเจ็บน้อยที่สุด: {{ injuryMin }}</p>
+
+    <div class="statistics-container">
+      <div class="stat-box red-box">
+        <h3>ผู้เสียชีวิตเฉลี่ยต่อวัน</h3>
+        <img src="../assets/mortality.png" class="logo1" alt="mortality" />
+        <span>เฉลี่ย {{ deathMean }} คน</span>
+      </div>
+      <div class="stat-box orange-box">
+        <h3>ผู้บาดเจ็บเฉลี่ยต่อวัน</h3>
+        <img src="../assets/fracture.png" class="logo1" alt="fracture" />
+        <span>เฉลี่ย {{ injuryMean }} คน</span>
+      </div>
+      <div class="stat-box blue-box">
+        <h3>ผู้เสียชีวิตโดยรวมในปี 2567</h3>
+        <img src="../assets/tomb.png" class="logo1" alt="tomb" />
+        <span>ทั้งหมด {{ totalDeaths2024 }} คน</span>
+      </div>
+      <div class="stat-box green-box">
+        <h3>ผู้บาดเจ็บโดยรวมในปี 2567</h3>
+        <img src="../assets/injuredLogo.png" class="logo1" alt="injury" />
+        <span>ทั้งหมด {{ totalInjuries2024 }} คน</span>
+      </div>
     </div>
   </div>
 </template>
@@ -37,10 +52,10 @@ export default {
     return {
       deathMean: 0,
       deathMax: 0,
-      deathMin: 0,
       injuryMean: 0,
       injuryMax: 0,
-      injuryMin: 0,
+      totalDeaths2024: 0,
+      totalInjuries2024: 0,
     };
   },
   mounted() {
@@ -48,21 +63,46 @@ export default {
   },
   methods: {
     fetchStatistics() {
-      axios.get("http://localhost:3000/api/data/")
+      axios
+        .get("http://localhost:3000/api/data/")
         .then((response) => {
           const accidents = response.data.data;
+
+          const accidents2024 = accidents.filter((accident) => {
+            const accidentYear = new Date(accident.accdate).getFullYear();
+            return accidentYear === 2024;
+          });
+
+          const deathCounts2024 = accidents2024.map(
+            (accident) => accident.numdeath
+          );
+          const injuryCounts2024 = accidents2024.map(
+            (accident) => accident.numinjur
+          );
+
+          this.totalDeaths2024 = deathCounts2024.reduce(
+            (sum, value) => sum + value,
+            0
+          );
+          this.totalInjuries2024 = injuryCounts2024.reduce(
+            (sum, value) => sum + value,
+            0
+          );
 
           const deathCounts = accidents.map((accident) => accident.numdeath);
           const injuryCounts = accidents.map((accident) => accident.numinjur);
 
-          this.deathMean = (deathCounts.reduce((sum, value) => sum + value, 0) / deathCounts.length).toFixed(2);
-          this.injuryMean = (injuryCounts.reduce((sum, value) => sum + value, 0) / injuryCounts.length).toFixed(2);
+          this.deathMean = (
+            deathCounts.reduce((sum, value) => sum + value, 0) /
+            deathCounts.length
+          ).toFixed(2);
+          this.injuryMean = (
+            injuryCounts.reduce((sum, value) => sum + value, 0) /
+            injuryCounts.length
+          ).toFixed(2);
 
           this.deathMax = Math.max(...deathCounts);
           this.injuryMax = Math.max(...injuryCounts);
-
-          this.deathMin = Math.min(...deathCounts);
-          this.injuryMin = Math.min(...injuryCounts);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -74,8 +114,8 @@ export default {
 
 <style>
 .chart-container {
-  background-color: #FFFFFF;
-  margin: 80px 180px 0 180px;
+  background-color: #ffffff;
+  margin: 0 180px 0 180px;
   border-radius: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -97,23 +137,93 @@ export default {
   align-items: center;
 }
 
-.statistics {
-  background-color: #ffffff;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width: 40%;
-  margin: 20px auto 0; 
-  font-size: 1.1rem;
+.statistics-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px 180px;
 }
 
-.statistics h3 {
-  margin-bottom: 10px;
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  margin: 0 10px;
+  font-size: 1.2rem;
+  background-size: 200% 200%;
+}
+
+.logo1 {
+  width: 100px;
+  height: auto;
+  margin: 10px;
+}
+
+.stat-box h3 {
+  margin: 0;
   font-size: 1.5rem;
   font-weight: bold;
+  color: #1d1d1d;
 }
 
-.statistics p {
-  margin: 5px 0;
+.stat-box span {
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: #1d1d1d;
+}
+
+.red-box {
+  background: linear-gradient(to right, #ff9999, #ff2525);
+  transition: background-position 0.6s ease, transform 0.4s ease;
+  background-size: 200% 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.red-box:hover {
+  background-position: left center;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.orange-box {
+  background: linear-gradient(to right, #ffd28f, #ffa114);
+  transition: background-position 0.6s ease, transform 0.4s ease;
+  background-size: 200% 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.orange-box:hover {
+  background-position: left center;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.blue-box {
+  background: linear-gradient(to right, #a0c5fc, #3b89ff);
+  transition: background-position 0.6s ease, transform 0.4s ease;
+  background-size: 200% 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.blue-box:hover {
+  background-position: left center;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.green-box {
+  background: linear-gradient(to right, #b3e6b3, #4ed04e);
+  transition: background-position 0.6s ease, transform 0.4s ease;
+  background-size: 200% 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.green-box:hover {
+  background-position: left center;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 </style>

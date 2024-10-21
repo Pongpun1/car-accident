@@ -30,7 +30,14 @@ export default {
           {
             label: "เปอร์เซ็นต์ผู้บาดเจ็บและผู้เสียชีวิตในแต่ละสถานที่",
             data: [],
-            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+            backgroundColor: [
+              "rgba(244, 67, 54, 0.6)",
+              "rgba(33, 150, 243, 0.6)",
+              "rgba(255, 152, 0, 0.6)"  ,
+              "rgba(76, 175, 80, 0.6)",
+            ],
+            borderColor: "#fff", // สีขอบเป็นสีขาว
+            borderWidth: 2,
           },
         ],
       },

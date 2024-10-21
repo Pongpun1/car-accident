@@ -42,7 +42,7 @@
         <b-input-group
           size="lg"
           prepend="จำนวนผู้บาดเจ็บ"
-          append="ราย"
+          append="คน"
           class="input"
         >
           <b-form-input
@@ -54,7 +54,7 @@
         <b-input-group
           size="lg"
           prepend="จำนวนผู้เสียชีวิต"
-          append="ราย"
+          append="คน"
           class="input"
         >
           <b-form-input

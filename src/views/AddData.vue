@@ -28,7 +28,7 @@
           <b-form-input v-model="formData.longitude" placeholder="กรอกค่าลองจิจูด"></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้บาดเจ็บ" append="ราย" class="input">
+        <b-input-group size="lg" prepend="จำนวนผู้บาดเจ็บ" append="คน" class="input">
           <b-form-input
             v-model="formData.numinjur"
             type="number"
@@ -36,7 +36,7 @@
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้เสียชีวิต" append="ราย" class="input">
+        <b-input-group size="lg" prepend="จำนวนผู้เสียชีวิต" append="คน" class="input">
           <b-form-input
             v-model="formData.numdeath"
             type="number"

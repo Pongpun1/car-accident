@@ -182,8 +182,8 @@
       <p><strong>สถานที่เกิดเหตุ:</strong> {{ selectedItem.acclocation }}</p>
       <p><strong>ละติจูด:</strong> {{ selectedItem.latitude }}</p>
       <p><strong>ลองจิจูด:</strong> {{ selectedItem.longitude }}</p>
-      <p><strong>จำนวนผู้บาดเจ็บ:</strong> {{ selectedItem.numinjur }} ราย</p>
-      <p><strong>จำนวนผู้เสียชีวิต:</strong> {{ selectedItem.numdeath }} ราย</p>
+      <p><strong>จำนวนผู้บาดเจ็บ:</strong> {{ selectedItem.numinjur }} คน</p>
+      <p><strong>จำนวนผู้เสียชีวิต:</strong> {{ selectedItem.numdeath }} คน</p>
       <p>
         <strong>วันเกิดเหตุ:</strong>
         {{
