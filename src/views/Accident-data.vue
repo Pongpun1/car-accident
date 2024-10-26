@@ -15,7 +15,7 @@
             v-model="filter"
             type="search"
             placeholder="ค้นหา.."
-            @input="filterData"
+            @input="handleFilterInput"
             style="border-radius: 0px 20px 20px 0px"
           ></b-form-input>
         </b-input-group>
@@ -177,7 +177,6 @@
       v-model="isInfoModalVisible"
       title="รายละเอียดเหตุการณ์"
       class="InfoModal"
-
     >
       <p><strong>สถานที่เกิดเหตุ:</strong> {{ selectedItem.acclocation }}</p>
       <p><strong>ละติจูด:</strong> {{ selectedItem.latitude }}</p>
@@ -237,18 +236,18 @@ export default {
     paginatedData() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
       const end = start + this.rowsPerPage;
-      return this.filteredData.slice(start, end);
+      return this.filterData.slice(start, end);
     },
 
     totalRows() {
-      return this.filteredData.length;
+      return this.filterData.length;
     },
 
     isAllSelected() {
       return this.selectedItems.length === this.excelData.length;
     },
 
-    filteredData() {
+    filterData() {
       if (!this.filter) {
         return this.excelData;
       }
@@ -397,7 +396,7 @@ export default {
     },
 
     formatDate(date) {
-      const year = new Date(date).getFullYear() + 543; // เพิ่ม 543
+      const year = new Date(date).getFullYear() + 543;
       return format(new Date(date), `d MMMM ${year}`, { locale: th });
     },
 
@@ -428,6 +427,10 @@ export default {
     refreshData() {
       this.isLoading = true;
       this.fetchData();
+    },
+
+    handleFilterInput() {
+      this.filter = this.filter.trim();
     },
   },
 

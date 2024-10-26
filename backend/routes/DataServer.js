@@ -11,7 +11,6 @@ router.post("/", (req, res) => {
     return res.status(400).send({ message: "No data received" });
   }
   const values = excelData.map((row) => [
-    row.ลำดับ,
     row.สถานที่เกิดเหตุ,
     row.ละติจูด,
     row.ลองจิจูด,
@@ -22,12 +21,12 @@ router.post("/", (req, res) => {
   ]);
 
   const insertOrUpdateQuery = `
-      INSERT INTO accidentdata (id, acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        numinjur = VALUES(numinjur),
-        numdeath = VALUES(numdeath)
-    `;
+    INSERT INTO accidentdata (acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      numinjur = VALUES(numinjur),
+      numdeath = VALUES(numdeath)
+  `;
 
   const queryPromises = values.map((value) => {
     return new Promise((resolve, reject) => {
@@ -53,7 +52,6 @@ router.post("/", (req, res) => {
 
 // ------------------------------------------เพิ่มข้อมูลแยกตัว---------------------------------------
 router.post("/single", (req, res) => {
-  console.log("Received request body:", req.body);
   const {
     acclocation,
     latitude,
@@ -89,7 +87,9 @@ router.post("/single", (req, res) => {
       (err, results) => {
         if (err) {
           console.error("Error checking data:", err.message);
-          return res.status(500).json({ message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล" });
+          return res
+            .status(500)
+            .json({ message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล" });
         }
 
         if (results.length > 0) {
@@ -97,14 +97,11 @@ router.post("/single", (req, res) => {
         }
 
         const insertQuery = `
-          INSERT INTO accidentdata (id, acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `;
+        INSERT INTO accidentdata (acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
         conn.execute(
           insertQuery,
           [
-            newId,
             acclocation,
             latitude,
             longitude,
@@ -197,8 +194,15 @@ router.get("/:id", async (req, res) => {
 // ------------------------------------------อัพเดทข้อมูล-------------------------------------------
 router.put("/:id", (req, res) => {
   const { id } = req.params;
-  const { acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo } =
-    req.body;
+  const {
+    acclocation,
+    latitude,
+    longitude,
+    numinjur,
+    numdeath,
+    accdate,
+    accinfo,
+  } = req.body;
 
   if (
     !acclocation ||
@@ -241,7 +245,16 @@ router.put("/:id", (req, res) => {
 
       conn.execute(
         updateQuery,
-        [acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo, id],
+        [
+          acclocation,
+          latitude,
+          longitude,
+          numinjur,
+          numdeath,
+          accdate,
+          accinfo,
+          id,
+        ],
         (err, result) => {
           if (err) {
             console.error("Error updating data:", err.message);
@@ -265,6 +278,5 @@ router.put("/:id", (req, res) => {
     }
   );
 });
-
 
 module.exports = router;
