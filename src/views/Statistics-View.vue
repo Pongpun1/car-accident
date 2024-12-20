@@ -12,33 +12,25 @@
 
     <div class="statistics-container">
       <div class="stat-box red-box">
-        <h3>ผู้เสียชีวิตเฉลี่ยต่อวัน</h3>
-        <img src="../assets/mortality.png" class="logo1" alt="mortality" />
-        <span>เฉลี่ย {{ deathMean }} คน</span>
+        <h3>อุบัติเหตุทั้งหมดเป็นเพศชาย</h3>
+        <img src="../assets/man.png" class="logo1" alt="man" />
+        <span>{{ malePercentage }}%</span>
       </div>
       <div class="stat-box orange-box">
-        <h3>ผู้บาดเจ็บเฉลี่ยต่อวัน</h3>
-        <img src="../assets/fracture.png" class="logo1" alt="fracture" />
-        <span>เฉลี่ย {{ injuryMean }} คน</span>
+        <h3>อุบัติเหตุทั้งหมดเป็นเพศหญิง</h3>
+        <img src="../assets/woman.png" class="logo1" alt="woman" />
+        <span>{{ femalePercentage }}%</span>
       </div>
       <div class="stat-box blue-box">
         <h3>ผู้เสียชีวิตโดยรวมในปี 2567</h3>
-        <img src="../assets/tomb.png" class="logo1" alt="tomb" />
+        <img src="../assets/risk-skull.png" class="logo1" alt="risk-skull" />
         <span>ทั้งหมด {{ totalDeaths2024 }} คน</span>
       </div>
       <div class="stat-box green-box">
         <h3>ผู้บาดเจ็บโดยรวมในปี 2567</h3>
-        <img src="../assets/injuredLogo.png" class="logo1" alt="injury" />
+        <img src="../assets/injury.png" class="logo1" alt="injury" />
         <span>ทั้งหมด {{ totalInjuries2024 }} คน</span>
       </div>
-    </div>
-    <div class="stat-box red-box">
-      <h3>จากอุบัติเหตุทั้งหมดเป็นเพศชาย</h3>
-      <span>{{ malePercentage }}%</span>
-    </div>
-    <div class="stat-box orange-box">
-      <h3>จากอุบัติเหตุทั้งหมดเป็นเพศหญิง</h3>
-      <span>{{ femalePercentage }}%</span>
     </div>
   </div>
 </template>
