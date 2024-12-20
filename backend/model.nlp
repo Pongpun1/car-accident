@@ -1,0 +1,253 @@
+{
+  "settings": {
+    "languages": [
+      "th"
+    ],
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
+  },
+  "nluManager": {
+    "settings": {
+      "tag": "nlu-manager"
+    },
+    "locales": [
+      "th"
+    ],
+    "languageNames": {},
+    "domainManagers": {
+      "th": {
+        "settings": {
+          "locale": "th",
+          "trainByDomain": false,
+          "tag": "domain-manager-th",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "ปล้น": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "ชิง,ทรัพย์": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "โจร": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "จี้": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "ขโมย": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "คน,ร้าย": {
+            "intent": "crime",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "crime": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "ปล้น",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "ชิงทรัพย์",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "โจร",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "จี้",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "ขโมย",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "คนร้าย",
+            "intent": "crime"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "th",
+              "tag": "nlu-th",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "ปล้น": 1,
+              "ชิง": 1,
+              "ทรัพย์": 1,
+              "โจร": 1,
+              "จี้": 1,
+              "ขโมย": 1,
+              "คน": 1,
+              "ร้าย": 1
+            },
+            "intents": {
+              "crime": 1
+            },
+            "intentFeatures": {
+              "crime": {
+                "ปล้น": 1,
+                "ชิง": 1,
+                "ทรัพย์": 1,
+                "โจร": 1,
+                "จี้": 1,
+                "ขโมย": 1,
+                "คน": 1,
+                "ร้าย": 1
+              }
+            },
+            "featuresToIntent": {
+              "ปล้น": [
+                "crime"
+              ],
+              "ชิง": [
+                "crime"
+              ],
+              "ทรัพย์": [
+                "crime"
+              ],
+              "โจร": [
+                "crime"
+              ],
+              "จี้": [
+                "crime"
+              ],
+              "ขโมย": [
+                "crime"
+              ],
+              "คน": [
+                "crime"
+              ],
+              "ร้าย": [
+                "crime"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "th",
+                "tag": "nlu-th",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "ปล้น",
+                "ชิง",
+                "ทรัพย์",
+                "โจร",
+                "จี้",
+                "ขโมย",
+                "คน",
+                "ร้าย"
+              ],
+              "intents": [
+                "crime"
+              ],
+              "perceptrons": [
+                [
+                  3.9850027561187744,
+                  2.0930447578430176,
+                  2.0930447578430176,
+                  4.0951056480407715,
+                  4.062631130218506,
+                  4.029049396514893,
+                  2.0827367305755615,
+                  2.0827367305755615,
+                  10.179435264266758
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "intentDomains": {},
+    "extraSentences": [
+      [
+        "th",
+        "ปล้น"
+      ],
+      [
+        "th",
+        "ชิงทรัพย์"
+      ],
+      [
+        "th",
+        "โจร"
+      ],
+      [
+        "th",
+        "จี้"
+      ],
+      [
+        "th",
+        "ขโมย"
+      ],
+      [
+        "th",
+        "คนร้าย"
+      ]
+    ]
+  },
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
+  },
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {}
+  },
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {}
+}

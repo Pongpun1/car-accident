@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-const allowedOrigins = ["http://localhost:8080", "http://10.203.70.62:8080"];
+const allowedOrigins = ["http://localhost:8080", "http://10.203.70.239:8080"];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -21,8 +21,10 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const dataRoutes = require("./routes/DataServer");
-app.use("/api/data", dataRoutes);
+const dataRoutes = require("./routes/AccidentData");
+app.use("/api/accidentdata", dataRoutes);
+const crimeRoutes = require("./routes/CrimeData");
+app.use("/api/crimedata", crimeRoutes);
 const UserRoutes = require("./routes/User");
 app.use("/users", UserRoutes);
 const GeoRoutes = require("./routes/Geo");

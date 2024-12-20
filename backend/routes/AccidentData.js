@@ -1,24 +1,55 @@
 const express = require("express");
 const conn = require("../config");
 const router = express.Router();
+const { NlpManager } = require("node-nlp");
+
+const manager = new NlpManager({ languages: ["th"] });
+
+manager.addDocument("th", "อุบัติเหตุ", "accident");
+manager.addDocument("th", "รถชน", "accident");
+manager.addDocument("th", "เหตุการณ์อันตราย", "accident");
+manager.addDocument("th", "รถล้ม", "accident");
+manager.addDocument("th", "รถคว่ำ", "accident");
+manager.addDocument("th", "ประสานงา", "accident");
+
+(async () => {
+  await manager.train();
+  manager.save();
+})();
 
 // ------------------------------------------เพิ่มข้อมูลแบบไฟล์---------------------------------------
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   console.log("Received body:", req.body);
   const excelData = req.body;
 
   if (!Array.isArray(excelData) || excelData.length === 0) {
     return res.status(400).send({ message: "No data received" });
   }
-  const values = excelData.map((row) => [
-    row.สถานที่เกิดเหตุ,
-    row.ละติจูด,
-    row.ลองจิจูด,
-    row.จำนวนผู้บาดเจ็บ,
-    row.จำนวนผู้เสียชีวิต,
-    row.วันเกิดเหตุ,
-    row.รายละเอียด,
-  ]);
+
+  // ตรวจสอบ accinfo ด้วย NLP
+  const filteredData = [];
+  for (const row of excelData) {
+    const accinfo = row.รายละเอียด || "";
+    const response = await manager.process("th", accinfo);
+
+    if (response.intent === "accident") {
+      filteredData.push([
+        row.สถานที่เกิดเหตุ,
+        row.ละติจูด,
+        row.ลองจิจูด,
+        row.จำนวนผู้บาดเจ็บ,
+        row.จำนวนผู้เสียชีวิต,
+        row.วันเกิดเหตุ,
+        accinfo,
+      ]);
+    }
+  }
+
+  if (filteredData.length === 0) {
+    return res
+      .status(400)
+      .send({ message: "No valid accident data to insert" });
+  }
 
   const insertOrUpdateQuery = `
     INSERT INTO accidentdata (acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo)
@@ -28,7 +59,7 @@ router.post("/", (req, res) => {
       numdeath = VALUES(numdeath)
   `;
 
-  const queryPromises = values.map((value) => {
+  const queryPromises = filteredData.map((value) => {
     return new Promise((resolve, reject) => {
       conn.execute(insertOrUpdateQuery, value, (err, result) => {
         if (err) {
@@ -78,7 +109,9 @@ router.post("/single", (req, res) => {
     const newId = result[0].maxId ? result[0].maxId + 1 : 1;
 
     const checkQuery = `
-      SELECT * FROM accidentdata WHERE acclocation = ? AND latitude = ? AND longitude = ? AND numinjur = ? AND numdeath = ? AND accdate = ?
+      SELECT * FROM accidentdata 
+      WHERE acclocation = ? AND latitude = ? AND longitude = ? 
+      AND numinjur = ? AND numdeath = ? AND accdate = ?
     `;
 
     conn.execute(
@@ -97,11 +130,15 @@ router.post("/single", (req, res) => {
         }
 
         const insertQuery = `
-        INSERT INTO accidentdata (acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+          INSERT INTO accidentdata 
+          (id, acclocation, latitude, longitude, numinjur, numdeath, accdate, accinfo) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
 
         conn.execute(
           insertQuery,
           [
+            newId,
             acclocation,
             latitude,
             longitude,

@@ -6,7 +6,7 @@
 
     <div class="controls-container">
       <div class="left-controls">
-        <b-input-group style="width: 600px">
+        <b-input-group style="width: 650px">
           <b-input-group-prepend is-text>
             <b-icon icon="search"></b-icon>
           </b-input-group-prepend>
@@ -27,21 +27,20 @@
           class="add-button"
         >
           <strong>เพิ่ม</strong>
-          <b-icon icon="plus-lg" class="ml-1" font-scale="1.1"></b-icon>
+          <b-icon icon="plus-lg" class="ml-1" font-scale="1.2"></b-icon>
         </b-button>
 
         <b-button @click="refreshData" class="refresh-btn-hover">
-          <b-icon icon="arrow-counterclockwise" font-scale="1.7"></b-icon>
+          <b-icon icon="arrow-counterclockwise" font-scale="1.4"></b-icon>
         </b-button>
 
         <b-button
-          v-if="selectedItems.length > 0"
+          v-if="selectedItemCount > 0"
           @click="deleteSelected"
           variant="danger"
           class="deleteAll"
         >
-          <strong>ลบ {{ selectedItems.length }} รายการ </strong>
-          <b-icon icon="trash" aria-hidden="true" class="ml-2"></b-icon>
+          <strong> ลบ {{ selectedItemCount }} รายการ </strong>
         </b-button>
       </div>
 
@@ -100,75 +99,160 @@
         animation="Fade"
       ></b-skeleton-table>
 
-      <table v-else class="table w-full">
-        <thead>
-          <tr>
-            <th>
-              <input
-                type="checkbox"
-                @change="toggleSelectAll"
-                :checked="isAllSelected"
-              />
-            </th>
-            <th>ลำดับ</th>
-            <th>สถานที่เกิดเหตุ</th>
-            <th>ละติจูด</th>
-            <th>ลองจิจูด</th>
-            <th @click="sortData('numinjur')">จำนวนผู้บาดเจ็บ</th>
-            <th @click="sortData('numdeath')">จำนวนผู้เสียชีวิต</th>
-            <th>วันเกิดเหตุ</th>
-            <th>จัดการ</th>
-          </tr>
-        </thead>
+      <table v-else class="table">
+        <b-tabs
+          pills
+          vertical
+          nav-class="vertical-tabs"
+          card
+          nav-wrapper-class="h-50"
+          v-model="activeTab"
+        >
+          <b-tab ref="accidentTab" title="อุบัติเหตุ">
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    @change="toggleSelectAll"
+                    :checked="isAllSelected"
+                  />
+                </th>
+                <th>ลำดับ</th>
+                <th>สถานที่เกิดเหตุ</th>
+                <th>ละติจูด</th>
+                <th>ลองจิจูด</th>
+                <th @click="sortData('numinjur')">จำนวนผู้บาดเจ็บ</th>
+                <th @click="sortData('numdeath')">จำนวนผู้เสียชีวิต</th>
+                <th>วันเกิดเหตุ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
 
-        <tbody>
-          <tr v-for="(item, index) in paginatedData" :key="index">
-            <td>
-              <input type="checkbox" v-model="selectedItems" :value="item.id" />
-            </td>
-            <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-            <td>{{ item.acclocation }}</td>
-            <td>{{ item.latitude }}</td>
-            <td>{{ item.longitude }}</td>
-            <td>{{ item.numinjur }}</td>
-            <td>{{ item.numdeath }}</td>
-            <td>{{ formatDate(item.accdate) }}</td>
-            <td>
-              <div class="btn-container">
-                <button
-                  @click="showInfoModal(item)"
-                  class="btn btn-info btn-sm mx-1 btn-hover"
-                >
-                  <b-icon icon="info-circle" font-scale="1.5"></b-icon>
-                </button>
-                <button
-                  @click="editData(item.id)"
-                  class="btn btn-primary btn-sm mx-1 btn-hover"
-                >
-                  <b-icon icon="pencil-square" font-scale="1.5"></b-icon>
-                </button>
-                <button
-                  @click="deleteData(item.id)"
-                  class="btn btn-danger btn-sm mx-1 btn-hover"
-                >
-                  <b-icon icon="trash" font-scale="1.5"></b-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
+            <tbody>
+              <tr v-for="(item, index) in paginatedData" :key="index">
+                <td>
+                  <input
+                    type="checkbox"
+                    v-model="selectedItems"
+                    :value="item.id"
+                  />
+                </td>
+                <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
+                <td>{{ item.acclocation }}</td>
+                <td>{{ item.latitude }}</td>
+                <td>{{ item.longitude }}</td>
+                <td>{{ item.numinjur }}</td>
+                <td>{{ item.numdeath }}</td>
+                <td>{{ formatDate(item.accdate) }}</td>
+
+                <td>
+                  <div class="btn-container">
+                    <button
+                      @click="showInfoModal(item)"
+                      class="btn btn-info btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="info-circle" font-scale="1.5"></b-icon>
+                    </button>
+                    <button
+                      @click="editAccidentData(item.id)"
+                      class="btn btn-primary btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="pencil-square" font-scale="1.5"></b-icon>
+                    </button>
+                    <button
+                      @click="deleteData(item.id)"
+                      class="btn btn-danger btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="trash" font-scale="1.5"></b-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </b-tab>
+
+          <b-tab ref="crimeTab" title="อาชญากรรม">
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    @change="toggleSelectAllCrime"
+                    :checked="isAllCrimeSelected"
+                  />
+                </th>
+                <th>ลำดับ</th>
+                <th>สถานที่เกิดเหตุ</th>
+                <th>ละติจูด</th>
+                <th>ลองจิจูด</th>
+                <th>จำนวนผู้บาดเจ็บ</th>
+                <th>จำนวนผู้เสียชีวิต</th>
+                <th>วันเกิดเหตุ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in paginatedCrimeData" :key="index">
+                <td>
+                  <input
+                    type="checkbox"
+                    v-model="selectedCrimeItems"
+                    :value="item.id"
+                  />
+                </td>
+                <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
+                <td>{{ item.crimelocation }}</td>
+                <td>{{ item.latitude }}</td>
+                <td>{{ item.longitude }}</td>
+                <td>{{ item.numinjur }}</td>
+                <td>{{ item.numdeath }}</td>
+                <td>{{ formatDate(item.crimedate) }}</td>
+                <td>
+                  <div class="btn-container">
+                    <button
+                      @click="showInfoModal(item)"
+                      class="btn btn-info btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="info-circle" font-scale="1.5"></b-icon>
+                    </button>
+                    <button
+                      @click="editCrimeData(item.id)"
+                      class="btn btn-primary btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="pencil-square" font-scale="1.5"></b-icon>
+                    </button>
+                    <button
+                      @click="deleteCrimeData(item.id)"
+                      class="btn btn-danger btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="trash" font-scale="1.5"></b-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </b-tab>
+
+          <b-tab ref="undefinedTab" title="ไม่ระบุ">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" />
+                </th>
+                <th>ลำดับ</th>
+                <th>สถานที่เกิดเหตุ</th>
+                <th>ละติจูด</th>
+                <th>ลองจิจูด</th>
+                <th>จำนวนผู้บาดเจ็บ</th>
+                <th>จำนวนผู้เสียชีวิต</th>
+                <th>วันเกิดเหตุ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+          </b-tab>
+        </b-tabs>
       </table>
-    </div>
-
-    <div class="pagination-controls">
-      <b-pagination
-        v-model="currentPage"
-        :total-rows="totalRows"
-        :per-page="rowsPerPage"
-        first-number
-        last-number
-        pills
-      ></b-pagination>
     </div>
 
     <b-modal
@@ -178,11 +262,17 @@
       title="รายละเอียดเหตุการณ์"
       class="InfoModal"
     >
-      <p><strong>สถานที่เกิดเหตุ:</strong> {{ selectedItem.acclocation }}</p>
+      <p>
+        <strong>สถานที่เกิดเหตุ:</strong>
+        {{ selectedItem.acclocation || selectedItem.crimelocation }}
+      </p>
       <p><strong>ละติจูด:</strong> {{ selectedItem.latitude }}</p>
       <p><strong>ลองจิจูด:</strong> {{ selectedItem.longitude }}</p>
       <p><strong>จำนวนผู้บาดเจ็บ:</strong> {{ selectedItem.numinjur }} คน</p>
-      <p><strong>จำนวนผู้เสียชีวิต:</strong> {{ selectedItem.numdeath }} คน</p>
+      <p>
+        <strong>จำนวนผู้เสียชีวิต:</strong>
+        {{ selectedItem.numdeath }} คน
+      </p>
       <p>
         <strong>วันเกิดเหตุ:</strong>
         {{
@@ -194,10 +284,21 @@
       <p>
         <strong>รายละเอียด: </strong
         ><span>{{
-          selectedItem.accinfo ? selectedItem.accinfo : "-- ไม่ได้ระบุ --"
+          selectedItem.accinfo || selectedItem.crimeinfo || "ไม่ระบุ"
         }}</span>
       </p>
     </b-modal>
+
+    <div class="pagination-controls">
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="totalRows"
+        :per-page="rowsPerPage"
+        first-number
+        last-number
+        pills
+      ></b-pagination>
+    </div>
   </div>
 </template>
 
@@ -216,7 +317,8 @@ export default {
   data() {
     return {
       currentPage: 1,
-      rowsPerPage: 14,
+      rowsPerPage: 10,
+      activeTab: 0,
       isUploading: false,
       isFileLoaded: false,
       isInfoModalVisible: false,
@@ -227,7 +329,9 @@ export default {
       sortKey: "",
       fileName: "",
       excelData: [],
+      crimeData: [],
       selectedItems: [],
+      selectedCrimeItems: [],
       selectedItem: {},
     };
   },
@@ -239,12 +343,27 @@ export default {
       return this.filterData.slice(start, end);
     },
 
+    paginatedCrimeData() {
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      return this.crimeData.slice(start, end);
+    },
+
     totalRows() {
       return this.filterData.length;
     },
 
     isAllSelected() {
       return this.selectedItems.length === this.excelData.length;
+    },
+    isAllCrimeSelected() {
+      return this.selectedCrimeItems.length === this.crimeData.length;
+    },
+
+    selectedItemCount() {
+      return this.activeTab === 0 || this.activeTab === 2
+        ? this.selectedItems.length
+        : this.selectedCrimeItems.length;
     },
 
     filterData() {
@@ -266,15 +385,20 @@ export default {
 
   methods: {
     showInfoModal(item) {
-      this.selectedItem = item;
-      this.selectedItemIndex = this.excelData.indexOf(item) + 1;
+      if (this.activeTab === 0) {
+        this.selectedItem = item;
+        this.selectedItemIndex = this.excelData.indexOf(item) + 1;
+      } else if (this.activeTab === 1) {
+        this.selectedItem = item;
+        this.selectedItemIndex = this.crimeData.indexOf(item) + 1;
+      }
       this.isInfoModalVisible = true;
     },
-
+    // --------------------------------- ดูข้อมูล --------------------------------
     fetchData() {
       this.isLoading = true;
       axios
-        .get("http://localhost:3000/api/data")
+        .get("http://localhost:3000/api/accidentdata")
         .then((response) => {
           this.excelData = response.data.data;
           this.isLoading = false;
@@ -285,6 +409,20 @@ export default {
         });
     },
 
+    fetchCrimeData() {
+      this.isLoading = true;
+      axios
+        .get("http://localhost:3000/api/crimedata")
+        .then((response) => {
+          this.crimeData = response.data.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.error("Error fetching crime data:", error);
+          this.isLoading = false;
+        });
+    },
+    // --------------------------------- เพิ่มข้อมูล --------------------------------
     onFileChange(event) {
       const file = event.target.files[0];
       if (!file) {
@@ -323,7 +461,7 @@ export default {
         return;
       }
       axios
-        .post("http://localhost:3000/api/data", this.excelData, {
+        .post("http://localhost:3000/api/accidentdata", this.excelData, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
@@ -337,6 +475,22 @@ export default {
         })
         .catch((error) => {
           console.error("There was an error uploading the data!", error);
+        });
+
+      axios
+        .post("http://localhost:3000/api/crimedata", this.excelData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(() => {
+          this.fetchCrimeData();
+          this.clearFileInput();
+          this.fileName = "";
+        })
+        .catch((error) => {
+          console.error("There was an error uploading to crimedata!", error);
         });
     },
 
@@ -353,33 +507,76 @@ export default {
       XLSX.writeFile(workbook, "data.xlsx");
     },
 
+    // --------------------------------- ลบข้อมูล --------------------------------
+
     deleteData(id) {
       if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
         axios
-          .delete(`http://localhost:3000/api/data/${id}`)
+          .delete(`http://localhost:3000/api/accidentdata/${id}`)
           .then(() => {
             this.fetchData();
           })
           .catch((error) => {
             console.error("There was an error deleting the data!", error);
           });
+      }
+    },
+
+    deleteCrimeData(id) {
+      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+        axios
+          .delete(`http://localhost:3000/api/crimedata/${id}`)
+          .then(() => {
+            this.fetchCrimeData();
+          })
+          .catch((error) => {
+            console.error("There was an error deleting the data!", error);
+          });
+      }
+    },
+
+    toggleSelectAll(event) {
+      if (event.target.checked) {
+        this.selectedItems = this.excelData.map((item) => item.id);
+      } else {
+        this.selectedItems = [];
+      }
+    },
+
+    toggleSelectAllCrime(event) {
+      if (event.target.checked) {
+        this.selectedCrimeItems = this.crimeData.map((item) => item.id);
+      } else {
+        this.selectedCrimeItems = [];
       }
     },
 
     deleteSelected() {
+      const isCrimeTab = this.activeTab === 1;
+      const selectedItems = isCrimeTab
+        ? this.selectedCrimeItems
+        : this.selectedItems;
+
       if (
-        confirm(
-          `คุณต้องการลบ ${this.selectedItems.length} รายการนี้จริงหรือไม่?`
-        )
+        confirm(`คุณต้องการลบ ${selectedItems.length} รายการนี้จริงหรือไม่?`)
       ) {
-        const deletePromises = this.selectedItems.map((id) =>
-          axios.delete(`http://localhost:3000/api/data/${id}`)
+        const deletePromises = selectedItems.map((id) =>
+          axios.delete(
+            isCrimeTab
+              ? `http://localhost:3000/api/crimedata/${id}`
+              : `http://localhost:3000/api/accidentdata/${id}`
+          )
         );
 
         Promise.all(deletePromises)
           .then(() => {
-            this.fetchData();
-            this.selectedItems = [];
+            if (isCrimeTab) {
+              this.fetchCrimeData();
+              this.selectedCrimeItems = [];
+            } else {
+              this.fetchData();
+              this.selectedItems = [];
+            }
           })
           .catch((error) => {
             console.error("There was an error deleting the data!", error);
@@ -387,8 +584,11 @@ export default {
       }
     },
 
-    editData(id) {
-      this.$router.push(`/data/edit/${id}`);
+    editAccidentData(id) {
+      this.$router.push(`/data/editaccident/${id}`);
+    },
+    editCrimeData(id) {
+      this.$router.push(`/data/editcrime/${id}`);
     },
 
     addData() {
@@ -416,14 +616,6 @@ export default {
       });
     },
 
-    toggleSelectAll(event) {
-      if (event.target.checked) {
-        this.selectedItems = this.excelData.map((item) => item.id);
-      } else {
-        this.selectedItems = [];
-      }
-    },
-
     refreshData() {
       this.isLoading = true;
       this.fetchData();
@@ -436,215 +628,11 @@ export default {
 
   mounted() {
     this.fetchData();
+    this.fetchCrimeData();
   },
 };
 </script>
 
 <style>
-body {
-  background-color: #f9efdf;
-}
-
-.NavBar {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 50px;
-  width: 100vw;
-  height: 100vh;
-  box-sizing: border-box;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-.table-container {
-  margin-top: 10px;
-  width: 100%;
-  max-width: 1400px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.table {
-  width: 140%;
-  text-align: center;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.table th,
-.table td {
-  padding: 8px;
-}
-
-.table td {
-  text-align: center;
-  vertical-align: middle;
-}
-
-.table .btn-container {
-  display: flex;
-  justify-content: center;
-}
-
-.table th {
-  background-color: #f2f2f2;
-}
-
-.controls-container {
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  max-width: 1430px;
-  margin-top: 30px;
-  padding: 0 15px;
-  box-sizing: border-box;
-}
-
-.left-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.right-controls {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-  margin-left: auto;
-}
-
-.file-input {
-  width: 250px;
-}
-
-.filename {
-  flex-grow: 1;
-  text-align: center;
-  font-size: 14px;
-  color: #333;
-}
-
-/* ---------------------CSS ของปุ่ม-------------------------- */
-.save-data {
-  font-size: 0.8rem;
-  width: 90px;
-  height: 30px;
-  top: 30px;
-  z-index: 1000;
-  border-radius: 20px;
-  transition: transform 0.3s ease;
-}
-
-.save-data:hover {
-  transform: scale(1.05);
-}
-
-.add-button {
-  font-size: 1rem;
-  width: 80px;
-  height: 33px;
-  text-align: center;
-  transition: transform 0.3s ease;
-  border-radius: 20px;
-}
-
-.add-button:hover {
-  transform: scale(1.05);
-}
-
-.ImportButt:hover {
-  transform: scale(1.05);
-}
-
-.ExportButt:hover {
-  transform: scale(1.05);
-}
-
-.deleteAll {
-  font-size: 1rem;
-  width: 160px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 20px;
-  transition: transform 0.3s ease;
-}
-
-.deleteAll:hover {
-  transform: scale(1.05);
-}
-
-.btn-hover {
-  transition: transform 0.3s ease;
-  border-radius: 30px;
-}
-
-.btn-hover:hover {
-  transform: scale(1.05);
-}
-
-.refresh-btn-hover {
-  width: 40px;
-  transition: transform 0.3s ease;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.refresh-btn-hover:hover {
-  transform: scale(1.05);
-}
-/* ---------------------------------------------------------- */
-
-.pagination-controls {
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.pagination-controls button {
-  padding: 5px 10px;
-  font-size: 0.9rem;
-}
-
-.pagination-controls span {
-  font-size: 0.9rem;
-}
-
-@media (max-width: 768px) {
-  .controls-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-  .left-controls,
-  .right-controls {
-    width: 100%;
-    justify-content: space-around;
-  }
-  .file-input,
-  .add-button,
-  .save-data {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .controls-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-  .pagination-controls {
-    flex-direction: column;
-  }
-}
+@import "@/styles/accident-data.css";
 </style>

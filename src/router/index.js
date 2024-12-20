@@ -2,7 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Login from "../views/LoginUser.vue";
 import Data from "../views/Accident-data.vue";
-import Edit from "../views/EditData.vue";
+import EditAccident from "../views/EditAccidentData.vue";
+import EditCrime from "../views/EditCrimeData.vue";
 import Add from "../views/AddData.vue";
 import Statistics from "../views/Statistics-View.vue";
 
@@ -22,9 +23,16 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/data/edit/:id",
-    name: "edit",
-    component: Edit,
+    path: "/data/editaccident/:id",
+    name: "editaccident",
+    component: EditAccident,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/data/editcrime/:id",
+    name: "editcrime",
+    component: EditCrime,
     props: true,
     meta: { requiresAuth: true },
   },

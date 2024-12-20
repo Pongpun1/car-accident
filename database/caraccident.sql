@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2024 at 12:07 PM
+-- Generation Time: Dec 20, 2024 at 06:59 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.26
 
@@ -44,27 +44,58 @@ CREATE TABLE `accidentdata` (
 --
 
 INSERT INTO `accidentdata` (`id`, `user_id`, `acclocation`, `latitude`, `longitude`, `numinjur`, `numdeath`, `accdate`, `accinfo`) VALUES
-(373, 0, 'ลาดกระบัง', 19.65612, 20.15447, 0, 1, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(374, 0, 'ประเวศ', 18.54941, 19.4891, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(375, 0, 'บางเมือง', 15.8916, 16.181165, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(376, 0, 'ลาดกระบัง', 11.876576, 21.4545, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(377, 0, 'ประเวศ', 12.7867675, 22.79837, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(378, 0, 'บางเมือง', 13.78754, 13.4876, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(379, 0, 'ลาดกระบัง', 15.7542, 12.8767, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(380, 0, 'ประเวศ', 13.4878, 17.4563456, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(381, 0, 'บางเมือง', 17.43435, 16.78768, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(382, 0, 'ลาดกระบัง', 19.156489, 14.7874, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(383, 0, 'ประเวศ', 12.6787987, 15.486486, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(384, 0, 'บางเมือง', 17.456874, 12.678, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(385, 0, 'ลาดกระบัง', 12.4634867, 17.786221, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(386, 0, 'ประเวศ', 18.18646884, 13.67878, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(387, 0, 'บางเมือง', 12.468486, 11.8789678, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(388, 0, 'ลาดกระบัง', 20.4867886, 12.67687, 5, 0, '2024-06-14', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(389, 0, 'ประเวศ', 21.7865786, 13.8942634, 1, 1, '2024-05-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(390, 0, 'บางเมือง', 22.4867468, 14.4896987, 2, 4, '2024-08-12', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(391, 0, 'บางเมือง', 22.4867468, 14.4896987, 2, 4, '2024-08-15', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(392, 0, 'บางเมือง', 22.4867468, 15.4896987, 2, 4, '2024-08-15', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'),
-(394, 0, 'บางพลี', 13.4895, 100.89147, 8, 0, '2024-08-20', 'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis\r\n      in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.');
+(712, 0, 'ลาดกระบัง', 13.7505781, 100.7943199, 4, 4, '2024-11-29', 'เกิดอุบัติเหตุรถชนกลางสี่แยกทำให้มีผู้บาดเจ็บ 4 รายเป็น ชาย 2 และ หญิง 2 และผู้เสียชีวิต 4 ราย เป็น ชาย 2 และหญิง 2'),
+(713, 0, 'ไบเทคบางนา', 13.6694549, 100.6101543, 3, 4, '2024-12-09', 'ชาย 2 คน บาดเจ็บ หญิง 1 คน เสียชีวิต'),
+(714, 0, 'ลาดกระบัง', 13.7505781, 100.7943199, 1, 2, '2024-12-03', 'อุบัติเหตุ'),
+(715, 0, 'บ้านทับช้าง', 13.7331049, 100.6886425, 2, 5, '2024-10-06', 'บัติเหตุเกิดขึ้นมีผู้บาดเจ็บ 2 คน, ผู้เสียชีวิต 1 คน, ผู้บาดเจ็บเป็นหญิง 1 คน, ชาย 1 คน'),
+(716, 0, 'ดอนเมือง', 13.9254892, 100.5923206, 1, 1, '2024-12-04', 'ชาย');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `crimedata`
+--
+
+CREATE TABLE `crimedata` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `crimelocation` varchar(255) NOT NULL,
+  `latitude` double NOT NULL,
+  `longitude` double NOT NULL,
+  `numinjur` int(11) NOT NULL,
+  `numdeath` int(11) NOT NULL,
+  `crimedate` date NOT NULL,
+  `crimeinfo` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `crimedata`
+--
+
+INSERT INTO `crimedata` (`id`, `user_id`, `crimelocation`, `latitude`, `longitude`, `numinjur`, `numdeath`, `crimedate`, `crimeinfo`) VALUES
+(145, 0, 'สำโรงเหนือ', 13.6475561, 100.6188288, 1, 5, '2024-11-29', 'มีโจรปล้นตรงมุมตึก ทำให้มีผู้เสียหายและได้รับบาดเจ็บเป็นชาย 1 คน'),
+(146, 0, 'ยะลา', 6.522747499999999, 101.178725, 6, 3, '2024-08-07', 'กฟหกฟหกฟ'),
+(148, 0, 'สำโรงเหนือ', 13.6475561, 100.6188288, 2, 1, '2024-12-01', 'มีโจรปล้นตรงมุมตึก'),
+(149, 0, 'ปัตตานี', 6.869516, 101.2504562, 3, 3, '2023-12-05', 'กฟหกฟห'),
+(150, 0, 'สมุทรปราการ', 13.6335741, 100.7548851, 1, 1, '2024-09-09', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `unspecified_data`
+--
+
+CREATE TABLE `unspecified_data` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `location` varchar(255) NOT NULL,
+  `latitude` double NOT NULL,
+  `longitude` double NOT NULL,
+  `numinjur` int(11) NOT NULL,
+  `numdeath` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `info` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -99,6 +130,20 @@ ALTER TABLE `accidentdata`
   ADD UNIQUE KEY `unique_accident` (`latitude`,`longitude`,`accdate`);
 
 --
+-- Indexes for table `crimedata`
+--
+ALTER TABLE `crimedata`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_crime` (`latitude`,`longitude`,`crimedate`);
+
+--
+-- Indexes for table `unspecified_data`
+--
+ALTER TABLE `unspecified_data`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique` (`latitude`,`longitude`,`date`);
+
+--
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -114,7 +159,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `accidentdata`
 --
 ALTER TABLE `accidentdata`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=395;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=717;
+
+--
+-- AUTO_INCREMENT for table `crimedata`
+--
+ALTER TABLE `crimedata`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+
+--
+-- AUTO_INCREMENT for table `unspecified_data`
+--
+ALTER TABLE `unspecified_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

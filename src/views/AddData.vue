@@ -21,14 +21,25 @@
         </b-input-group>
 
         <b-input-group size="lg" prepend="ละติจูด" class="input">
-          <b-form-input v-model="formData.latitude" placeholder="กรอกค่าละติจูด"></b-form-input>
+          <b-form-input
+            v-model="formData.latitude"
+            placeholder="กรอกค่าละติจูด"
+          ></b-form-input>
         </b-input-group>
 
         <b-input-group size="lg" prepend="ลองจิจูด" class="input">
-          <b-form-input v-model="formData.longitude" placeholder="กรอกค่าลองจิจูด"></b-form-input>
+          <b-form-input
+            v-model="formData.longitude"
+            placeholder="กรอกค่าลองจิจูด"
+          ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้บาดเจ็บ" append="คน" class="input">
+        <b-input-group
+          size="lg"
+          prepend="จำนวนผู้บาดเจ็บ"
+          append="คน"
+          class="input"
+        >
           <b-form-input
             v-model="formData.numinjur"
             type="number"
@@ -36,7 +47,12 @@
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="จำนวนผู้เสียชีวิต" append="คน" class="input">
+        <b-input-group
+          size="lg"
+          prepend="จำนวนผู้เสียชีวิต"
+          append="คน"
+          class="input"
+        >
           <b-form-input
             v-model="formData.numdeath"
             type="number"
@@ -67,6 +83,13 @@
               }"
             ></b-form-datepicker>
           </b-input-group-append>
+        </b-input-group>
+
+        <b-input-group size="lg" prepend="ประเภทความเสี่ยง" class="input">
+          <b-form-select
+            v-model="formData.category"
+            :options="categories"
+          ></b-form-select>
         </b-input-group>
 
         <b-input-group size="lg" class="input">
@@ -118,6 +141,7 @@ export default {
   data() {
     return {
       formData: {
+        category: "ไม่ระบุ",
         acclocation: "",
         latitude: "",
         longitude: "",
@@ -125,6 +149,11 @@ export default {
         numdeath: 0,
         accdate: "",
       },
+      categories: [
+        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
+        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
+        { value: "อาชญากรรม", text: "อาชญากรรม" },
+      ],
       mapCenter: {
         lat: 13.736717,
         lng: 100.523186,
@@ -138,14 +167,28 @@ export default {
   },
 
   computed: {
+    formattedData() {
+      const isCrime = this.formData.category === "อาชญากรรม";
+      return {
+        ...this.formData,
+        crimelocation: isCrime ? this.formData.acclocation : undefined,
+        crimedate: isCrime ? this.formData.accdate : undefined,
+        crimeinfo: isCrime ? this.formData.accinfo : undefined,
+        acclocation: !isCrime ? this.formData.acclocation : undefined,
+        accdate: !isCrime ? this.formData.accdate : undefined,
+        accinfo: !isCrime ? this.formData.accinfo : undefined,
+      };
+    },
     formattedAccdate() {
-    if (this.formData.accdate) {
-      const date = new Date(this.formData.accdate);
-      const buddhistYear = date.getFullYear() + 543; // เพิ่ม 543 ปี
-      return `${date.getDate()} ${date.toLocaleString("th-TH", { month: "long" })} ${buddhistYear}`;
-    }
-    return "";
-  },
+      if (this.formData.accdate) {
+        const date = new Date(this.formData.accdate);
+        const buddhistYear = date.getFullYear() + 543;
+        return `${date.getDate()} ${date.toLocaleString("th-TH", {
+          month: "long",
+        })} ${buddhistYear}`;
+      }
+      return "";
+    },
   },
 
   methods: {
@@ -160,12 +203,25 @@ export default {
         return;
       }
 
+      let apiEndpoint = "";
+      if (this.formData.category === "อุบัติเหตุ") {
+        apiEndpoint = "http://localhost:3000/api/accidentdata/single";
+      } else if (this.formData.category === "อาชญากรรม") {
+        apiEndpoint = "http://localhost:3000/api/crimedata/single";
+      } else {
+        alert("กรุณาเลือกประเภทความเสี่ยง");
+        return;
+      }
+
       const formattedDate = new Date(this.formData.accdate).toISOString();
 
       axios
         .post(
-          "http://localhost:3000/api/data/single",
-          { ...this.formData, accdate: formattedDate },
+          apiEndpoint,
+          {
+            ...this.formattedData,
+            accdate: formattedDate,
+          },
           {
             headers: {
               "Content-Type": "application/json",
@@ -175,14 +231,7 @@ export default {
         .then(() => {
           alert("บันทึกข้อมูลสำเร็จ");
           this.$router.push("/data");
-          this.formData = {
-            acclocation: "",
-            latitude: "",
-            longitude: "",
-            numinjur: 0,
-            numdeath: 0,
-            accdate: "",
-          };
+          this.resetForm();
         })
         .catch((error) => {
           if (error.response && error.response.status === 400) {
@@ -192,6 +241,18 @@ export default {
             alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
           }
         });
+    },
+
+    resetForm() {
+      this.formData = {
+        acclocation: "",
+        latitude: "",
+        longitude: "",
+        numinjur: 0,
+        numdeath: 0,
+        accdate: "",
+        category: "ไม่ระบุ",
+      };
     },
 
     updateMapCenter() {

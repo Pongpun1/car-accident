@@ -157,26 +157,40 @@ export default {
     formattedAccdate() {
       if (this.formData.accdate) {
         const date = new Date(this.formData.accdate);
-        const buddhistYear = date.getFullYear() + 543; // เพิ่ม 543 ปี
+        const buddhistYear = date.getFullYear() + 543;
         return `${date.getDate()} ${date.toLocaleString("th-TH", {
           month: "long",
-        })} ${buddhistYear}`; // รูปแบบวันที่ที่ต้องการ
+        })} ${buddhistYear}`;
       }
       return "";
     },
   },
 
   methods: {
-    showSingleData() {
+    showAccidentSingleData() {
       const id = this.$route.params.id;
       axios
-        .get(`http://localhost:3000/api/data/${id}`)
+        .get(`http://localhost:3000/api/accidentdata/${id}`)
         .then((response) => {
           this.formData = response.data.data[0];
           this.updateMapCenter();
         })
         .catch((error) => {
           console.error("Error fetching data from API:", error);
+        });
+    },
+
+    updateData() {
+      const id = this.$route.params.id;
+      axios
+        .put(`http://localhost:3000/api/accidentdata/${id}`, this.formData)
+        .then(() => {
+          alert("ข้อมูลได้รับการอัปเดต");
+          this.$router.push("/data");
+        })
+        .catch((error) => {
+          console.error("Error updating data:", error);
+          alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
         });
     },
 
@@ -215,20 +229,6 @@ export default {
       }
     },
 
-    updateData() {
-      const id = this.$route.params.id;
-      axios
-        .put(`http://localhost:3000/api/data/${id}`, this.formData)
-        .then(() => {
-          alert("ข้อมูลได้รับการอัปเดต");
-          this.$router.push("/data");
-        })
-        .catch((error) => {
-          console.error("Error updating data:", error);
-          alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
-        });
-    },
-
     async onMapClick(event) {
       const lat = event.latLng.lat().toFixed(7);
       const lng = event.latLng.lng().toFixed(7);
@@ -249,7 +249,7 @@ export default {
   },
 
   mounted() {
-    this.showSingleData();
+    this.showAccidentSingleData();
   },
 };
 </script>

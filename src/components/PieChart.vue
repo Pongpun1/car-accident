@@ -63,7 +63,7 @@ export default {
   methods: {
     fetchData() {
       axios
-        .get("http://localhost:3000/api/data/")
+        .get("http://localhost:3000/api/accidentdata/")
         .then((response) => {
           const accidents = response.data.data;
 

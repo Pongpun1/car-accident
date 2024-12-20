@@ -7,7 +7,6 @@
     <div class="chart-container">
       <div class="charts">
         <BarChart />
-        <PieChart />
       </div>
     </div>
 
@@ -33,19 +32,27 @@
         <span>ทั้งหมด {{ totalInjuries2024 }} คน</span>
       </div>
     </div>
+    <div class="stat-box red-box">
+      <h3>จากอุบัติเหตุทั้งหมดเป็นเพศชาย</h3>
+      <span>{{ malePercentage }}%</span>
+    </div>
+    <div class="stat-box orange-box">
+      <h3>จากอุบัติเหตุทั้งหมดเป็นเพศหญิง</h3>
+      <span>{{ femalePercentage }}%</span>
+    </div>
   </div>
 </template>
 
 <script>
 import NavTopBar from "../components/nav-bar.vue";
-import PieChart from "../components/PieChart.vue";
+
 import BarChart from "../components/BarChart.vue";
 import axios from "axios";
 
 export default {
   components: {
     NavTopBar,
-    PieChart,
+
     BarChart,
   },
   data() {
@@ -56,6 +63,12 @@ export default {
       injuryMax: 0,
       totalDeaths2024: 0,
       totalInjuries2024: 0,
+      maleCount: 0,
+      femaleCount: 0,
+      malePercentage: 0,
+      femalePercentage: 0,
+      totalAccidents2024: 0,
+      mostFrequentGender: "",
     };
   },
   mounted() {
@@ -64,7 +77,7 @@ export default {
   methods: {
     fetchStatistics() {
       axios
-        .get("http://localhost:3000/api/data/")
+        .get("http://localhost:3000/api/accidentdata/")
         .then((response) => {
           const accidents = response.data.data;
 
@@ -103,6 +116,41 @@ export default {
 
           this.deathMax = Math.max(...deathCounts);
           this.injuryMax = Math.max(...injuryCounts);
+
+          // จำนวนทั้งหมดของอุบัติเหตุในปี 2024
+          this.totalAccidents2024 = accidents2024.length;
+
+          // คัดกรองคำว่า "ชาย" และ "หญิง" จาก accinfo
+          let maleCount = 0;
+          let femaleCount = 0;
+
+          accidents2024.forEach((accident) => {
+            const accInfo = accident.accinfo.toLowerCase();
+            if (accInfo.includes("ชาย")) {
+              maleCount++;
+            }
+            if (accInfo.includes("หญิง")) {
+              femaleCount++;
+            }
+          });
+
+          // คำนวณเปอร์เซ็นต์
+          if (this.totalAccidents2024 > 0) {
+            this.malePercentage = ((maleCount / this.totalAccidents2024) * 100).toFixed(2);
+            this.femalePercentage = ((femaleCount / this.totalAccidents2024) * 100).toFixed(2);
+          }
+
+          // หาเพศที่พบมากกว่า
+          if (maleCount > femaleCount) {
+            this.mostFrequentGender = "ชาย";
+          } else if (femaleCount > maleCount) {
+            this.mostFrequentGender = "หญิง";
+          } else {
+            this.mostFrequentGender = "ทั้งชายและหญิงพบเท่ากัน";
+          }
+
+          this.maleCount = maleCount;
+          this.femaleCount = femaleCount;
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -131,7 +179,7 @@ export default {
 .charts > div {
   flex: 1;
   max-width: 600px;
-  margin: 0 10px;
+  margin: 0 5px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -169,13 +217,13 @@ export default {
   margin: 0;
   font-size: 1.5rem;
   font-weight: bold;
-  color: #1d1d1d;
+  color: #141414;
 }
 
 .stat-box span {
   font-size: 1.7rem;
   font-weight: bold;
-  color: #1d1d1d;
+  color: #141414;
 }
 
 .red-box {
