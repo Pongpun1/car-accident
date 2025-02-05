@@ -4,6 +4,7 @@ import Login from "../views/LoginUser.vue";
 import Data from "../views/Accident-data.vue";
 import EditAccident from "../views/EditAccidentData.vue";
 import EditCrime from "../views/EditCrimeData.vue";
+import EditUnspecified from "../views/EditUnspecData.vue";
 import Add from "../views/AddData.vue";
 import Statistics from "../views/Statistics-View.vue";
 
@@ -33,6 +34,13 @@ const routes = [
     path: "/data/editcrime/:id",
     name: "editcrime",
     component: EditCrime,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/data/editunspecified/:id",
+    name: "editunspecified",
+    component: EditUnspecified,
     props: true,
     meta: { requiresAuth: true },
   },

@@ -125,86 +125,124 @@ export default {
   },
   methods: {
     fetchAccidentData() {
-      axios
-        .get("http://localhost:3000/api/accidentdata/")
-        .then((response) => {
-          const accidents = response.data.data;
+  axios
+    .get("http://localhost:3000/api/accidentdata/")
+    .then((response) => {
+      const accidents = response.data.data;
 
-          const aggregatedData = {};
+      const aggregatedData = {};
 
-          accidents.forEach((accident) => {
-            // ตรวจสอบว่า `numdeath` และ `numinjur` มีค่าหรือไม่
-            const numdeath = accident.numdeath || 0; // ถ้าไม่มีกำหนดค่าเป็น 0
-            const numinjur = accident.numinjur || 0; // ถ้าไม่มีกำหนดค่าเป็น 0
+      accidents.forEach((accident) => {
+        const numdeath = accident.numdeath || 0;
+        const numinjur = accident.numinjur || 0;
 
-            if (aggregatedData[accident.acclocation]) {
-              aggregatedData[accident.acclocation].numdeath += numdeath;
-              aggregatedData[accident.acclocation].numinjur += numinjur;
-            } else {
-              aggregatedData[accident.acclocation] = {
-                numdeath: numdeath,
-                numinjur: numinjur,
-              };
-            }
-          });
+        if (aggregatedData[accident.acclocation]) {
+          aggregatedData[accident.acclocation].numdeath += numdeath;
+          aggregatedData[accident.acclocation].numinjur += numinjur;
+        } else {
+          aggregatedData[accident.acclocation] = {
+            numdeath: numdeath,
+            numinjur: numinjur,
+          };
+        }
+      });
 
-          const labels = Object.keys(aggregatedData);
-          const deathData = labels.map(
-            (location) => aggregatedData[location].numdeath
-          );
-          const injuryData = labels.map(
-            (location) => aggregatedData[location].numinjur
-          );
+      // แปลง Object เป็น Array และจัดเรียงจากมากไปน้อย
+      const sortedData = Object.entries(aggregatedData).sort(
+        (a, b) => (b[1].numdeath + b[1].numinjur) - (a[1].numdeath + a[1].numinjur)
+      );
 
-          this.accidentChartData.labels = labels;
-          this.accidentChartData.datasets[0].data = deathData;
-          this.accidentChartData.datasets[1].data = injuryData;
-        })
-        .catch((error) => {
-          console.error("Error fetching accident data:", error);
-        });
-    },
+      const top4 = sortedData.slice(0, 4); // 4 อันดับแรก
+      const others = sortedData.slice(4); // ข้อมูลที่เหลือ
 
-    fetchCrimeData() {
-      axios
-        .get("http://localhost:3000/api/crimedata/")
-        .then((response) => {
-          const crimes = response.data.data;
+      // รวมข้อมูลของ "พื้นที่อื่นๆ"
+      const othersData = others.reduce(
+        (acc, data) => {
+          acc.numdeath += data[1].numdeath;
+          acc.numinjur += data[1].numinjur;
+          return acc;
+        },
+        { numdeath: 0, numinjur: 0 }
+      );
 
-          const aggregatedData = {};
+      // สร้าง Labels และ Data
+      const labels = [...top4.map(([location]) => location), "พื้นที่อื่นๆ"];
+      const deathData = [
+        ...top4.map((data) => data[1].numdeath),
+        othersData.numdeath,
+      ];
+      const injuryData = [
+        ...top4.map((data) => data[1].numinjur),
+        othersData.numinjur,
+      ];
 
-          crimes.forEach((crime) => {
-            // ตรวจสอบว่า `numdeath` และ `numinjur` มีค่าหรือไม่
-            const numdeath = crime.numdeath || 0; // ถ้าไม่มีกำหนดค่าเป็น 0
-            const numinjur = crime.numinjur || 0; // ถ้าไม่มีกำหนดค่าเป็น 0
+      this.accidentChartData.labels = labels;
+      this.accidentChartData.datasets[0].data = deathData;
+      this.accidentChartData.datasets[1].data = injuryData;
+    })
+    .catch((error) => {
+      console.error("Error fetching accident data:", error);
+    });
+},
 
-            if (aggregatedData[crime.crimelocation]) {
-              aggregatedData[crime.crimelocation].numdeath += numdeath;
-              aggregatedData[crime.crimelocation].numinjur += numinjur;
-            } else {
-              aggregatedData[crime.crimelocation] = {
-                numdeath: numdeath,
-                numinjur: numinjur,
-              };
-            }
-          });
+fetchCrimeData() {
+  axios
+    .get("http://localhost:3000/api/crimedata/")
+    .then((response) => {
+      const crimes = response.data.data;
 
-          const labels = Object.keys(aggregatedData);
-          const deathData = labels.map(
-            (location) => aggregatedData[location].numdeath
-          );
-          const injuryData = labels.map(
-            (location) => aggregatedData[location].numinjur
-          );
+      const aggregatedData = {};
 
-          this.crimeChartData.labels = labels;
-          this.crimeChartData.datasets[0].data = deathData;
-          this.crimeChartData.datasets[1].data = injuryData;
-        })
-        .catch((error) => {
-          console.error("Error fetching accident data:", error);
-        });
-    },
+      crimes.forEach((crime) => {
+        const numdeath = crime.numdeath || 0;
+        const numinjur = crime.numinjur || 0;
+
+        if (aggregatedData[crime.crimelocation]) {
+          aggregatedData[crime.crimelocation].numdeath += numdeath;
+          aggregatedData[crime.crimelocation].numinjur += numinjur;
+        } else {
+          aggregatedData[crime.crimelocation] = {
+            numdeath: numdeath,
+            numinjur: numinjur,
+          };
+        }
+      });
+
+      const sortedData = Object.entries(aggregatedData).sort(
+        (a, b) => (b[1].numdeath + b[1].numinjur) - (a[1].numdeath + a[1].numinjur)
+      );
+
+      const top4 = sortedData.slice(0, 4);
+      const others = sortedData.slice(4);
+
+      const othersData = others.reduce(
+        (acc, data) => {
+          acc.numdeath += data[1].numdeath;
+          acc.numinjur += data[1].numinjur;
+          return acc;
+        },
+        { numdeath: 0, numinjur: 0 }
+      );
+
+      const labels = [...top4.map(([location]) => location), "พื้นที่อื่นๆ"];
+      const deathData = [
+        ...top4.map((data) => data[1].numdeath),
+        othersData.numdeath,
+      ];
+      const injuryData = [
+        ...top4.map((data) => data[1].numinjur),
+        othersData.numinjur,
+      ];
+
+      this.crimeChartData.labels = labels;
+      this.crimeChartData.datasets[0].data = deathData;
+      this.crimeChartData.datasets[1].data = injuryData;
+    })
+    .catch((error) => {
+      console.error("Error fetching crime data:", error);
+    });
+},
+
   },
 };
 </script>

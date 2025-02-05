@@ -7,7 +7,6 @@ const manager = new NlpManager({ languages: ["th"] });
 
 manager.addDocument("th", "อุบัติเหตุ", "accident");
 manager.addDocument("th", "รถชน", "accident");
-manager.addDocument("th", "เหตุการณ์อันตราย", "accident");
 manager.addDocument("th", "รถล้ม", "accident");
 manager.addDocument("th", "รถคว่ำ", "accident");
 manager.addDocument("th", "ประสานงา", "accident");

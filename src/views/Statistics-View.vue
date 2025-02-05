@@ -22,12 +22,12 @@
         <span>{{ femalePercentage }}%</span>
       </div>
       <div class="stat-box blue-box">
-        <h3>ผู้เสียชีวิตโดยรวมในปี 2567</h3>
+        <h3>ผู้เสียชีวิตโดยรวมในปี 2568</h3>
         <img src="../assets/risk-skull.png" class="logo1" alt="risk-skull" />
         <span>ทั้งหมด {{ totalDeaths2024 }} คน</span>
       </div>
       <div class="stat-box green-box">
-        <h3>ผู้บาดเจ็บโดยรวมในปี 2567</h3>
+        <h3>ผู้บาดเจ็บโดยรวมในปี 2568</h3>
         <img src="../assets/injury.png" class="logo1" alt="injury" />
         <span>ทั้งหมด {{ totalInjuries2024 }} คน</span>
       </div>
@@ -72,77 +72,70 @@ export default {
         .get("http://localhost:3000/api/accidentdata/")
         .then((response) => {
           const accidents = response.data.data;
-
           const accidents2024 = accidents.filter((accident) => {
             const accidentYear = new Date(accident.accdate).getFullYear();
             return accidentYear === 2024;
           });
 
-          const deathCounts2024 = accidents2024.map(
-            (accident) => accident.numdeath
-          );
-          const injuryCounts2024 = accidents2024.map(
-            (accident) => accident.numinjur
-          );
+          let maleInjuries = 0,
+            femaleInjuries = 0;
+          let maleDeaths = 0,
+            femaleDeaths = 0;
 
-          this.totalDeaths2024 = deathCounts2024.reduce(
-            (sum, value) => sum + value,
-            0
-          );
-          this.totalInjuries2024 = injuryCounts2024.reduce(
-            (sum, value) => sum + value,
-            0
-          );
-
-          const deathCounts = accidents.map((accident) => accident.numdeath);
-          const injuryCounts = accidents.map((accident) => accident.numinjur);
-
-          this.deathMean = (
-            deathCounts.reduce((sum, value) => sum + value, 0) /
-            deathCounts.length
-          ).toFixed(2);
-          this.injuryMean = (
-            injuryCounts.reduce((sum, value) => sum + value, 0) /
-            injuryCounts.length
-          ).toFixed(2);
-
-          this.deathMax = Math.max(...deathCounts);
-          this.injuryMax = Math.max(...injuryCounts);
-
-          // จำนวนทั้งหมดของอุบัติเหตุในปี 2024
-          this.totalAccidents2024 = accidents2024.length;
-
-          // คัดกรองคำว่า "ชาย" และ "หญิง" จาก accinfo
-          let maleCount = 0;
-          let femaleCount = 0;
+          const regex =
+            /(ผู้ชาย|ชาย|เพศชาย|เด็กผู้ชาย|เด็กชาย|หนุ่ม|ผู้หญิง|เพศหญิง|เด็กผู้หญิง|เด็กหญิง|หญิง|สาว)(?:.*?)(เสียชีวิต|ตาย|ดับ|บาดเจ็บ|เจ็บ|ได้รับบาดเจ็บ|สาหัส)(?:.*?)(\d+)/g;
 
           accidents2024.forEach((accident) => {
             const accInfo = accident.accinfo.toLowerCase();
-            if (accInfo.includes("ชาย")) {
-              maleCount++;
-            }
-            if (accInfo.includes("หญิง")) {
-              femaleCount++;
+            let match;
+
+            // วนลูปหาคู่คำที่ตรงกับ Regex
+            while ((match = regex.exec(accInfo)) !== null) {
+              const gender = match[1];
+              const event = match[2];
+              const count = parseInt(match[3]);
+
+              // แยกประเภทตามเพศและเหตุการณ์
+              if (gender.includes("ชาย")) {
+                if (event.includes("เสียชีวิต") || event.includes("ตาย")) {
+                  maleDeaths += count;
+                } else if (
+                  event.includes("บาดเจ็บ") ||
+                  event.includes("เจ็บ")
+                ) {
+                  maleInjuries += count;
+                }
+              } else if (gender.includes("หญิง")) {
+                if (event.includes("เสียชีวิต") || event.includes("ตาย")) {
+                  femaleDeaths += count;
+                } else if (
+                  event.includes("บาดเจ็บ") ||
+                  event.includes("เจ็บ")
+                ) {
+                  femaleInjuries += count;
+                }
+              }
             }
           });
 
-          // คำนวณเปอร์เซ็นต์
-          if (this.totalAccidents2024 > 0) {
-            this.malePercentage = ((maleCount / this.totalAccidents2024) * 100).toFixed(2);
-            this.femalePercentage = ((femaleCount / this.totalAccidents2024) * 100).toFixed(2);
+          // รวมข้อมูล
+          this.totalDeaths2024 = maleDeaths + femaleDeaths;
+          this.totalInjuries2024 = maleInjuries + femaleInjuries;
+
+          const total = this.totalInjuries2024 + this.totalDeaths2024;
+          if (total > 0) {
+            this.malePercentage = (
+              ((maleInjuries + maleDeaths) / total) *
+              100
+            ).toFixed(2);
+            this.femalePercentage = (
+              ((femaleInjuries + femaleDeaths) / total) *
+              100
+            ).toFixed(2);
           }
 
-          // หาเพศที่พบมากกว่า
-          if (maleCount > femaleCount) {
-            this.mostFrequentGender = "ชาย";
-          } else if (femaleCount > maleCount) {
-            this.mostFrequentGender = "หญิง";
-          } else {
-            this.mostFrequentGender = "ทั้งชายและหญิงพบเท่ากัน";
-          }
-
-          this.maleCount = maleCount;
-          this.femaleCount = femaleCount;
+          this.maleCount = maleInjuries + maleDeaths;
+          this.femaleCount = femaleInjuries + femaleDeaths;
         })
         .catch((error) => {
           console.error("Error fetching data:", error);

@@ -10,7 +10,7 @@
         <div class="input-form">
           <b-input-group size="lg" prepend="สถานที่เกิดเหตุ" class="input">
             <b-form-input
-              v-model="formData.crimelocation"
+              v-model="formData.location"
               type="text"
               placeholder="ระบุสถานที่เกิดเหตุ"
             ></b-form-input>
@@ -66,7 +66,7 @@
           <b-input-group size="lg" prepend="วันและเวลาเกิดเหตุ" class="input">
             <b-form-input
               id="example-input"
-              v-model="formattedCrimedate"
+              v-model="formatteddate"
               type="text"
               placeholder="เลือกวันและเวลา"
               autocomplete="off"
@@ -74,7 +74,7 @@
             ></b-form-input>
             <b-input-group-append>
               <b-form-datepicker
-                v-model="formData.crimedate"
+                v-model="formData.date"
                 button-only
                 right
                 locale="th"
@@ -87,17 +87,17 @@
               ></b-form-datepicker>
             </b-input-group-append>
           </b-input-group>
-
+  
           <b-input-group size="lg" prepend="ประเภทความเสี่ยง" class="input">
-          <b-form-select
-            v-model="formData.category"
-            :options="categories"
-          ></b-form-select>
-        </b-input-group>
+            <b-form-select
+              v-model="formData.category"
+              :options="categories"
+            ></b-form-select>
+          </b-input-group>
   
           <b-input-group size="lg" class="input">
             <b-form-textarea
-              v-model="formData.crimeinfo"
+              v-model="formData.info"
               rows="5"
               max-rows="8"
               placeholder="กรอกรายละเอียดเพิ่มเติมที่นี่"
@@ -146,19 +146,19 @@
     data() {
       return {
         formData: {
-          category: "อาชญากรรม",
-          crimelocation: "",
+          category: "ไม่ระบุ",
+          location: "",
           latitude: "",
           longitude: "",
           numinjur: 0,
           numdeath: 0,
-          crimedate: "",
+          date: "",
         },
         categories: [
-        { value: "อาชญากรรม", text: "อาชญากรรม" },
-        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
-        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
-      ],
+          { value: "ไม่ระบุ", text: "ไม่ระบุ" },
+          { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
+          { value: "อาชญากรรม", text: "อาชญากรรม" },
+        ],
         mapCenter: {
           lat: 13.736717,
           lng: 100.523186,
@@ -167,9 +167,9 @@
     },
   
     computed: {
-      formattedCrimedate() {
-        if (this.formData.crimedate) {
-          const date = new Date(this.formData.crimedate);
+      formatteddate() {
+        if (this.formData.date) {
+          const date = new Date(this.formData.date);
           const buddhistYear = date.getFullYear() + 543;
           return `${date.getDate()} ${date.toLocaleString("th-TH", {
             month: "long",
@@ -180,15 +180,15 @@
     },
   
     methods: {
-      showCrimeSingleData() {
+      showAccidentSingleData() {
         const id = this.$route.params.id;
         axios
-          .get(`http://localhost:3000/api/crimedata/${id}`)
+          .get(`http://localhost:3000/api/unspecifieddata/${id}`)
           .then((response) => {
             this.formData = response.data.data[0];
             if (!this.formData.category) {
-            this.formData.category = "อาชญากรรม";
-          }
+              this.formData.category = "ไม่ระบุ";
+            }
             this.updateMapCenter();
           })
           .catch((error) => {
@@ -197,61 +197,60 @@
       },
   
       updateData() {
-      const id = this.$route.params.id;
-
-      if (this.formData.category === "อาชญากรรม") {
-        axios
-          .put(`http://localhost:3000/api/crimedata/${id}`, this.formData)
-          .then(() => {
-            alert("ข้อมูลได้รับการอัปเดต");
-            this.$router.push("/data");
-          })
-          .catch((error) => {
-            console.error("Error updating data:", error);
-            alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
-          });
-      } else {
-        axios
-          .delete(`http://localhost:3000/api/crimedata/${id}`)
-          .then(() => {
-            const newData = { ...this.formData };
-
-            if (this.formData.category === "ไม่ระบุ") {
-              newData.location = newData.crimelocation;
-              newData.date = newData.crimedate;
-              newData.info = newData.crimeinfo;
-              delete newData.crimelocation;
-              delete newData.crimedate;
-              delete newData.crimeinfo;
-
-              axios
-                .post("http://localhost:3000/api/unspecifieddata/single", newData)
-                .then(() => {
-                  this.$router.push("/data");
-                });
-            } 
-            else if (this.formData.category === "อุบัติเหตุ") {
-              newData.acclocation = newData.crimelocation;
-              newData.accdate = newData.crimedate;
-              newData.accinfo = newData.crimeinfo;
-              delete newData.crimelocation;
-              delete newData.crimedate;
-              delete newData.crimeinfo;
-
-              axios
-                .post("http://localhost:3000/api/accidentdata/single", newData)
-                .then(() => {
-                  this.$router.push("/data");
-                });
-            }
-          })
-          .catch((error) => {
-            console.error("Error moving data:", error);
-            alert("เกิดข้อผิดพลาดในการย้ายข้อมูล");
-          });
-      }
-    },
+        const id = this.$route.params.id;
   
+        if (this.formData.category === "ไม่ระบุ") {
+          axios
+            .put(`http://localhost:3000/api/unspecifieddata/${id}`, this.formData)
+            .then(() => {
+              alert("ข้อมูลได้รับการอัปเดต");
+              this.$router.push("/data");
+            })
+            .catch((error) => {
+              console.error("Error updating data:", error);
+              alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
+            });
+        } else {
+          axios
+            .delete(`http://localhost:3000/api/unspecifieddata/${id}`)
+            .then(() => {
+              const newData = { ...this.formData };
+  
+              if (this.formData.category === "อุบัติเหตุ") {
+                newData.acclocation = newData.location;
+                newData.accdate = newData.date;
+                newData.accinfo = newData.info;
+                delete newData.location;
+                delete newData.date;
+                delete newData.info;
+  
+                axios
+                  .post("http://localhost:3000/api/accidentdata/single", newData)
+                  .then(() => {
+                    this.$router.push("/data");
+                  });
+              } 
+              else if (this.formData.category === "ไม่ระบุ") {
+                newData.crimelocation = newData.location;
+                newData.crimedate = newData.date;
+                newData.crimeinfo = newData.info;
+                delete newData.location;
+                delete newData.date;
+                delete newData.info;
+  
+                axios
+                  .post("http://localhost:3000/api/crimedata/single", newData)
+                  .then(() => {
+                    this.$router.push("/data");
+                  });
+              }
+            })
+            .catch((error) => {
+              console.error("Error moving data:", error);
+              alert("เกิดข้อผิดพลาดในการย้ายข้อมูล");
+            });
+        }
+      },
       updateMapCenter() {
         if (this.formData.latitude && this.formData.longitude) {
           this.mapCenter = {
@@ -262,7 +261,7 @@
       },
   
       async searchLocation() {
-        const location = this.formData.crimelocation;
+        const location = this.formData.location;
         if (location) {
           const geocodeUrl = `http://localhost:3000/geocode?address=${encodeURIComponent(
             location
@@ -297,7 +296,7 @@
         try {
           const response = await axios.get(geocodeUrl);
           if (response.data.results.length) {
-            this.formData.crimelocation =
+            this.formData.location =
               response.data.results[0].formatted_address;
           }
         } catch (error) {
@@ -307,7 +306,7 @@
     },
   
     mounted() {
-      this.showCrimeSingleData();
+      this.showAccidentSingleData();
     },
   };
   </script>

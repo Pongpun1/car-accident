@@ -781,7 +781,7 @@ export default {
       this.$router.push(`/data/editcrime/${id}`);
     },
     editUnspecifiedData(id) {
-      this.$router.push(`/data/editUnspecified/${id}`);
+      this.$router.push(`/data/editunspecified/${id}`);
     },
 
     addData() {
