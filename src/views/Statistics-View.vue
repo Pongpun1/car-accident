@@ -82,43 +82,70 @@ export default {
           let maleDeaths = 0,
             femaleDeaths = 0;
 
-          const regex =
-            /(ผู้ชาย|ชาย|เพศชาย|เด็กผู้ชาย|เด็กชาย|หนุ่ม|ผู้หญิง|เพศหญิง|เด็กผู้หญิง|เด็กหญิง|หญิง|สาว)(?:.*?)(เสียชีวิต|ตาย|ดับ|บาดเจ็บ|เจ็บ|ได้รับบาดเจ็บ|สาหัส)(?:.*?)(\d+)/g;
+          const regex1 =
+            /(ผู้ชาย|ชาย|เพศชาย|เด็กผู้ชาย|เด็กชาย|หนุ่ม|ผู้หญิง|เพศหญิง|เด็กผู้หญิง|เด็กหญิง|หญิง|สาว)(?:.*?)(ผู้เสียชีวิต|เสียชีวิต|ตาย|ดับ|ผู้บาดเจ็บ|บาดเจ็บ|เจ็บ|ได้รับบาดเจ็บ|สาหัส)(?:.*?)(\d+)/g;
+          const regex2 =
+            /(ผู้เสียชีวิต|เสียชีวิต|ตาย|ดับ|ผู้บาดเจ็บ|บาดเจ็บ|เจ็บ|ได้รับบาดเจ็บ|สาหัส)(?:.*?)(ผู้ชาย|ชาย|เพศชาย|เด็กผู้ชาย|เด็กชาย|หนุ่ม|ผู้หญิง|เพศหญิง|เด็กผู้หญิง|เด็กหญิง|หญิง|สาว)(?:.*?)(\d+)/g;
 
           accidents2024.forEach((accident) => {
             const accInfo = accident.accinfo.toLowerCase();
             let match;
 
-            // วนลูปหาคู่คำที่ตรงกับ Regex
-            while ((match = regex.exec(accInfo)) !== null) {
-              const gender = match[1];
-              const event = match[2];
-              const count = parseInt(match[3]);
+            // ใช้ regex1
+            while ((match = regex1.exec(accInfo)) !== null) {
+              processMatch(match);
+            }
 
-              // แยกประเภทตามเพศและเหตุการณ์
-              if (gender.includes("ชาย")) {
-                if (event.includes("เสียชีวิต") || event.includes("ตาย")) {
-                  maleDeaths += count;
-                } else if (
-                  event.includes("บาดเจ็บ") ||
-                  event.includes("เจ็บ")
-                ) {
-                  maleInjuries += count;
-                }
-              } else if (gender.includes("หญิง")) {
-                if (event.includes("เสียชีวิต") || event.includes("ตาย")) {
-                  femaleDeaths += count;
-                } else if (
-                  event.includes("บาดเจ็บ") ||
-                  event.includes("เจ็บ")
-                ) {
-                  femaleInjuries += count;
-                }
-              }
+            // ใช้ regex2
+            while ((match = regex2.exec(accInfo)) !== null) {
+              processMatch([match[0], match[2], match[1], match[3]]);
             }
           });
 
-          // รวมข้อมูล
+          function processMatch(match) {
+            const gender = match[1];
+            const event = match[2];
+            const count = parseInt(match[3]);
+
+            if (gender.includes("ชาย")) {
+              if (
+                ["ผู้เสียชีวิต", "เสียชีวิต", "ตาย", "ดับ"].some((e) =>
+                  event.includes(e)
+                )
+              ) {
+                maleDeaths += count;
+              } else if (
+                [
+                  "ผู้บาดเจ็บ",
+                  "บาดเจ็บ",
+                  "เจ็บ",
+                  "ได้รับบาดเจ็บ",
+                  "สาหัส",
+                ].some((e) => event.includes(e))
+              ) {
+                maleInjuries += count;
+              }
+            } else if (gender.includes("หญิง") || gender.includes("สาว")) {
+              if (
+                ["ผู้เสียชีวิต", "เสียชีวิต", "ตาย", "ดับ"].some((e) =>
+                  event.includes(e)
+                )
+              ) {
+                femaleDeaths += count;
+              } else if (
+                [
+                  "ผู้บาดเจ็บ",
+                  "บาดเจ็บ",
+                  "เจ็บ",
+                  "ได้รับบาดเจ็บ",
+                  "สาหัส",
+                ].some((e) => event.includes(e))
+              ) {
+                femaleInjuries += count;
+              }
+            }
+          }
+
           this.totalDeaths2024 = maleDeaths + femaleDeaths;
           this.totalInjuries2024 = maleInjuries + femaleInjuries;
 
