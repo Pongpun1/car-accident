@@ -148,6 +148,7 @@ export default {
         numinjur: 0,
         numdeath: 0,
         accdate: "",
+        accinfo: "",
       },
       categories: [
         { value: "ไม่ระบุ", text: "ไม่ระบุ" },
@@ -169,6 +170,8 @@ export default {
   computed: {
     formattedData() {
       const isCrime = this.formData.category === "อาชญากรรม";
+      const isUnspecified = this.formData.category === "ไม่ระบุ";
+
       return {
         ...this.formData,
         crimelocation: isCrime ? this.formData.acclocation : undefined,
@@ -177,6 +180,11 @@ export default {
         acclocation: !isCrime ? this.formData.acclocation : undefined,
         accdate: !isCrime ? this.formData.accdate : undefined,
         accinfo: !isCrime ? this.formData.accinfo : undefined,
+        location: isUnspecified
+          ? this.formData.acclocation
+          : undefined,
+        date: isUnspecified ? this.formData.accdate : undefined,
+        info: isUnspecified ? this.formData.accinfo : undefined,
       };
     },
     formattedAccdate() {
@@ -204,13 +212,19 @@ export default {
       }
 
       let apiEndpoint = "";
-      if (this.formData.category === "อุบัติเหตุ") {
-        apiEndpoint = "http://localhost:3000/api/accidentdata/single";
-      } else if (this.formData.category === "อาชญากรรม") {
-        apiEndpoint = "http://localhost:3000/api/crimedata/single";
-      } else {
-        alert("กรุณาเลือกประเภทความเสี่ยง");
-        return;
+      switch (this.formData.category) {
+        case "อุบัติเหตุ":
+          apiEndpoint = "http://localhost:3000/api/accidentdata/single";
+          break;
+        case "อาชญากรรม":
+          apiEndpoint = "http://localhost:3000/api/crimedata/single";
+          break;
+        case "ไม่ระบุ":
+          apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
+          break;
+        default:
+          alert("กรุณาเลือกประเภทความเสี่ยง");
+          return;
       }
 
       const formattedDate = new Date(this.formData.accdate).toISOString();

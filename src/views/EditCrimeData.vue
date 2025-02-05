@@ -87,6 +87,13 @@
               ></b-form-datepicker>
             </b-input-group-append>
           </b-input-group>
+
+          <b-input-group size="lg" prepend="ประเภทความเสี่ยง" class="input">
+          <b-form-select
+            v-model="formData.category"
+            :options="categories"
+          ></b-form-select>
+        </b-input-group>
   
           <b-input-group size="lg" class="input">
             <b-form-textarea
@@ -139,6 +146,7 @@
     data() {
       return {
         formData: {
+          category: "อาชญากรรม",
           crimelocation: "",
           latitude: "",
           longitude: "",
@@ -146,6 +154,11 @@
           numdeath: 0,
           crimedate: "",
         },
+        categories: [
+        { value: "อาชญากรรม", text: "อาชญากรรม" },
+        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
+        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
+      ],
         mapCenter: {
           lat: 13.736717,
           lng: 100.523186,
@@ -173,6 +186,9 @@
           .get(`http://localhost:3000/api/crimedata/${id}`)
           .then((response) => {
             this.formData = response.data.data[0];
+            if (!this.formData.category) {
+            this.formData.category = "อาชญากรรม";
+          }
             this.updateMapCenter();
           })
           .catch((error) => {
@@ -181,7 +197,9 @@
       },
   
       updateData() {
-        const id = this.$route.params.id;
+      const id = this.$route.params.id;
+
+      if (this.formData.category === "อาชญากรรม") {
         axios
           .put(`http://localhost:3000/api/crimedata/${id}`, this.formData)
           .then(() => {
@@ -192,7 +210,47 @@
             console.error("Error updating data:", error);
             alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
           });
-      },
+      } else {
+        axios
+          .delete(`http://localhost:3000/api/crimedata/${id}`)
+          .then(() => {
+            const newData = { ...this.formData };
+
+            if (this.formData.category === "ไม่ระบุ") {
+              newData.location = newData.crimelocation;
+              newData.date = newData.crimedate;
+              newData.info = newData.crimeinfo;
+              delete newData.location;
+              delete newData.date;
+              delete newData.info;
+
+              axios
+                .post("http://localhost:3000/api/unspecifieddata/single", newData)
+                .then(() => {
+                  this.$router.push("/data");
+                });
+            } 
+            else if (this.formData.category === "อุบัติเหตุ") {
+              newData.acclocation = newData.crimelocation;
+              newData.accdate = newData.crimedate;
+              newData.accinfo = newData.crimeinfo;
+              delete newData.crimelocation;
+              delete newData.crimedate;
+              delete newData.crimeinfo;
+
+              axios
+                .post("http://localhost:3000/api/accidentdata/single", newData)
+                .then(() => {
+                  this.$router.push("/data");
+                });
+            }
+          })
+          .catch((error) => {
+            console.error("Error moving data:", error);
+            alert("เกิดข้อผิดพลาดในการย้ายข้อมูล");
+          });
+      }
+    },
   
       updateMapCenter() {
         if (this.formData.latitude && this.formData.longitude) {

@@ -114,8 +114,8 @@
                 <th>
                   <input
                     type="checkbox"
-                    @change="toggleSelectAll"
-                    :checked="isAllSelected"
+                    @change="toggleSelectAllAccident"
+                    :checked="isAllAccidentSelected"
                   />
                 </th>
                 <th>ลำดับ</th>
@@ -130,11 +130,11 @@
             </thead>
 
             <tbody>
-              <tr v-for="(item, index) in paginatedData" :key="index">
+              <tr v-for="(item, index) in paginatedAccidentData" :key="index">
                 <td>
                   <input
                     type="checkbox"
-                    v-model="selectedItems"
+                    v-model="selectedAccidentItems"
                     :value="item.id"
                   />
                 </td>
@@ -238,7 +238,11 @@
             <thead>
               <tr>
                 <th>
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    @change="toggleSelectAllUnspecified"
+                    :checked="isAllUnspecifiedSelected"
+                  />
                 </th>
                 <th>ลำดับ</th>
                 <th>สถานที่เกิดเหตุ</th>
@@ -250,6 +254,49 @@
                 <th>จัดการ</th>
               </tr>
             </thead>
+            <tbody>
+              <tr
+                v-for="(item, index) in paginatedUnspecifiedData"
+                :key="index"
+              >
+                <td>
+                  <input
+                    type="checkbox"
+                    v-model="selectedUnspecifiedItems"
+                    :value="item.id"
+                  />
+                </td>
+                <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
+                <td>{{ item.location }}</td>
+                <td>{{ item.latitude }}</td>
+                <td>{{ item.longitude }}</td>
+                <td>{{ item.numinjur }}</td>
+                <td>{{ item.numdeath }}</td>
+                <td>{{ formatDate(item.date) }}</td>
+                <td>
+                  <div class="btn-container">
+                    <button
+                      @click="showInfoModal(item)"
+                      class="btn btn-info btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="info-circle" font-scale="1.5"></b-icon>
+                    </button>
+                    <button
+                      @click="editUnspecifiedData(item.id)"
+                      class="btn btn-primary btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="pencil-square" font-scale="1.5"></b-icon>
+                    </button>
+                    <button
+                      @click="deleteUnspecifiedData(item.id)"
+                      class="btn btn-danger btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="trash" font-scale="1.5"></b-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
           </b-tab>
         </b-tabs>
       </table>
@@ -264,7 +311,11 @@
     >
       <p>
         <strong>สถานที่เกิดเหตุ:</strong>
-        {{ selectedItem.acclocation || selectedItem.crimelocation }}
+        {{
+          selectedItem.acclocation ||
+          selectedItem.crimelocation ||
+          selectedItem.location
+        }}
       </p>
       <p><strong>ละติจูด:</strong> {{ selectedItem.latitude }}</p>
       <p><strong>ลองจิจูด:</strong> {{ selectedItem.longitude }}</p>
@@ -278,13 +329,20 @@
         {{
           selectedItem.accdate
             ? formatDate(selectedItem.accdate)
+            : selectedItem.crimedate
+            ? formatDate(selectedItem.crimedate)
+            : selectedItem.date
+            ? formatDate(selectedItem.date)
             : "ไม่ทราบวันที่"
         }}
       </p>
       <p>
         <strong>รายละเอียด: </strong
         ><span>{{
-          selectedItem.accinfo || selectedItem.crimeinfo || "ไม่ระบุ"
+          selectedItem.accinfo ||
+          selectedItem.crimeinfo ||
+          selectedItem.info ||
+          "ไม่ระบุ"
         }}</span>
       </p>
     </b-modal>
@@ -328,49 +386,72 @@ export default {
       filter: "",
       sortKey: "",
       fileName: "",
-      excelData: [],
+      accidentData: [],
       crimeData: [],
-      selectedItems: [],
+      UnspecifiedData: [],
+      selectedAccidentItems: [],
       selectedCrimeItems: [],
+      selectedUnspecifiedItems: [],
       selectedItem: {},
     };
   },
 
   computed: {
-    paginatedData() {
+    paginatedAccidentData() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
       const end = start + this.rowsPerPage;
-      return this.filterData.slice(start, end);
+      return this.filterAccidentData.slice(start, end);
     },
 
     paginatedCrimeData() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
       const end = start + this.rowsPerPage;
-      return this.crimeData.slice(start, end);
+      return this.filterCrimeData.slice(start, end);
+    },
+
+    paginatedUnspecifiedData() {
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      return this.filterUnspecifiedData.slice(start, end);
     },
 
     totalRows() {
-      return this.filterData.length;
+      if (this.activeTab === 0) {
+        return this.filterAccidentData.length;
+      } else if (this.activeTab === 1) {
+        return this.filterCrimeData.length;
+      } else {
+        return this.filterUnspecifiedData.length;
+      }
     },
 
-    isAllSelected() {
-      return this.selectedItems.length === this.excelData.length;
+    isAllAccidentSelected() {
+      return this.selectedAccidentItems.length === this.accidentData.length;
     },
     isAllCrimeSelected() {
       return this.selectedCrimeItems.length === this.crimeData.length;
     },
-
-    selectedItemCount() {
-      return this.activeTab === 0 || this.activeTab === 2
-        ? this.selectedItems.length
-        : this.selectedCrimeItems.length;
+    isAllUnspecifiedSelected() {
+      return (
+        this.selectedUnspecifiedItems.length === this.UnspecifiedData.length
+      );
     },
 
-    filterData() {
+    selectedItemCount() {
+      return this.activeTab === 0
+        ? this.selectedAccidentItems.length
+        : this.activeTab === 1
+        ? this.selectedCrimeItems.length
+        : this.activeTab === 2
+        ? this.selectedUnspecifiedItems.length
+        : 0;
+    },
+
+    filterAccidentData() {
       if (!this.filter) {
-        return this.excelData;
+        return this.accidentData;
       }
-      return this.excelData.filter((item) => {
+      return this.accidentData.filter((item) => {
         return (
           item.acclocation.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.latitude.toString().includes(this.filter) ||
@@ -381,26 +462,63 @@ export default {
         );
       });
     },
+
+    filterCrimeData() {
+      if (!this.filter) {
+        return this.crimeData;
+      }
+      return this.crimeData.filter((item) => {
+        return (
+          item.crimelocation
+            .toLowerCase()
+            .includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          this.formatDate(item.crimedate).includes(this.filter)
+        );
+      });
+    },
+
+    filterUnspecifiedData() {
+      if (!this.filter) {
+        return this.UnspecifiedData;
+      }
+      return this.UnspecifiedData.filter((item) => {
+        return (
+          item.location.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          this.formatDate(item.date).includes(this.filter)
+        );
+      });
+    },
   },
 
   methods: {
     showInfoModal(item) {
       if (this.activeTab === 0) {
         this.selectedItem = item;
-        this.selectedItemIndex = this.excelData.indexOf(item) + 1;
+        this.selectedItemIndex = this.accidentData.indexOf(item) + 1;
       } else if (this.activeTab === 1) {
         this.selectedItem = item;
         this.selectedItemIndex = this.crimeData.indexOf(item) + 1;
+      } else if (this.activeTab === 2) {
+        this.selectedItem = item;
+        this.selectedItemIndex = this.UnspecifiedData.indexOf(item) + 1;
       }
       this.isInfoModalVisible = true;
     },
     // --------------------------------- ดูข้อมูล --------------------------------
-    fetchData() {
+    fetchAccidentData() {
       this.isLoading = true;
       axios
         .get("http://localhost:3000/api/accidentdata")
         .then((response) => {
-          this.excelData = response.data.data;
+          this.accidentData = response.data.data;
           this.isLoading = false;
         })
         .catch((error) => {
@@ -418,7 +536,21 @@ export default {
           this.isLoading = false;
         })
         .catch((error) => {
-          console.error("Error fetching crime data:", error);
+          console.error("Error fetching Crime Data:", error);
+          this.isLoading = false;
+        });
+    },
+
+    fetchUnspecifiedData() {
+      this.isLoading = true;
+      axios
+        .get("http://localhost:3000/api/Unspecifieddata")
+        .then((response) => {
+          this.UnspecifiedData = response.data.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.error("Error fetching Unspecified Data:", error);
           this.isLoading = false;
         });
     },
@@ -426,7 +558,7 @@ export default {
     onFileChange(event) {
       const file = event.target.files[0];
       if (!file) {
-        this.excelData = [];
+        this.accidentData = [];
         this.isFileLoaded = false;
         this.fileName = "";
         return;
@@ -443,7 +575,7 @@ export default {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        this.excelData = jsonData;
+        this.accidentData = jsonData;
       };
 
       reader.readAsArrayBuffer(file);
@@ -455,21 +587,23 @@ export default {
         return;
       }
 
-      if (this.excelData.length === 0) {
+      if (this.accidentData.length === 0) {
         alert("ไม่มีข้อมูลในไฟล์ที่จะอัปโหลด");
-        this.fetchData();
+        this.fetchAccidentData();
         return;
       }
       axios
-        .post("http://localhost:3000/api/accidentdata", this.excelData, {
+        .post("http://localhost:3000/api/accidentdata", this.accidentData, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
           },
         })
         .then(() => {
-          alert(`อัปโหลดข้อมูลเสร็จสิ้น`);
-          this.fetchData();
+          alert("อัปโหลดข้อมูลเสร็จสิ้น");
+          this.fetchAccidentData();
+          this.fetchCrimeData();
+          this.fetchUnspecifiedData();
           this.clearFileInput();
           this.fileName = "";
         })
@@ -478,7 +612,7 @@ export default {
         });
 
       axios
-        .post("http://localhost:3000/api/crimedata", this.excelData, {
+        .post("http://localhost:3000/api/crimedata", this.accidentData, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
@@ -490,7 +624,26 @@ export default {
           this.fileName = "";
         })
         .catch((error) => {
-          console.error("There was an error uploading to crimedata!", error);
+          console.error("There was an error uploading to Crimedata!", error);
+        });
+
+      axios
+        .post("http://localhost:3000/api/unspecifieddata", this.accidentData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(() => {
+          this.fetchCrimeData();
+          this.clearFileInput();
+          this.fileName = "";
+        })
+        .catch((error) => {
+          console.error(
+            "There was an error uploading to UnspecifiedData!",
+            error
+          );
         });
     },
 
@@ -500,7 +653,7 @@ export default {
     },
 
     exportToExcel() {
-      const worksheet = XLSX.utils.json_to_sheet(this.excelData);
+      const worksheet = XLSX.utils.json_to_sheet(this.accidentData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
 
@@ -514,7 +667,7 @@ export default {
         axios
           .delete(`http://localhost:3000/api/accidentdata/${id}`)
           .then(() => {
-            this.fetchData();
+            this.fetchAccidentData();
           })
           .catch((error) => {
             console.error("There was an error deleting the data!", error);
@@ -535,11 +688,24 @@ export default {
       }
     },
 
-    toggleSelectAll(event) {
+    deleteUnspecifiedData(id) {
+      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+        axios
+          .delete(`http://localhost:3000/api/Unspecifieddata/${id}`)
+          .then(() => {
+            this.fetchUnspecifiedData();
+          })
+          .catch((error) => {
+            console.error("There was an error deleting the data!", error);
+          });
+      }
+    },
+
+    toggleSelectAllAccident(event) {
       if (event.target.checked) {
-        this.selectedItems = this.excelData.map((item) => item.id);
+        this.selectedAccidentItems = this.accidentData.map((item) => item.id);
       } else {
-        this.selectedItems = [];
+        this.selectedAccidentItems = [];
       }
     },
 
@@ -551,11 +717,30 @@ export default {
       }
     },
 
+    toggleSelectAllUnspecified(event) {
+      if (event.target.checked) {
+        this.selectedUnspecifiedItems = this.UnspecifiedData.map(
+          (item) => item.id
+        );
+      } else {
+        this.selectedUnspecifiedItems = [];
+      }
+    },
+
     deleteSelected() {
       const isCrimeTab = this.activeTab === 1;
+      const isUnspecifiedTab = this.activeTab === 2;
+
       const selectedItems = isCrimeTab
         ? this.selectedCrimeItems
-        : this.selectedItems;
+        : isUnspecifiedTab
+        ? this.selectedUnspecifiedItems
+        : this.selectedAccidentItems;
+
+      if (selectedItems.length === 0) {
+        alert("กรุณาเลือกข้อมูลที่ต้องการลบก่อน");
+        return;
+      }
 
       if (
         confirm(`คุณต้องการลบ ${selectedItems.length} รายการนี้จริงหรือไม่?`)
@@ -564,6 +749,8 @@ export default {
           axios.delete(
             isCrimeTab
               ? `http://localhost:3000/api/crimedata/${id}`
+              : isUnspecifiedTab
+              ? `http://localhost:3000/api/unspecifieddata/${id}`
               : `http://localhost:3000/api/accidentdata/${id}`
           )
         );
@@ -573,13 +760,16 @@ export default {
             if (isCrimeTab) {
               this.fetchCrimeData();
               this.selectedCrimeItems = [];
+            } else if (isUnspecifiedTab) {
+              this.fetchUnspecificData();
+              this.selectedUnspecificItems = [];
             } else {
-              this.fetchData();
-              this.selectedItems = [];
+              this.fetchAccidentData();
+              this.selectedAccidentItems = [];
             }
           })
           .catch((error) => {
-            console.error("There was an error deleting the data!", error);
+            console.error("เกิดข้อผิดพลาดในการลบข้อมูล!", error);
           });
       }
     },
@@ -589,6 +779,9 @@ export default {
     },
     editCrimeData(id) {
       this.$router.push(`/data/editcrime/${id}`);
+    },
+    editUnspecifiedData(id) {
+      this.$router.push(`/data/editUnspecified/${id}`);
     },
 
     addData() {
@@ -607,7 +800,7 @@ export default {
     sortData(key) {
       this.sortKey = key;
       this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
-      this.excelData.sort((a, b) => {
+      this.accidentData.sort((a, b) => {
         if (this.sortOrder === "asc") {
           return a[key] > b[key] ? 1 : -1;
         } else {
@@ -618,7 +811,7 @@ export default {
 
     refreshData() {
       this.isLoading = true;
-      this.fetchData();
+      this.fetchAccidentData();
     },
 
     handleFilterInput() {
@@ -627,8 +820,9 @@ export default {
   },
 
   mounted() {
-    this.fetchData();
+    this.fetchAccidentData();
     this.fetchCrimeData();
+    this.fetchUnspecifiedData();
   },
 };
 </script>

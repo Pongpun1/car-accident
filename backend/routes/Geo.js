@@ -9,9 +9,9 @@ router.get("/", async (req, res) => {
   if (address) {
     geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       address
-    )}&language=th&key=AIzaSyC-ucYUMX0Ci1nUtBSOgZaJZHXZqHwRFeM`;
+    )}&language=th&key=AIzaSyBpTaSCF5FB940suGM1mmn5oMhewau86PQ`;
   } else if (lat && lng) {
-    geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=th&key=AIzaSyC-ucYUMX0Ci1nUtBSOgZaJZHXZqHwRFeM`;
+    geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=th&key=AIzaSyBpTaSCF5FB940suGM1mmn5oMhewau86PQ`;
   } else {
     return res.status(400).json({ error: "Missing lat, lng or address parameters" });
   }

@@ -88,6 +88,13 @@
           </b-input-group-append>
         </b-input-group>
 
+        <b-input-group size="lg" prepend="ประเภทความเสี่ยง" class="input">
+          <b-form-select
+            v-model="formData.category"
+            :options="categories"
+          ></b-form-select>
+        </b-input-group>
+
         <b-input-group size="lg" class="input">
           <b-form-textarea
             v-model="formData.accinfo"
@@ -139,6 +146,7 @@ export default {
   data() {
     return {
       formData: {
+        category: "อุบัติเหตุ",
         acclocation: "",
         latitude: "",
         longitude: "",
@@ -146,6 +154,11 @@ export default {
         numdeath: 0,
         accdate: "",
       },
+      categories: [
+        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
+        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
+        { value: "อาชญากรรม", text: "อาชญากรรม" },
+      ],
       mapCenter: {
         lat: 13.736717,
         lng: 100.523186,
@@ -173,6 +186,9 @@ export default {
         .get(`http://localhost:3000/api/accidentdata/${id}`)
         .then((response) => {
           this.formData = response.data.data[0];
+          if (!this.formData.category) {
+            this.formData.category = "อุบัติเหตุ";
+          }
           this.updateMapCenter();
         })
         .catch((error) => {
@@ -182,18 +198,59 @@ export default {
 
     updateData() {
       const id = this.$route.params.id;
-      axios
-        .put(`http://localhost:3000/api/accidentdata/${id}`, this.formData)
-        .then(() => {
-          alert("ข้อมูลได้รับการอัปเดต");
-          this.$router.push("/data");
-        })
-        .catch((error) => {
-          console.error("Error updating data:", error);
-          alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
-        });
-    },
 
+      if (this.formData.category === "อุบัติเหตุ") {
+        axios
+          .put(`http://localhost:3000/api/accidentdata/${id}`, this.formData)
+          .then(() => {
+            alert("ข้อมูลได้รับการอัปเดต");
+            this.$router.push("/data");
+          })
+          .catch((error) => {
+            console.error("Error updating data:", error);
+            alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
+          });
+      } else {
+        axios
+          .delete(`http://localhost:3000/api/accidentdata/${id}`)
+          .then(() => {
+            const newData = { ...this.formData };
+
+            if (this.formData.category === "อาชญากรรม") {
+              newData.crimelocation = newData.acclocation;
+              newData.crimedate = newData.accdate;
+              newData.crimeinfo = newData.accinfo;
+              delete newData.acclocation;
+              delete newData.accdate;
+              delete newData.accinfo;
+
+              axios
+                .post("http://localhost:3000/api/crimedata/single", newData)
+                .then(() => {
+                  this.$router.push("/data");
+                });
+            } 
+            else if (this.formData.category === "ไม่ระบุ") {
+              newData.location = newData.acclocation;
+              newData.date = newData.accdate;
+              newData.info = newData.accinfo;
+              delete newData.acclocation;
+              delete newData.accdate;
+              delete newData.accinfo;
+
+              axios
+                .post("http://localhost:3000/api/unspecifieddata/single", newData)
+                .then(() => {
+                  this.$router.push("/data");
+                });
+            }
+          })
+          .catch((error) => {
+            console.error("Error moving data:", error);
+            alert("เกิดข้อผิดพลาดในการย้ายข้อมูล");
+          });
+      }
+    },
     updateMapCenter() {
       if (this.formData.latitude && this.formData.longitude) {
         this.mapCenter = {
