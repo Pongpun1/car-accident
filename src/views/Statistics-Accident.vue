@@ -7,17 +7,18 @@
     <div class="chart-container">
       <div class="charts">
         <BarChart />
+        <PieChart />
       </div>
     </div>
 
     <div class="statistics-container">
       <div class="stat-box red-box">
-        <h3>อุบัติเหตุทั้งหมดเป็นเพศชาย</h3>
+        <h3>อุบัติเหตุเป็นเพศชาย</h3>
         <img src="../assets/man.png" class="logo1" alt="man" />
         <span>{{ malePercentage }}%</span>
       </div>
       <div class="stat-box orange-box">
-        <h3>อุบัติเหตุทั้งหมดเป็นเพศหญิง</h3>
+        <h3>อุบัติเหตุเป็นเพศหญิง</h3>
         <img src="../assets/woman.png" class="logo1" alt="woman" />
         <span>{{ femalePercentage }}%</span>
       </div>
@@ -36,15 +37,15 @@
 </template>
 
 <script>
-import NavTopBar from "../components/nav-bar.vue";
-
-import BarChart from "../components/BarChart.vue";
+import NavTopBar from "../components/TopNavBar.vue";
+import BarChart from "../components/AccidentBarChart.vue";
+import PieChart from "../components/AccidentPieChart.vue";
 import axios from "axios";
 
 export default {
   components: {
     NavTopBar,
-
+    PieChart,
     BarChart,
   },
   data() {
@@ -230,7 +231,10 @@ export default {
   font-size: 1.5rem;
   font-weight: bold;
   color: #141414;
+  text-align: center;
+  width: 100%;
 }
+
 
 .stat-box span {
   font-size: 1.7rem;

@@ -132,7 +132,7 @@
   </template>
   
   <script>
-  import NavTopBar from "../components/nav-bar.vue";
+  import NavTopBar from "../components/TopNavBar.vue";
   import axios from "axios";
   import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
   

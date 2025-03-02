@@ -6,19 +6,6 @@
 
     <div class="controls-container">
       <div class="left-controls">
-        <b-input-group style="width: 650px">
-          <b-input-group-prepend is-text>
-            <b-icon icon="search"></b-icon>
-          </b-input-group-prepend>
-          <b-form-input
-            id="filter-input"
-            v-model="filter"
-            type="search"
-            placeholder="ค้นหา.."
-            @input="handleFilterInput"
-            style="border-radius: 0px 20px 20px 0px"
-          ></b-form-input>
-        </b-input-group>
 
         <b-button
           @click="addData"
@@ -31,8 +18,34 @@
         </b-button>
 
         <b-button @click="refreshData" class="refresh-btn-hover">
-          <b-icon icon="arrow-counterclockwise" font-scale="1.4"></b-icon>
+          <b-icon icon="arrow-clockwise" font-scale="1.4"></b-icon>
         </b-button>
+
+        <b-input-group style="width: 400px">
+          <b-input-group-prepend is-text>
+            <b-icon icon="search"></b-icon>
+          </b-input-group-prepend>
+          <b-form-input
+            id="filter-input"
+            v-model="filter"
+            type="search"
+            placeholder="ค้นหา"
+            @input="handleFilterInput"
+            style="border-radius: 0px 20px 20px 0px"
+          ></b-form-input>
+        </b-input-group>
+
+        <b-form-datepicker
+          v-model="selectedDate"
+          locale="th"
+          placeholder="เลือกวันที่เกิดเหตุ"
+          reset-button
+          today-button
+          reset-value=""
+          class="ml-2"
+           style="width: 330px; border-radius: 20px 20px 20px 20px;"
+        ></b-form-datepicker>
+
 
         <b-button
           v-if="selectedItemCount > 0"
@@ -49,7 +62,7 @@
           title="Import file"
           @click="triggerFileUpload"
           variant="info"
-          class="btn-hover"
+          class="import-btn"
         >
           <strong>Import</strong>
           <b-icon icon="cloud-upload" aria-hidden="true" class="ml-1"></b-icon>
@@ -79,7 +92,7 @@
           title="Export file"
           @click="exportToExcel"
           variant="warning"
-          class="btn-hover"
+          class="export-btn"
         >
           <strong>Export</strong>
           <b-icon
@@ -234,7 +247,7 @@
             </tbody>
           </b-tab>
 
-          <b-tab ref="undefinedTab" title="ไม่ระบุ">
+          <b-tab ref="undefinedTab" title="ไม่ระบุรายละเอียด">
             <thead>
               <tr>
                 <th>
@@ -297,6 +310,25 @@
                 </td>
               </tr>
             </tbody>
+          </b-tab>
+
+          <b-tab ref="crimeTab" title="รออนุมัติ">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" />
+                </th>
+                <th>ลำดับ</th>
+                <th>สถานที่เกิดเหตุ</th>
+                <th>ละติจูด</th>
+                <th>ลองจิจูด</th>
+                <th>จำนวนผู้บาดเจ็บ</th>
+                <th>จำนวนผู้เสียชีวิต</th>
+                <th>วันเกิดเหตุ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
           </b-tab>
         </b-tabs>
       </table>
@@ -361,7 +393,7 @@
 </template>
 
 <script>
-import NavTopBar from "../components/nav-bar.vue";
+import NavTopBar from "../components/TopNavBar.vue";
 import * as XLSX from "xlsx";
 import axios from "axios";
 import { format } from "date-fns";
@@ -386,6 +418,7 @@ export default {
       filter: "",
       sortKey: "",
       fileName: "",
+      selectedDate: "",
       accidentData: [],
       crimeData: [],
       UnspecifiedData: [],
@@ -448,27 +481,32 @@ export default {
     },
 
     filterAccidentData() {
-      if (!this.filter) {
-        return this.accidentData;
-      }
       return this.accidentData.filter((item) => {
-        return (
+        const formattedDate = this.formatDate(item.accdate);
+
+        const matchesFilter =
+          !this.filter ||
           item.acclocation.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.latitude.toString().includes(this.filter) ||
           item.longitude.toString().includes(this.filter) ||
           item.numinjur.toString().includes(this.filter) ||
           item.numdeath.toString().includes(this.filter) ||
-          this.formatDate(item.accdate).includes(this.filter)
-        );
+          formattedDate.includes(this.filter);
+
+        const matchesDate =
+          !this.selectedDate ||
+          formattedDate === this.formatDate(this.selectedDate);
+
+        return matchesFilter && matchesDate;
       });
     },
 
     filterCrimeData() {
-      if (!this.filter) {
-        return this.crimeData;
-      }
       return this.crimeData.filter((item) => {
-        return (
+        const formattedDate = this.formatDate(item.crimedate);
+
+        const matchesFilter =
+          !this.filter ||
           item.crimelocation
             .toLowerCase()
             .includes(this.filter.toLowerCase()) ||
@@ -476,24 +514,33 @@ export default {
           item.longitude.toString().includes(this.filter) ||
           item.numinjur.toString().includes(this.filter) ||
           item.numdeath.toString().includes(this.filter) ||
-          this.formatDate(item.crimedate).includes(this.filter)
-        );
+          formattedDate.includes(this.filter);
+
+        const matchesDate =
+          !this.selectedDate ||
+          formattedDate === this.formatDate(this.selectedDate);
+
+        return matchesFilter && matchesDate;
       });
     },
 
     filterUnspecifiedData() {
-      if (!this.filter) {
-        return this.UnspecifiedData;
-      }
       return this.UnspecifiedData.filter((item) => {
-        return (
+        const formattedDate = this.formatDate(item.date);
+        const matchesFilter =
+          !this.filter ||
           item.location.toLowerCase().includes(this.filter.toLowerCase()) ||
           item.latitude.toString().includes(this.filter) ||
           item.longitude.toString().includes(this.filter) ||
           item.numinjur.toString().includes(this.filter) ||
           item.numdeath.toString().includes(this.filter) ||
-          this.formatDate(item.date).includes(this.filter)
-        );
+          formattedDate.includes(this.filter);
+
+        const matchesDate =
+          !this.selectedDate ||
+          formattedDate === this.formatDate(this.selectedDate);
+
+        return matchesFilter && matchesDate;
       });
     },
   },
@@ -653,11 +700,25 @@ export default {
     },
 
     exportToExcel() {
-      const worksheet = XLSX.utils.json_to_sheet(this.accidentData);
+      let dataToExport = [];
+
+      if (this.activeTab === 0) {
+        dataToExport = this.accidentData;
+      } else if (this.activeTab === 1) {
+        dataToExport = this.crimeData;
+      } else if (this.activeTab === 2) {
+        dataToExport = this.UnspecifiedData;
+      }
+      if (dataToExport.length === 0) {
+        alert("ไม่มีข้อมูลในแท็บนี้สำหรับนำออก");
+        return;
+      }
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
 
-      XLSX.writeFile(workbook, "data.xlsx");
+      XLSX.writeFile(workbook, "สถิติ.xlsx");
     },
 
     // --------------------------------- ลบข้อมูล --------------------------------

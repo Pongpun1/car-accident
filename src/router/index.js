@@ -6,7 +6,8 @@ import EditAccident from "../views/EditAccidentData.vue";
 import EditCrime from "../views/EditCrimeData.vue";
 import EditUnspecified from "../views/EditUnspecData.vue";
 import Add from "../views/AddData.vue";
-import Statistics from "../views/Statistics-View.vue";
+import StatisticsAccident from "../views/Statistics-Accident.vue";
+import StatisticsCrime from "../views/Statistics-Crime.vue";
 
 Vue.use(VueRouter);
 
@@ -52,9 +53,16 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/statistics",
-    name: "statistics",
-    component: Statistics,
+    path: "/statistics/accidents",
+    name: "statistics-accidents",
+    component: StatisticsAccident,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/statistics/crimes",
+    name: "statistics-crimes",
+    component: StatisticsCrime,
     props: true,
     meta: { requiresAuth: true },
   },
