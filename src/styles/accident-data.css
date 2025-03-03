@@ -1,3 +1,4 @@
+/* Default Styles (สำหรับขนาดใหญ่) */
 body {
   background-color: #f9efdf;
 }
@@ -19,6 +20,7 @@ body {
   height: 100vh;
   box-sizing: border-box;
 }
+
 .table-container {
   margin-top: 10px;
   width: 100%;
@@ -26,10 +28,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-
 }
 
 .table {
+  min-width: 1000px;
+  table-layout: fixed;
   width: 100%;
   text-align: center;
 }
@@ -137,7 +140,7 @@ body {
   transform: scale(1.05);
 }
 
-.import-btn{
+.import-btn {
   width: 120px;
   transition: transform 0.3s ease;
   border-radius: 13px;
@@ -147,7 +150,7 @@ body {
   transform: scale(1.05);
 }
 
-.export-btn{
+.export-btn {
   width: 120px;
   transition: transform 0.3s ease;
   border-radius: 13px;
@@ -166,14 +169,6 @@ body {
   transform: scale(1.05);
 }
 
-@keyframes rotate-once {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 /* ---------------------------------------------------------- */
 
 .pagination-controls {
@@ -193,38 +188,6 @@ body {
   font-size: 0.9rem;
 }
 
-@media (max-width: 768px) {
-  .controls-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-  .left-controls,
-  .right-controls {
-    width: 100%;
-    justify-content: space-around;
-  }
-  .file-input,
-  .add-button,
-  .save-data {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .controls-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-  .pagination-controls {
-    flex-direction: column;
-  }
-}
-
-.table th:nth-child(8),
-.table td:nth-child(8) {
-  width: 2000px;
-}
-
 .vertical-tabs .nav-link {
   color: #333;
   border-radius: 5px;
@@ -236,4 +199,68 @@ body {
   background-color: #e51c23;
   font-weight: bold;
   color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .left-controls,
+  .right-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .file-input,
+  .add-button,
+  .save-data {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.8rem;
+  }
+
+  .table th:nth-child(8),
+  .table td:nth-child(8) {
+    width: auto;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+  }
+
+  .vertical-tabs .nav-link {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+  }
+  
+  .save-data,
+  .add-button,
+  .import-btn,
+  .export-btn {
+    font-size: 0.9rem;
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 576px) {
+  .add-button,
+  .import-btn,
+  .export-btn,
+  .save-data,
+  .deleteAll {
+    width: 100%;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.75rem;
+  }
 }
