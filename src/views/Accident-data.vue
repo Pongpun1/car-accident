@@ -409,15 +409,13 @@
     </b-modal>
 
     <b-modal
-      v-for="(item, index) in paginatedUnapproveData"
-      :key="index"
       v-model="isConfirmModalVisible"
       title="รายละเอียดเหตุการณ์"
       ok-title="ยืนยัน"
       cancel-title="ยกเลิก"
       ok-variant="success"
       cancel-variant="danger"
-      @ok="confirmRiskType(item.id)"
+      @ok="confirmRiskType"
     >
       <p>
         <strong>สถานที่เกิดเหตุ: </strong>
@@ -469,7 +467,7 @@ export default {
         { value: "ไม่ระบุรายละเอียด", text: "ไม่ระบุรายละเอียด" },
       ],
       selectedRisk: {
-        riskType: "ไม่ระบุรายละเอียด",
+        riskType: "อุบัติเหตุ",
       },
       currentPage: 1,
       rowsPerPage: 10,
@@ -642,52 +640,110 @@ export default {
   },
 
   methods: {
-    confirmRiskType(id) {
-      const riskType = this.selectedRisk.riskType;
-      if (!riskType) {
-        alert("กรุณาเลือกประเภทความเสี่ยง");
-        return;
+    confirmRiskType() {
+      if (this.selectedRisk.riskType === "อุบัติเหตุ") {
+        axios
+          .post("http://localhost:3000/api/accidentdata/single", {
+            acclocation: this.selectedItem.unapprove_location,
+            latitude: this.selectedItem.latitude,
+            longitude: this.selectedItem.longitude,
+            numinjur: this.selectedItem.numinjur,
+            numdeath: this.selectedItem.numdeath,
+            accdate: this.selectedItem.unapprove_date,
+            accinfo: this.selectedItem.unapprove_info,
+          })
+          .then(() => {
+            alert("เพิ่มข้อมูลเรียบร้อยแล้ว");
+            axios
+              .delete(
+                `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
+              )
+              .then(() => {
+                this.fetchAccidentData();
+                this.fetchCrimeData();
+                this.fetchUnspecifiedData();
+                this.fetchUnapproveData();
+                this.isConfirmModalVisible = false;
+                this.$emit("refreshData");
+              })
+              .catch((error) => {
+                console.error("Error deleting unapproved data:", error);
+                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+              });
+          })
+          .catch((error) => {
+            console.error("Error adding data to accidentdata:", error);
+            alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลอุบัติเหตุ");
+          });
+      } else if (this.selectedRisk.riskType === "อาชญากรรม") {
+        axios
+          .post("http://localhost:3000/api/crimedata/single", {
+            crimelocation: this.selectedItem.unapprove_location,
+            latitude: this.selectedItem.latitude,
+            longitude: this.selectedItem.longitude,
+            numinjur: this.selectedItem.numinjur,
+            numdeath: this.selectedItem.numdeath,
+            crimedate: this.selectedItem.unapprove_date,
+            crimeinfo: this.selectedItem.unapprove_info,
+          })
+          .then(() => {
+            alert("เพิ่มข้อมูลเรียบร้อยแล้ว");
+            axios
+              .delete(
+                `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
+              )
+              .then(() => {
+                this.fetchAccidentData();
+                this.fetchCrimeData();
+                this.fetchUnspecifiedData();
+                this.fetchUnapproveData();
+                this.isConfirmModalVisible = false;
+                this.$emit("refreshData");
+              })
+              .catch((error) => {
+                console.error("Error deleting unapproved data:", error);
+                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+              });
+          })
+          .catch((error) => {
+            console.error("Error adding data to accidentdata:", error);
+            alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลอุบัติเหตุ");
+          });
+      } else if (this.selectedRisk.riskType === "ไม่ระบุรายละเอียด") {
+        axios
+          .post("http://localhost:3000/api/unspecifieddata/single", {
+            location: this.selectedItem.unapprove_location,
+            latitude: this.selectedItem.latitude,
+            longitude: this.selectedItem.longitude,
+            numinjur: this.selectedItem.numinjur,
+            numdeath: this.selectedItem.numdeath,
+            date: this.selectedItem.unapprove_date,
+            info: this.selectedItem.unapprove_info,
+          })
+          .then(() => {
+            alert("เพิ่มข้อมูลเรียบร้อยแล้ว");
+            axios
+              .delete(
+                `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
+              )
+              .then(() => {
+                this.fetchAccidentData();
+                this.fetchCrimeData();
+                this.fetchUnspecifiedData();
+                this.fetchUnapproveData();
+                this.isConfirmModalVisible = false;
+                this.$emit("refreshData");
+              })
+              .catch((error) => {
+                console.error("Error deleting unapproved data:", error);
+                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+              });
+          })
+          .catch((error) => {
+            console.error("Error adding data to accidentdata:", error);
+            alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลอุบัติเหตุ");
+          });
       }
-
-      axios
-        .delete(`http://localhost:3000/api/unapprovedata/${id}`)
-        .then(() => {
-          this.addDataToCorrectCategory(riskType);
-          this.isConfirmModalVisible = false;
-        })
-        .catch((error) => {
-          console.error("Error deleting unapproved data:", error);
-          alert("เกิดข้อผิดพลาดในการลบข้อมูล");
-        });
-    },
-
-    addDataToCorrectCategory(riskType) {
-      let apiEndpoint = "";
-
-      switch (riskType) {
-        case "อุบัติเหตุ":
-          apiEndpoint = "http://localhost:3000/api/accidentdata/confirmsingle";
-          break;
-        case "อาชญากรรม":
-          apiEndpoint = "http://localhost:3000/api/crimedata/single";
-          break;
-        case "ไม่ระบุรายละเอียด":
-          apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
-          break;
-        default:
-          alert("ประเภทความเสี่ยงไม่ถูกต้อง");
-          return;
-      }
-
-      axios
-        .post(apiEndpoint, this.selectedItem)
-        .then(() => {
-          alert("ข้อมูลถูกบันทึกเรียบร้อยแล้ว");
-        })
-        .catch((error) => {
-          console.error("Error adding data to category:", error);
-          alert("เกิดข้อผิดพลาดในการย้ายข้อมูล");
-        });
     },
 
     showInfoModal(item) {
