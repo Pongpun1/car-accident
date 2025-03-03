@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-const allowedOrigins = ["http://localhost:8080", "http://10.203.70.26:8080"];
+const allowedOrigins = ["http://localhost:8080/", "http://10.203.70.26:8080"];
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -27,6 +27,8 @@ const crimeRoutes = require("./routes/CrimeData");
 app.use("/api/crimedata", crimeRoutes);
 const unspecifiedRoutes = require("./routes/UnspecifiedData");
 app.use("/api/unspecifieddata", unspecifiedRoutes);
+const unapproveRoutes = require("./routes/UnapproveData");
+app.use("/api/unapprovedata", unapproveRoutes);
 const UserRoutes = require("./routes/User");
 app.use("/users", UserRoutes);
 const GeoRoutes = require("./routes/Geo");

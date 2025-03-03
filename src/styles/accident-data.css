@@ -24,8 +24,9 @@ body {
   width: 100%;
   max-width: 1500px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+
 }
 
 .table {
@@ -55,9 +56,10 @@ body {
 
 .controls-container {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  max-width: 1430px;
+  max-width: 1500px;
   margin-top: 30px;
   padding: 0 15px;
   box-sizing: border-box;
@@ -66,16 +68,15 @@ body {
 .left-controls {
   display: flex;
   align-items: center;
-  margin-left: 20px;
   gap: 10px;
+  margin-right: auto;
 }
 
 .right-controls {
   display: flex;
   gap: 10px;
   align-items: center;
-  justify-content: flex-end;
-  margin-left: 100px;
+  margin-left: auto;
 }
 
 .file-input {
@@ -106,21 +107,25 @@ body {
 
 .add-button {
   font-size: 1rem;
-  width: 90px;
+  width: 150px;
   height: 35px;
   text-align: center;
   transition: transform 0.3s ease;
-  border-radius: 13px;
+  border-radius: 7px;
+  border: none;
+  background-color: #5677fc;
 }
 
 .add-button:hover {
+  background-color: #455ede;
   transform: scale(1.05);
 }
 
 .deleteAll {
+  margin-right: 90px;
+  width: 130px;
   font-size: 1rem;
-  width: 140px;
-  height: 35px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,20 +166,6 @@ body {
   transform: scale(1.05);
 }
 
-.refresh-btn-hover {
-  width: 35px;
-  transition: transform 0.3s ease;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-.refresh-btn-hover:hover {
-  animation: rotate-once 0.6s ease-in-out 1;
-}
-
 @keyframes rotate-once {
   from {
     transform: rotate(0deg);
@@ -186,10 +177,11 @@ body {
 /* ---------------------------------------------------------- */
 
 .pagination-controls {
-  margin-top: 8px;
+  margin-left: 230px;
   display: flex;
   justify-content: center;
-  gap: 10px;
+  align-items: center;
+  width: 100%;
 }
 
 .pagination-controls button {
@@ -241,7 +233,7 @@ body {
 }
 
 .vertical-tabs .nav-link.active {
-  background-color: #dc3545;
+  background-color: #e51c23;
   font-weight: bold;
   color: #ffffff;
 }

@@ -6,22 +6,16 @@
 
     <div class="controls-container">
       <div class="left-controls">
-
-        <b-button
-          @click="addData"
-          size="sm"
-          variant="secondary"
-          class="add-button"
-        >
-          <strong>เพิ่ม</strong>
-          <b-icon icon="plus-lg" class="ml-1" font-scale="1.2"></b-icon>
+        <b-button @click="addData" size="sm" class="add-button">
+          <strong>เพิ่มข้อมูล</strong>
+          <b-icon
+            icon="plus-circle-fill"
+            class="ml-1"
+            font-scale="1.2"
+          ></b-icon>
         </b-button>
 
-        <b-button @click="refreshData" class="refresh-btn-hover">
-          <b-icon icon="arrow-clockwise" font-scale="1.4"></b-icon>
-        </b-button>
-
-        <b-input-group style="width: 400px">
+        <b-input-group style="width: 500px">
           <b-input-group-prepend is-text>
             <b-icon icon="search"></b-icon>
           </b-input-group-prepend>
@@ -43,9 +37,8 @@
           today-button
           reset-value=""
           class="ml-2"
-           style="width: 330px; border-radius: 20px 20px 20px 20px;"
+          style="width: 280px; border-radius: 20px 20px 20px 20px"
         ></b-form-datepicker>
-
 
         <b-button
           v-if="selectedItemCount > 0"
@@ -59,6 +52,7 @@
 
       <div class="right-controls">
         <b-button
+          v-if="!isFileLoaded"
           title="Import file"
           @click="triggerFileUpload"
           variant="info"
@@ -107,7 +101,7 @@
     <div class="table-container">
       <b-skeleton-table
         v-if="isLoading"
-        :rows="19"
+        :rows="10"
         :columns="9"
         animation="Fade"
       ></b-skeleton-table>
@@ -165,7 +159,7 @@
                       @click="showInfoModal(item)"
                       class="btn btn-info btn-sm mx-1 btn-hover"
                     >
-                      <b-icon icon="info-circle" font-scale="1.5"></b-icon>
+                      <b-icon icon="info-circle-fill" font-scale="1.5"></b-icon>
                     </button>
                     <button
                       @click="editAccidentData(item.id)"
@@ -227,7 +221,7 @@
                       @click="showInfoModal(item)"
                       class="btn btn-info btn-sm mx-1 btn-hover"
                     >
-                      <b-icon icon="info-circle" font-scale="1.5"></b-icon>
+                      <b-icon icon="info-circle-fill" font-scale="1.5"></b-icon>
                     </button>
                     <button
                       @click="editCrimeData(item.id)"
@@ -292,7 +286,7 @@
                       @click="showInfoModal(item)"
                       class="btn btn-info btn-sm mx-1 btn-hover"
                     >
-                      <b-icon icon="info-circle" font-scale="1.5"></b-icon>
+                      <b-icon icon="info-circle-fill" font-scale="1.5"></b-icon>
                     </button>
                     <button
                       @click="editUnspecifiedData(item.id)"
@@ -312,12 +306,9 @@
             </tbody>
           </b-tab>
 
-          <b-tab ref="crimeTab" title="รออนุมัติ">
+          <b-tab ref="unapproveTab" title="รออนุมัติ">
             <thead>
               <tr>
-                <th>
-                  <input type="checkbox" />
-                </th>
                 <th>ลำดับ</th>
                 <th>สถานที่เกิดเหตุ</th>
                 <th>ละติจูด</th>
@@ -328,36 +319,72 @@
                 <th>จัดการ</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              <tr v-for="(item, index) in paginatedUnapproveData" :key="index">
+                <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
+                <td>{{ item.unapprove_location }}</td>
+                <td>{{ item.latitude }}</td>
+                <td>{{ item.longitude }}</td>
+                <td>{{ item.numinjur }}</td>
+                <td>{{ item.numdeath }}</td>
+                <td>{{ formatDate(item.unapprove_date) }}</td>
+                <td>
+                  <div class="btn-container">
+                    <button
+                      @click="confirmDataModal(item)"
+                      class="btn btn-success btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="check-lg" font-scale="1.5"></b-icon>
+                    </button>
+                    <button
+                      @click="deleteUnapproveData(item.id)"
+                      class="btn btn-danger btn-sm mx-1 btn-hover"
+                    >
+                      <b-icon icon="x-lg" font-scale="1.5"></b-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
           </b-tab>
         </b-tabs>
       </table>
+
+      <div class="pagination-controls">
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="totalRows"
+          :per-page="rowsPerPage"
+          first-number
+          last-number
+          pills
+        ></b-pagination>
+      </div>
     </div>
 
     <b-modal
-      scrollable
       hide-footer
       v-model="isInfoModalVisible"
       title="รายละเอียดเหตุการณ์"
       class="InfoModal"
     >
       <p>
-        <strong>สถานที่เกิดเหตุ:</strong>
+        <strong>สถานที่เกิดเหตุ: </strong>
         {{
           selectedItem.acclocation ||
           selectedItem.crimelocation ||
           selectedItem.location
         }}
       </p>
-      <p><strong>ละติจูด:</strong> {{ selectedItem.latitude }}</p>
-      <p><strong>ลองจิจูด:</strong> {{ selectedItem.longitude }}</p>
-      <p><strong>จำนวนผู้บาดเจ็บ:</strong> {{ selectedItem.numinjur }} คน</p>
+      <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
+      <p><strong>ลองจิจูด: </strong> {{ selectedItem.longitude }}</p>
+      <p><strong>จำนวนผู้บาดเจ็บ: </strong> {{ selectedItem.numinjur }} คน</p>
       <p>
-        <strong>จำนวนผู้เสียชีวิต:</strong>
+        <strong>จำนวนผู้เสียชีวิต: </strong>
         {{ selectedItem.numdeath }} คน
       </p>
       <p>
-        <strong>วันเกิดเหตุ:</strong>
+        <strong>วันเกิดเหตุ: </strong>
         {{
           selectedItem.accdate
             ? formatDate(selectedItem.accdate)
@@ -369,26 +396,56 @@
         }}
       </p>
       <p>
-        <strong>รายละเอียด: </strong
-        ><span>{{
-          selectedItem.accinfo ||
-          selectedItem.crimeinfo ||
-          selectedItem.info ||
-          "ไม่ระบุ"
-        }}</span>
+        <strong>รายละเอียด</strong><br />
+        <span>
+          {{
+            selectedItem.accinfo ||
+            selectedItem.crimeinfo ||
+            selectedItem.info ||
+            "ไม่ระบุ"
+          }}</span
+        >
       </p>
     </b-modal>
 
-    <div class="pagination-controls">
-      <b-pagination
-        v-model="currentPage"
-        :total-rows="totalRows"
-        :per-page="rowsPerPage"
-        first-number
-        last-number
-        pills
-      ></b-pagination>
-    </div>
+    <b-modal
+      v-for="(item, index) in paginatedUnapproveData"
+      :key="index"
+      v-model="isConfirmModalVisible"
+      title="รายละเอียดเหตุการณ์"
+      ok-title="ยืนยัน"
+      cancel-title="ยกเลิก"
+      ok-variant="success"
+      cancel-variant="danger"
+      @ok="confirmRiskType(item.id)"
+    >
+      <p>
+        <strong>สถานที่เกิดเหตุ: </strong>
+        {{ selectedItem.unapprove_location }}
+      </p>
+      <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
+      <p><strong>ลองจิจูด: </strong>{{ selectedItem.longitude }}</p>
+      <p><strong>จำนวนผู้บาดเจ็บ: </strong> {{ selectedItem.numinjur }} คน</p>
+      <p><strong>จำนวนผู้เสียชีวิต: </strong> {{ selectedItem.numdeath }} คน</p>
+      <p>
+        <strong>วันเกิดเหตุ: </strong>
+        {{
+          selectedItem.unapprove_date
+            ? formatDate(selectedItem.unapprove_date)
+            : "ไม่ทราบวันที่"
+        }}
+      </p>
+      <p>
+        <strong>รายละเอียด</strong><br />
+        <span>{{ selectedItem.unapprove_info || "ไม่ระบุ" }}</span>
+      </p>
+      <p><strong>เลือกประเภทความเสี่ยง</strong></p>
+      <b-form-select
+        v-model="selectedRisk.riskType"
+        :options="riskOptions"
+        class="mb-3"
+      ></b-form-select>
+    </b-modal>
   </div>
 </template>
 
@@ -406,12 +463,21 @@ export default {
 
   data() {
     return {
+      riskOptions: [
+        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
+        { value: "อาชญากรรม", text: "อาชญากรรม" },
+        { value: "ไม่ระบุรายละเอียด", text: "ไม่ระบุรายละเอียด" },
+      ],
+      selectedRisk: {
+        riskType: "ไม่ระบุรายละเอียด",
+      },
       currentPage: 1,
       rowsPerPage: 10,
       activeTab: 0,
       isUploading: false,
       isFileLoaded: false,
       isInfoModalVisible: false,
+      isConfirmModalVisible: false,
       selectedItemIndex: null,
       isLoading: true,
       sortOrder: "asc",
@@ -422,9 +488,11 @@ export default {
       accidentData: [],
       crimeData: [],
       UnspecifiedData: [],
+      UnapproveData: [],
       selectedAccidentItems: [],
       selectedCrimeItems: [],
       selectedUnspecifiedItems: [],
+      selectedUnapproveItems: [],
       selectedItem: {},
     };
   },
@@ -446,6 +514,12 @@ export default {
       const start = (this.currentPage - 1) * this.rowsPerPage;
       const end = start + this.rowsPerPage;
       return this.filterUnspecifiedData.slice(start, end);
+    },
+
+    paginatedUnapproveData() {
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      return this.filterUnapproveData.slice(start, end);
     },
 
     totalRows() {
@@ -543,9 +617,79 @@ export default {
         return matchesFilter && matchesDate;
       });
     },
+
+    filterUnapproveData() {
+      return this.UnapproveData.filter((item) => {
+        const formattedDate = this.formatDate(item.unapprove_date);
+        const matchesFilter =
+          !this.filter ||
+          item.unapprove_location
+            .toLowerCase()
+            .includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          formattedDate.includes(this.filter);
+
+        const matchesDate =
+          !this.selectedDate ||
+          formattedDate === this.formatDate(this.selectedDate);
+
+        return matchesFilter && matchesDate;
+      });
+    },
   },
 
   methods: {
+    confirmRiskType(id) {
+      const riskType = this.selectedRisk.riskType;
+      if (!riskType) {
+        alert("กรุณาเลือกประเภทความเสี่ยง");
+        return;
+      }
+
+      axios
+        .delete(`http://localhost:3000/api/unapprovedata/${id}`)
+        .then(() => {
+          this.addDataToCorrectCategory(riskType);
+          this.isConfirmModalVisible = false;
+        })
+        .catch((error) => {
+          console.error("Error deleting unapproved data:", error);
+          alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+        });
+    },
+
+    addDataToCorrectCategory(riskType) {
+      let apiEndpoint = "";
+
+      switch (riskType) {
+        case "อุบัติเหตุ":
+          apiEndpoint = "http://localhost:3000/api/accidentdata/confirmsingle";
+          break;
+        case "อาชญากรรม":
+          apiEndpoint = "http://localhost:3000/api/crimedata/single";
+          break;
+        case "ไม่ระบุรายละเอียด":
+          apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
+          break;
+        default:
+          alert("ประเภทความเสี่ยงไม่ถูกต้อง");
+          return;
+      }
+
+      axios
+        .post(apiEndpoint, this.selectedItem)
+        .then(() => {
+          alert("ข้อมูลถูกบันทึกเรียบร้อยแล้ว");
+        })
+        .catch((error) => {
+          console.error("Error adding data to category:", error);
+          alert("เกิดข้อผิดพลาดในการย้ายข้อมูล");
+        });
+    },
+
     showInfoModal(item) {
       if (this.activeTab === 0) {
         this.selectedItem = item;
@@ -558,6 +702,13 @@ export default {
         this.selectedItemIndex = this.UnspecifiedData.indexOf(item) + 1;
       }
       this.isInfoModalVisible = true;
+    },
+    confirmDataModal(item) {
+      if (this.activeTab === 3) {
+        this.selectedItem = item;
+        this.selectedItemIndex = this.UnapproveData.indexOf(item) + 1;
+      }
+      this.isConfirmModalVisible = true;
     },
     // --------------------------------- ดูข้อมูล --------------------------------
     fetchAccidentData() {
@@ -594,6 +745,20 @@ export default {
         .get("http://localhost:3000/api/Unspecifieddata")
         .then((response) => {
           this.UnspecifiedData = response.data.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.error("Error fetching Unspecified Data:", error);
+          this.isLoading = false;
+        });
+    },
+
+    fetchUnapproveData() {
+      this.isLoading = true;
+      axios
+        .get("http://localhost:3000/api/Unapprovedata")
+        .then((response) => {
+          this.UnapproveData = response.data.data;
           this.isLoading = false;
         })
         .catch((error) => {
@@ -762,6 +927,19 @@ export default {
       }
     },
 
+    deleteUnapproveData(id) {
+      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+        axios
+          .delete(`http://localhost:3000/api/Unapprovedata/${id}`)
+          .then(() => {
+            this.fetchUnapproveData();
+          })
+          .catch((error) => {
+            console.error("There was an error deleting the data!", error);
+          });
+      }
+    },
+
     toggleSelectAllAccident(event) {
       if (event.target.checked) {
         this.selectedAccidentItems = this.accidentData.map((item) => item.id);
@@ -870,11 +1048,6 @@ export default {
       });
     },
 
-    refreshData() {
-      this.isLoading = true;
-      this.fetchAccidentData();
-    },
-
     handleFilterInput() {
       this.filter = this.filter.trim();
     },
@@ -884,6 +1057,7 @@ export default {
     this.fetchAccidentData();
     this.fetchCrimeData();
     this.fetchUnspecifiedData();
+    this.fetchUnapproveData();
   },
 };
 </script>
