@@ -13,12 +13,12 @@
   
       <div class="statistics-container">
         <div class="stat-box red-box">
-          <h3>อาชญากรรมเป็นเพศชาย</h3>
+          <h3>เปอร์เซ็นต์อาชญากรรมเพศชาย</h3>
           <img src="../assets/man.png" class="logo1" alt="man" />
           <span>{{ malePercentage }}%</span>
         </div>
         <div class="stat-box orange-box">
-          <h3>อาชญากรรมเป็นเพศหญิง</h3>
+          <h3>เปอร์เซ็นต์อาชญากรรมเพศหญิง</h3>
           <img src="../assets/woman.png" class="logo1" alt="woman" />
           <span>{{ femalePercentage }}%</span>
         </div>

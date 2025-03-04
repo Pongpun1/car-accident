@@ -70,7 +70,6 @@
               type="text"
               placeholder="เลือกวันและเวลา"
               autocomplete="off"
-              readonly
             ></b-form-input>
             <b-input-group-append>
               <b-form-datepicker
@@ -100,7 +99,7 @@
               v-model="formData.crimeinfo"
               rows="5"
               max-rows="8"
-              placeholder="กรอกรายละเอียดเพิ่มเติมที่นี่"
+              placeholder="กรอกรายละเอียดเพิ่มเติม"
             ></b-form-textarea>
           </b-input-group>
   

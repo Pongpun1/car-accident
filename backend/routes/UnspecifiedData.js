@@ -89,7 +89,7 @@ router.post("/single", (req, res) => {
   const { location, latitude, longitude, numinjur, numdeath, date, info } =
     req.body;
 
-  if (!location || !latitude || !longitude || !date) {
+  if (!latitude || !longitude || !date) {
     console.log("Missing required fields");
     return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }

@@ -24,8 +24,7 @@ router.post("/", async (req, res) => {
   if (!Array.isArray(excelData) || excelData.length === 0) {
     return res.status(400).send({ message: "No data received" });
   }
-
-  // ตรวจสอบ accinfo ด้วย NLP
+  
   const filteredData = [];
   for (const row of excelData) {
     const accinfo = row.รายละเอียด || "";
@@ -92,7 +91,7 @@ router.post("/single", (req, res) => {
     accinfo,
   } = req.body;
 
-  if (!acclocation || !latitude || !longitude || !accdate) {
+  if (!latitude || !longitude || !accdate) {
     console.log("Missing required fields");
     return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }

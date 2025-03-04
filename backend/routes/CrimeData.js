@@ -92,14 +92,11 @@ router.post("/single", (req, res) => {
     crimeinfo,
   } = req.body;
 
-  console.log("Received Data:", req.body);
-
   const validLatitude = parseFloat(latitude);
   const validLongitude = parseFloat(longitude);
   const validCrimedate = new Date(crimedate);
 
   if (
-    !crimelocation ||
     isNaN(validLatitude) ||
     isNaN(validLongitude) ||
     isNaN(validCrimedate.getTime())

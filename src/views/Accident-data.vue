@@ -146,7 +146,7 @@
                   />
                 </td>
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.acclocation }}</td>
+                <td>{{ item.acclocation ? item.acclocation : '-'  }}</td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -209,7 +209,7 @@
                   />
                 </td>
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.crimelocation }}</td>
+                <td>{{ item.crimelocation ? item.crimelocation : '-' }}</td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -274,7 +274,7 @@
                   />
                 </td>
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.location }}</td>
+                <td>{{ item.location ? item.location : '-' }}</td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -322,7 +322,7 @@
             <tbody>
               <tr v-for="(item, index) in paginatedUnapproveData" :key="index">
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.unapprove_location }}</td>
+                <td>{{ item.unapprove_location ? item.unapprove_location : '-' }}</td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -373,7 +373,7 @@
         {{
           selectedItem.acclocation ||
           selectedItem.crimelocation ||
-          selectedItem.location
+          selectedItem.location || "-"
         }}
       </p>
       <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
@@ -392,7 +392,7 @@
             ? formatDate(selectedItem.crimedate)
             : selectedItem.date
             ? formatDate(selectedItem.date)
-            : "ไม่ทราบวันที่"
+            : "-"
         }}
       </p>
       <p>
@@ -402,7 +402,7 @@
             selectedItem.accinfo ||
             selectedItem.crimeinfo ||
             selectedItem.info ||
-            "ไม่ระบุ"
+            "-"
           }}</span
         >
       </p>
@@ -419,7 +419,7 @@
     >
       <p>
         <strong>สถานที่เกิดเหตุ: </strong>
-        {{ selectedItem.unapprove_location }}
+        {{ selectedItem.unapprove_location ? selectedItem.unapprove_location : '-' }}
       </p>
       <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
       <p><strong>ลองจิจูด: </strong>{{ selectedItem.longitude }}</p>
@@ -430,12 +430,12 @@
         {{
           selectedItem.unapprove_date
             ? formatDate(selectedItem.unapprove_date)
-            : "ไม่ทราบวันที่"
+            : "-"
         }}
       </p>
       <p>
         <strong>รายละเอียด</strong><br />
-        <span>{{ selectedItem.unapprove_info || "ไม่ระบุ" }}</span>
+        <span>{{ selectedItem.unapprove_info || "-" }}</span>
       </p>
       <p><strong>เลือกประเภทความเสี่ยง</strong></p>
       <b-form-select

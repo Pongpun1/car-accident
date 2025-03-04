@@ -65,9 +65,8 @@
             id="example-input"
             v-model="formattedAccdate"
             type="text"
-            placeholder="เลือกวันเกิดเหตุ"
+            placeholder="วันเกิดเหตุ"
             autocomplete="off"
-            readonly
           ></b-form-input>
           <b-input-group-append>
             <b-form-datepicker
@@ -97,7 +96,7 @@
             v-model="formData.accinfo"
             rows="5"
             max-rows="8"
-            placeholder="กรอกรายละเอียดเพิ่มเติมที่นี่"
+            placeholder="กรอกรายละเอียดเพิ่มเติม"
           ></b-form-textarea>
         </b-input-group>
 
@@ -141,7 +140,7 @@ export default {
   data() {
     return {
       formData: {
-        category: "ไม่ระบุ",
+        category: "อุบัติเหตุ",
         acclocation: "",
         latitude: "",
         longitude: "",
@@ -151,9 +150,9 @@ export default {
         accinfo: "",
       },
       categories: [
-        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
         { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
         { value: "อาชญากรรม", text: "อาชญากรรม" },
+        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
       ],
       mapCenter: {
         lat: 13.736717,
@@ -202,7 +201,6 @@ export default {
   methods: {
     AddData() {
       if (
-        !this.formData.acclocation ||
         !this.formData.latitude ||
         !this.formData.longitude ||
         !this.formData.accdate
