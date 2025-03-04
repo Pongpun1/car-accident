@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 03, 2025 at 03:59 AM
+-- Generation Time: Mar 04, 2025 at 10:38 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.26
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `accidentdata` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `acclocation` varchar(255) NOT NULL,
+  `acclocation` varchar(255) DEFAULT NULL,
   `latitude` double NOT NULL,
   `longitude` double NOT NULL,
   `numinjur` int(11) NOT NULL,
@@ -54,7 +54,9 @@ INSERT INTO `accidentdata` (`id`, `user_id`, `acclocation`, `latitude`, `longitu
 (762, 0, 'บ้านทับช้าง', 13.7331049, 100.6886425, 7, 2, '2024-12-03', 'เกิดรถล้มตรงฟุตบาท มีผู้ชายได้รับบาดเจ็ 5 ราย'),
 (764, 0, 'สยาม', 15.870032, 100.992541, 0, 2, '2024-12-03', 'เกิดเหตุรถ10ล้อ ประสานงากับรถพ่วง'),
 (765, 0, 'ลาดกระบัง', 13.7505781, 100.7943199, 1, 2, '2024-12-01', 'อุบัติเหตุ'),
-(766, 0, 'ลำลูกกา', 13.9754896, 100.7774424, 1, 1, '2025-03-01', 'ฟหกฟหกฟ');
+(766, 0, 'ลำลูกกา', 13.9754896, 100.7774424, 1, 1, '2025-03-01', 'ฟหกฟหกฟ'),
+(767, 0, '', 13.663853, 100.6132453, 0, 0, '2025-03-02', NULL),
+(768, 0, 'ห้วยขวาง', 13.7699094, 100.5864793, 0, 0, '2025-03-08', NULL);
 
 -- --------------------------------------------------------
 
@@ -65,7 +67,7 @@ INSERT INTO `accidentdata` (`id`, `user_id`, `acclocation`, `latitude`, `longitu
 CREATE TABLE `crimedata` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `crimelocation` varchar(255) NOT NULL,
+  `crimelocation` varchar(255) DEFAULT NULL,
   `latitude` double NOT NULL,
   `longitude` double NOT NULL,
   `numinjur` int(11) NOT NULL,
@@ -86,8 +88,8 @@ INSERT INTO `crimedata` (`id`, `user_id`, `crimelocation`, `latitude`, `longitud
 (174, 0, 'บางเมือง', 13.6106322, 100.6252859, 6, 3, '2024-12-01', 'มีคนร้ายแอบลอบวางเพลิง'),
 (185, 0, 'บางพลี', 13.6117233, 100.7323332, 8, 5, '2024-11-28', 'เกิดเหตุจี้ชิงทรัพย์ในยามวิกาล'),
 (188, 0, 'บางพลี', 13.6117233, 100.7323332, 8, 5, '2024-12-01', 'เกิดเหตุจี้ชิงทรัพย์ในยามวิกาล'),
-(198, 0, 'ฟหกฟหกฟหดๆดไำด', 13.6117233, 100.6188288, 7, 3, '2024-11-10', 'กไฟกไฟกฟหก'),
-(200, 0, 'บางนา', 13.663853, 100.6132453, 5, 1, '2024-12-01', 'มีขโมยตรงซอยมังกร');
+(200, 0, 'บางนา', 13.663853, 100.6132453, 5, 1, '2024-12-01', 'มีขโมยตรงซอยมังกร'),
+(203, 0, '', 13.6383764, 100.5774363, 0, 0, '2025-02-03', NULL);
 
 -- --------------------------------------------------------
 
@@ -107,6 +109,13 @@ CREATE TABLE `unapprove_data` (
   `unapprove_info` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `unapprove_data`
+--
+
+INSERT INTO `unapprove_data` (`id`, `user_id`, `unapprove_location`, `latitude`, `longitude`, `numinjur`, `numdeath`, `unapprove_date`, `unapprove_info`) VALUES
+(65, 0, 'สำโรงใต้', 13.6117233, 100.7323332, 2, 4, '2025-03-03', 'ฟกกฟกฟก');
+
 -- --------------------------------------------------------
 
 --
@@ -116,7 +125,7 @@ CREATE TABLE `unapprove_data` (
 CREATE TABLE `unspecified_data` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `location` varchar(255) NOT NULL,
+  `location` varchar(255) DEFAULT NULL,
   `latitude` double NOT NULL,
   `longitude` double NOT NULL,
   `numinjur` int(11) NOT NULL,
@@ -136,7 +145,8 @@ INSERT INTO `unspecified_data` (`id`, `user_id`, `location`, `latitude`, `longit
 (169, 0, 'ฉลองกรุง 1', 13.7278962, 100.7693314, 7, 2, '2024-12-02', 'กินเผือกติดฟัน'),
 (170, 0, 'สมุรทปราการ เทพารักษ์', 13.6309772, 100.6168401, 3, 3, '2024-12-08', 'ปลากินมด'),
 (171, 0, 'ฟเดหเิหแปปปแปแ', 13.6475561, 100.7323332, 7, 8, '2025-02-10', 'ฟกหกฟหกฟหกฟอิิแปvsvsd'),
-(172, 0, 'บางลำพู', 13.7561935, 100.5057151, 1, 2, '2025-03-02', 'ไก่ขันก่อนนอน');
+(172, 0, 'บางลำพู', 13.7561935, 100.5057151, 1, 2, '2025-03-02', 'ไก่ขันก่อนนอน'),
+(173, 0, '', 12.4202239, 102.5298028, 0, 0, '2025-03-04', NULL);
 
 -- --------------------------------------------------------
 
@@ -213,7 +223,7 @@ ALTER TABLE `accidentdata`
 -- AUTO_INCREMENT for table `crimedata`
 --
 ALTER TABLE `crimedata`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=203;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=204;
 
 --
 -- AUTO_INCREMENT for table `unapprove_data`
