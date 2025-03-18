@@ -1,7 +1,8 @@
 {
   "settings": {
     "languages": [
-      "th"
+      "th",
+      "en"
     ],
     "tag": "nlp",
     "threshold": 0.5,
@@ -16,7 +17,8 @@
       "tag": "nlu-manager"
     },
     "locales": [
-      "th"
+      "th",
+      "en"
     ],
     "languageNames": {},
     "domainManagers": {
@@ -147,7 +149,7 @@
           },
           {
             "domain": "default",
-            "utterance": "ยาเสพติด ",
+            "utterance": "ยาเสพติด",
             "intent": "crime"
           },
           {
@@ -411,6 +413,266 @@
             }
           }
         }
+      },
+      "en": {
+        "settings": {
+          "locale": "en",
+          "trainByDomain": false,
+          "tag": "domain-manager-en",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "robberi": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "thief": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "hijack": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "crimin": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "murder": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "rape": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "assault,indec": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "caus,unrest": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "drug": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "kidnap": {
+            "intent": "crime",
+            "domain": "default"
+          },
+          "crime": {
+            "intent": "crime",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "crime": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "Robbery",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Thief",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Hijacking",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Criminal",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Murder",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Rape",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Indecent assault",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Causing unrest",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Drugs",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Kidnapping",
+            "intent": "crime"
+          },
+          {
+            "domain": "default",
+            "utterance": "Crime",
+            "intent": "crime"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "en",
+              "tag": "nlu-en",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "robberi": 1,
+              "thief": 1,
+              "hijack": 1,
+              "crimin": 1,
+              "murder": 1,
+              "rape": 1,
+              "indec": 1,
+              "assault": 1,
+              "caus": 1,
+              "unrest": 1,
+              "drug": 1,
+              "kidnap": 1,
+              "crime": 1
+            },
+            "intents": {
+              "crime": 1
+            },
+            "intentFeatures": {
+              "crime": {
+                "robberi": 1,
+                "thief": 1,
+                "hijack": 1,
+                "crimin": 1,
+                "murder": 1,
+                "rape": 1,
+                "indec": 1,
+                "assault": 1,
+                "caus": 1,
+                "unrest": 1,
+                "drug": 1,
+                "kidnap": 1,
+                "crime": 1
+              }
+            },
+            "featuresToIntent": {
+              "robberi": [
+                "crime"
+              ],
+              "thief": [
+                "crime"
+              ],
+              "hijack": [
+                "crime"
+              ],
+              "crimin": [
+                "crime"
+              ],
+              "murder": [
+                "crime"
+              ],
+              "rape": [
+                "crime"
+              ],
+              "indec": [
+                "crime"
+              ],
+              "assault": [
+                "crime"
+              ],
+              "caus": [
+                "crime"
+              ],
+              "unrest": [
+                "crime"
+              ],
+              "drug": [
+                "crime"
+              ],
+              "kidnap": [
+                "crime"
+              ],
+              "crime": [
+                "crime"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "en",
+                "tag": "nlu-en",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "robberi",
+                "thief",
+                "hijack",
+                "crimin",
+                "murder",
+                "rape",
+                "indec",
+                "assault",
+                "caus",
+                "unrest",
+                "drug",
+                "kidnap",
+                "crime"
+              ],
+              "intents": [
+                "crime"
+              ],
+              "perceptrons": [
+                [
+                  2.2564637660980225,
+                  2.472787857055664,
+                  2.449396848678589,
+                  2.425260066986084,
+                  2.4004337787628174,
+                  2.3749725818634033,
+                  1.2360938787460327,
+                  1.2360938787460327,
+                  1.240492582321167,
+                  1.240492582321167,
+                  2.337780714035034,
+                  2.3098859786987305,
+                  2.2815775871276855,
+                  11.895687274164024
+                ]
+              ]
+            }
+          }
+        }
       }
     },
     "intentDomains": {},
@@ -457,7 +719,7 @@
       ],
       [
         "th",
-        "ยาเสพติด "
+        "ยาเสพติด"
       ],
       [
         "th",
@@ -470,6 +732,50 @@
       [
         "th",
         "ฆาตกรรม"
+      ],
+      [
+        "en",
+        "Robbery"
+      ],
+      [
+        "en",
+        "Thief"
+      ],
+      [
+        "en",
+        "Hijacking"
+      ],
+      [
+        "en",
+        "Criminal"
+      ],
+      [
+        "en",
+        "Murder"
+      ],
+      [
+        "en",
+        "Rape"
+      ],
+      [
+        "en",
+        "Indecent assault"
+      ],
+      [
+        "en",
+        "Causing unrest"
+      ],
+      [
+        "en",
+        "Drugs"
+      ],
+      [
+        "en",
+        "Kidnapping"
+      ],
+      [
+        "en",
+        "Crime"
       ]
     ]
   },

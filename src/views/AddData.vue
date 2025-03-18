@@ -4,14 +4,14 @@
       <NavTopBar />
     </div>
 
-    <h2 class="AddHeader"><strong>เพิ่มข้อมูล</strong></h2>
+    <h2 class="AddHeader"><strong>{{ $t("addData") }}</strong></h2>
     <div class="input-form-container">
       <div class="input-form">
-        <b-input-group size="lg" prepend="สถานที่เกิดเหตุ" class="input">
+        <b-input-group size="lg" :prepend="$t('location')" class="input">
           <b-form-input
             v-model="formData.acclocation"
             type="text"
-            placeholder="ระบุสถานที่เกิดเหตุ"
+            :placeholder="$t('locationHolder')"
           ></b-form-input>
           <b-input-group-append>
             <b-button @click="searchLocation">
@@ -20,37 +20,35 @@
           </b-input-group-append>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ละติจูด" class="input">
+        <b-input-group size="lg" :prepend="$t('latitude')" class="input">
           <b-form-input
             v-model="formData.latitude"
-            placeholder="กรอกค่าละติจูด"
+            :placeholder="$t('latitudeHolder')"
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ลองจิจูด" class="input">
+        <b-input-group size="lg" :prepend="$t('longitude')" class="input">
           <b-form-input
             v-model="formData.longitude"
-            placeholder="กรอกค่าลองจิจูด"
+            :placeholder="$t('longitudeHolder')"
           ></b-form-input>
         </b-input-group>
 
         <b-input-group
           size="lg"
-          prepend="จำนวนผู้บาดเจ็บ"
-          append="คน"
+          :prepend="$t('injured')"
           class="input"
         >
           <b-form-input
             v-model="formData.numinjur"
             type="number"
-            placeholder="ระบุจำนวนผู้บาดเจ็บ"
+            :placeholder="ระบุจำนวนผู้บาดเจ็บ"
           ></b-form-input>
         </b-input-group>
 
         <b-input-group
           size="lg"
-          prepend="จำนวนผู้เสียชีวิต"
-          append="คน"
+          :prepend="$t('death')"
           class="input"
         >
           <b-form-input
@@ -60,12 +58,12 @@
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="วันและเวลาเกิดเหตุ" class="input">
+        <b-input-group size="lg" :prepend="$t('date')" class="input">
           <b-form-input
             id="example-input"
             v-model="formattedAccdate"
             type="text"
-            placeholder="วันเกิดเหตุ"
+            :placeholder="$t('dateHolder')"
             autocomplete="off"
           ></b-form-input>
           <b-input-group-append>
@@ -89,12 +87,12 @@
             v-model="formData.accinfo"
             rows="5"
             max-rows="8"
-            placeholder="กรอกรายละเอียดเพิ่มเติม"
+            :placeholder="$t('infoHolder')"
           ></b-form-textarea>
         </b-input-group>
 
         <b-button-group size="lg" class="Addbutton">
-          <b-button variant="primary" @click="AddData">บันทึกข้อมูล</b-button>
+          <b-button variant="primary" @click="AddData">{{ $t("editSave") }}</b-button>
         </b-button-group>
       </div>
 
@@ -225,7 +223,7 @@ export default {
             },
           })
           .then(() => {
-            alert("บันทึกข้อมูลสำเร็จ");
+            alert(this.$t("saveSuccess"));
             this.$router.push("/data");
             this.resetForm();
           })
@@ -233,8 +231,7 @@ export default {
             if (error.response && error.response.status === 400) {
               alert(error.response.data.message);
             } else {
-              console.error("เกิดข้อผิดพลาด:", error);
-              alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+              alert(this.$t("saveFail"));
             }
           });
         return;
@@ -258,7 +255,7 @@ export default {
             },
           })
           .then(() => {
-            alert("บันทึกข้อมูลสำเร็จ");
+            alert(this.$t("saveSuccess"));
             this.$router.push("/data");
             this.resetForm();
           })
@@ -266,8 +263,7 @@ export default {
             if (error.response && error.response.status === 400) {
               alert(error.response.data.message);
             } else {
-              console.error("เกิดข้อผิดพลาด:", error);
-              alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+              alert(this.$t("saveFail"));
             }
           });
         return;
@@ -289,7 +285,7 @@ export default {
             }
           )
           .then(() => {
-            alert("บันทึกข้อมูลสำเร็จ");
+            alert(this.$t("saveSuccess"));
             this.$router.push("/data");
             this.resetForm();
           })
@@ -297,8 +293,7 @@ export default {
             if (error.response && error.response.status === 400) {
               alert(error.response.data.message);
             } else {
-              console.error("เกิดข้อผิดพลาด:", error);
-              alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+              alert(this.$t("saveFail"));
             }
           });
       }

@@ -9,16 +9,15 @@
     >
       <b-navbar-brand class="d-flex align-items-center">
         <span class="navbar-text ml-3 text-white">
-          <strong>ระบบจัดการเหตุการณ์และอุบัติเหตุ</strong>
+          <strong>{{ $t("appTitle") }}</strong>
         </span>
 
-        <!-- ปุ่มจัดการข้อมูล -->
         <span
           @click="$router.push('/data')"
           class="ml-4 navbar-link"
           :style="navStyle('/data')"
         >
-          จัดการข้อมูล
+          {{ $t("manageData") }}
           <b-icon icon="house-door-fill" class="ml-1" font-scale="1.2"></b-icon>
         </span>
 
@@ -30,33 +29,52 @@
         >
           <template #button-content>
             <span :style="navStyle('/statistics')">
-              สถิติ
-              <b-icon icon="bar-chart-line-fill" class="ml-1" font-scale="1.2"></b-icon>
+              {{ $t("statistics") }}
+              <b-icon
+                icon="bar-chart-line-fill"
+                class="ml-1"
+                font-scale="1.2"
+              ></b-icon>
             </span>
           </template>
           <b-dropdown-item @click="$router.push('/statistics/accidents')">
-            <b-icon icon="cone" class="mr-2"></b-icon> สถิติอุบัติเหตุ
+            <b-icon icon="cone" class="mr-2"></b-icon> {{ $t("accidentStats") }}
           </b-dropdown-item>
           <b-dropdown-item @click="$router.push('/statistics/crimes')">
-            <b-icon icon="people-fill" class="mr-2"></b-icon> สถิติอาชญากรรม
+            <b-icon icon="people-fill" class="mr-2"></b-icon>
+            {{ $t("crimeStats") }}
           </b-dropdown-item>
         </b-dropdown>
       </b-navbar-brand>
 
-      <div v-if="isAuthenticated" class="navbar-user">
-        <b-icon icon="person-circle" font-scale="2.5" style="color: white"></b-icon>
-        <span class="navbar-text text-white">{{ username }}</span>
+      <div class="d-flex align-items-center">
         <b-button
-          @click="logoutUser"
-          variant="danger"
-          class="btn btn-xs ml-3 custom-small-btn"
-          ><strong>ออกจากระบบ</strong></b-button
+          @click="toggleLanguage"
+          variant="outline-light"
+          class="mr-3 custom-lang-btn"
+          size="sm"
         >
+          {{ $t("switchLang") }}
+        </b-button>
+
+        <div v-if="isAuthenticated" class="navbar-user">
+          <b-icon
+            icon="person-circle"
+            font-scale="2.5"
+            style="color: white"
+          ></b-icon>
+          <span class="navbar-text text-white">{{ username }}</span>
+          <b-button
+            @click="logoutUser"
+            variant="danger"
+            class="btn btn-xs ml-3 custom-small-btn"
+            ><strong>{{ $t("logout") }}</strong></b-button
+          >
+        </div>
       </div>
     </b-navbar>
   </div>
 </template>
-
 
 <script>
 import { mapGetters, mapActions } from "vuex";
@@ -75,11 +93,18 @@ export default {
     },
     navStyle(path) {
       return {
-        backgroundColor: this.$route.path.includes(path) ? "white" : "transparent",
+        backgroundColor: this.$route.path.includes(path)
+          ? "white"
+          : "transparent",
         color: this.$route.path.includes(path) ? "#9a7b4f" : "white",
         borderRadius: this.$route.path.includes(path) ? "10px" : "0",
         padding: "5px 10px",
       };
+    },
+    toggleLanguage() {
+      const newLang = this.$i18n.locale === "th" ? "en" : "th";
+      this.$i18n.locale = newLang;
+      localStorage.setItem("lang", newLang);
     },
   },
   mounted() {
@@ -146,4 +171,9 @@ export default {
   background-color: #f1f1f1;
 }
 
+.custom-lang-btn {
+  font-size: 12px;
+  padding: 2px 8px;
+  height: 28px;
+}
 </style>

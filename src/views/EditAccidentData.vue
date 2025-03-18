@@ -4,15 +4,17 @@
       <NavTopBar />
     </div>
 
-    <h2 class="EditHeader"><strong>แก้ไขข้อมูล</strong></h2>
+    <h2 class="EditHeader">
+      <strong>{{ $t("editInfo") }}</strong>
+    </h2>
 
     <div class="input-form-container">
       <div class="input-form">
-        <b-input-group size="lg" prepend="สถานที่เกิดเหตุ" class="input">
+        <b-input-group size="lg" :prepend="$t('location')" class="input">
           <b-form-input
             v-model="formData.acclocation"
             type="text"
-            placeholder="ระบุสถานที่เกิดเหตุ"
+            :placeholder="$t('locationHolder')"
           ></b-form-input>
           <b-input-group-append>
             <b-button @click="searchLocation">
@@ -23,8 +25,8 @@
 
         <b-input-group
           size="lg"
-          prepend="ละติจูด"
-          placeholder="กรอกค่าละติจูด"
+          :prepend="$t('latitude')"
+          :placeholder="$t('latitudeHolder')"
           class="input"
         >
           <b-form-input v-model="formData.latitude"></b-form-input>
@@ -32,43 +34,33 @@
 
         <b-input-group
           size="lg"
-          prepend="ลองจิจูด"
-          placeholder="กรอกค่าลองจิจูด"
+          :prepend="$t('longitude')"
+          :placeholder="$t('longitudeHolder')"
           class="input"
         >
           <b-form-input v-model="formData.longitude"></b-form-input>
         </b-input-group>
 
-        <b-input-group
-          size="lg"
-          prepend="จำนวนผู้บาดเจ็บ"
-          append="คน"
-          class="input"
-        >
+        <b-input-group size="lg" :prepend="$t('injured')" class="input">
           <b-form-input
             v-model="formData.numinjur"
             type="number"
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group
-          size="lg"
-          prepend="จำนวนผู้เสียชีวิต"
-          append="คน"
-          class="input"
-        >
+        <b-input-group size="lg" :prepend="$t('death')" class="input">
           <b-form-input
             v-model="formData.numdeath"
             type="number"
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="วันและเวลาเกิดเหตุ" class="input">
+        <b-input-group size="lg" :prepend="$t('date')" class="input">
           <b-form-input
             id="example-input"
             v-model="formattedAccdate"
             type="text"
-            placeholder="เลือกวันและเวลา"
+            :placeholder="$t('dateHolder')"
             autocomplete="off"
           ></b-form-input>
           <b-input-group-append>
@@ -87,7 +79,7 @@
           </b-input-group-append>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ประเภทความเสี่ยง" class="input">
+        <b-input-group size="lg" :prepend="$t('category')" class="input">
           <b-form-select
             v-model="formData.category"
             :options="categories"
@@ -99,13 +91,13 @@
             v-model="formData.accinfo"
             rows="5"
             max-rows="8"
-            placeholder="กรอกรายละเอียดเพิ่มเติม"
+            :placeholder="$t('infoHolder')"
           ></b-form-textarea>
         </b-input-group>
 
         <b-button-group size="lg" class="Editbutton">
           <b-button variant="primary" @click="updateData">
-            บันทึกการแก้ไข
+            {{ $t("editSave") }}
           </b-button>
         </b-button-group>
       </div>
@@ -154,9 +146,9 @@ export default {
         accdate: "",
       },
       categories: [
-        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
-        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
-        { value: "อาชญากรรม", text: "อาชญากรรม" },
+        { value: "อุบัติเหตุ", text: this.$t("accident") },
+        { value: "อาชญากรรม", text: this.$t("crime") },
+        { value: "ไม่ระบุรายละเอียด", text: this.$t("unspecified") },
       ],
       mapCenter: {
         lat: 13.736717,
@@ -198,55 +190,68 @@ export default {
     updateData() {
       const id = this.$route.params.id;
 
-      if (this.formData.category === "อุบัติเหตุ") {
+      if (
+        this.formData.category === "อุบัติเหตุ"
+      ) {
         axios
           .put(`http://localhost:3000/api/accidentdata/${id}`, this.formData)
           .then(() => {
-            alert("ข้อมูลได้รับการอัปเดต");
+            alert(this.$t("dataUpdated"));
             this.$router.push("/data");
           })
           .catch((error) => {
             console.error("Error updating data:", error);
-            alert("ข้อมูลนี้มีอยู่แล้วในระบบ");
+            alert(this.$t("dataExists"));
           });
-      } else {
+      } else if (
+        this.formData.category === "อาชญากรรม"
+      ) {
         axios
           .delete(`http://localhost:3000/api/accidentdata/${id}`)
           .then(() => {
             const newData = { ...this.formData };
 
-            if (this.formData.category === "อาชญากรรม") {
-              newData.crimelocation = newData.acclocation;
-              newData.crimedate = newData.accdate;
-              newData.crimeinfo = newData.accinfo;
-              delete newData.acclocation;
-              delete newData.accdate;
-              delete newData.accinfo;
+            newData.crimelocation = newData.acclocation;
+            newData.crimedate = newData.accdate;
+            newData.crimeinfo = newData.accinfo;
+            delete newData.acclocation;
+            delete newData.accdate;
+            delete newData.accinfo;
 
-              axios
-                .post("http://localhost:3000/api/crimedata/single", newData)
-                .then(() => {
-                  this.$router.push("/data");
-                });
-            } 
-            else if (this.formData.category === "ไม่ระบุ") {
-              newData.location = newData.acclocation;
-              newData.date = newData.accdate;
-              newData.info = newData.accinfo;
-              delete newData.acclocation;
-              delete newData.accdate;
-              delete newData.accinfo;
-
-              axios
-                .post("http://localhost:3000/api/unspecifieddata/single", newData)
-                .then(() => {
-                  this.$router.push("/data");
-                });
-            }
+            axios
+              .post("http://localhost:3000/api/crimedata/single", newData)
+              .then(() => {
+                this.$router.push("/data");
+              });
           })
           .catch((error) => {
             console.error("Error moving data:", error);
-            alert("เกิดข้อผิดพลาดในการย้ายข้อมูล");
+            alert(this.$t("errorMovingData"));
+          });
+      } else if (
+        this.formData.category === "ไม่ระบุรายละเอียด"
+      ) {
+        axios
+          .delete(`http://localhost:3000/api/accidentdata/${id}`)
+          .then(() => {
+            const newData = { ...this.formData };
+
+            newData.location = newData.acclocation;
+            newData.date = newData.accdate;
+            newData.info = newData.accinfo;
+            delete newData.acclocation;
+            delete newData.accdate;
+            delete newData.accinfo;
+
+            axios
+              .post("http://localhost:3000/api/unspecifieddata/single", newData)
+              .then(() => {
+                this.$router.push("/data");
+              });
+          })
+          .catch((error) => {
+            console.error("Error moving data:", error);
+            alert(this.$t("errorMovingData"));
           });
       }
     },
@@ -274,14 +279,13 @@ export default {
             this.formData.longitude = lng;
             this.updateMapCenter();
           } else {
-            alert("ไม่พบตำแหน่งที่ระบุ");
+            alert(this.$t("notFoundLocation"));
           }
         } catch (error) {
           console.error("Error fetching location:", error);
-          alert("เกิดข้อผิดพลาดในการค้นหาสถานที่");
         }
       } else {
-        alert("กรุณากรอกสถานที่เกิดเหตุ");
+        alert(this.$t("enterLocation"));
       }
     },
 

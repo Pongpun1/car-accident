@@ -36,7 +36,7 @@
                 "rgba(255, 152, 0, 0.6)"  ,
                 "rgba(76, 175, 80, 0.6)",
               ],
-              borderColor: "#fff", // สีขอบเป็นสีขาว
+              borderColor: "#fff",
               borderWidth: 2,
             },
           ],

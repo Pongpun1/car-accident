@@ -3,16 +3,29 @@ const conn = require("../config");
 const router = express.Router();
 const { NlpManager } = require("node-nlp");
 
-const manager = new NlpManager({ languages: ["th"] });
+const manager = new NlpManager({ languages: ["th", "en"] });
 
-manager.addDocument("th", "อุบัติเหตุ", "accident");
-manager.addDocument("th", "รถชน", "accident");
-manager.addDocument("th", "รถล้ม", "accident");
-manager.addDocument("th", "รถคว่ำ", "accident");
-manager.addDocument("th", "ประสานงา", "accident");
-manager.addDocument("th", "ชนท้าย", "accident");
-manager.addDocument("th", "เสียหลัก", "accident");
+const accidentTermsTh = [
+  "อุบัติเหตุ",
+  "รถชน",
+  "รถล้ม",
+  "รถคว่ำ",
+  "ประสานงา",
+  "ชนท้าย",
+  "เสียหลัก",
+];
 
+const accidentTermsEn = [
+  "accident",
+  "crash",
+  "fall",
+  "overturn",
+  "collision",
+  "lost of control",
+];
+
+accidentTermsTh.forEach((term) => manager.addDocument("th", term, "crime"));
+accidentTermsEn.forEach((term) => manager.addDocument("en", term, "crime"));
 
 (async () => {
   await manager.train();
@@ -27,11 +40,12 @@ router.post("/", async (req, res) => {
   if (!Array.isArray(excelData) || excelData.length === 0) {
     return res.status(400).send({ message: "No data received" });
   }
-  
+
   const filteredData = [];
   for (const row of excelData) {
     const accinfo = row.รายละเอียด || "";
-    const response = await manager.process("th", accinfo);
+    const language = manager.getLanguage(accinfo) || "th";
+    const response = await manager.process(language, accinfo);
 
     if (response.intent === "accident") {
       filteredData.push([

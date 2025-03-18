@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p style="text-align: center; font-weight: bold;">สถิติอุบัติเหตุ</p>
+    <p style="text-align: center; font-weight: bold;">{{ $t("staticAccident") }}</p>
     <Bar
       :key="'accident-' + accidentChartData.labels.join('-')"
       :data="accidentChartData"

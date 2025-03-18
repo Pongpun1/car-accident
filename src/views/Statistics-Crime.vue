@@ -13,24 +13,24 @@
   
       <div class="statistics-container">
         <div class="stat-box red-box">
-          <h3>เปอร์เซ็นต์อาชญากรรมเพศชาย</h3>
+          <h3>{{ $t("maleCrimePercent") }}</h3>
           <img src="../assets/man.png" class="logo1" alt="man" />
           <span>{{ malePercentage }}%</span>
         </div>
         <div class="stat-box orange-box">
-          <h3>เปอร์เซ็นต์อาชญากรรมเพศหญิง</h3>
+          <h3>{{ $t("femaleCrimePercent") }}</h3>
           <img src="../assets/woman.png" class="logo1" alt="woman" />
           <span>{{ femalePercentage }}%</span>
         </div>
         <div class="stat-box blue-box">
-          <h3>ผู้เสียชีวิตโดยรวมในปี 2568</h3>
+          <h3>{{ $t("totalDeath") }}</h3>
           <img src="../assets/risk-skull.png" class="logo1" alt="risk-skull" />
-          <span>ทั้งหมด {{ totalDeaths2024 }} คน</span>
+          <span>{{ $t("total", { count: totalDeaths2024 }) }}</span>
         </div>
         <div class="stat-box green-box">
-          <h3>ผู้บาดเจ็บโดยรวมในปี 2568</h3>
+          <h3>{{ $t("totalInjured") }}</h3>
           <img src="../assets/injury.png" class="logo1" alt="injury" />
-          <span>ทั้งหมด {{ totalInjuries2024 }} คน</span>
+          <span>{{ $t("total", { count: totalInjuries2024 }) }}</span>
         </div>
       </div>
     </div>

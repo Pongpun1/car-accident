@@ -7,7 +7,7 @@
     <div class="controls-container">
       <div class="left-controls">
         <b-button @click="addData" size="sm" class="add-button">
-          <strong>เพิ่มข้อมูล</strong>
+          <strong>{{ $t("addData") }}</strong>
           <b-icon
             icon="plus-circle-fill"
             class="ml-1"
@@ -23,7 +23,7 @@
             id="filter-input"
             v-model="filter"
             type="search"
-            placeholder="ค้นหา"
+            :placeholder="$t('searchPlaceholder')"
             style="border-radius: 0px 20px 20px 0px"
           ></b-form-input>
         </b-input-group>
@@ -32,7 +32,7 @@
           v-model="selectedDateRange"
           range
           format="DD/MM/YYYY"
-          placeholder="เลือกช่วงวันที่เกิดเหตุ"
+          :placeholder="$t('selectDateRange')"
           style="width: 300px; border-radius: 20px"
           @change="filterByDateRange"
           @clear="clearDateRange"
@@ -43,7 +43,9 @@
           variant="danger"
           class="deleteAll"
         >
-          <strong> ลบ {{ selectedItemCount }} รายการ </strong>
+          <strong>
+            {{ $t("deleteSelected", { count: selectedItemCount }) }}
+          </strong>
         </b-button>
       </div>
 
@@ -75,7 +77,7 @@
           variant="primary"
           class="save-data"
         >
-          <strong>อัปโหลด</strong>
+          <strong>{{ $t("upload") }}</strong>
           <b-icon icon="upload" class="ml-1"></b-icon>
         </b-button>
 
@@ -112,7 +114,7 @@
           nav-wrapper-class="h-50"
           v-model="activeTab"
         >
-          <b-tab ref="accidentTab" title="อุบัติเหตุ">
+        <b-tab ref="accidentTab" :title="$t('accident')">
             <thead>
               <tr>
                 <th>
@@ -122,14 +124,14 @@
                     :checked="isAllAccidentSelected"
                   />
                 </th>
-                <th>ลำดับ</th>
-                <th>สถานที่เกิดเหตุ</th>
-                <th>ละติจูด</th>
-                <th>ลองจิจูด</th>
-                <th @click="sortData('numinjur')">จำนวนผู้บาดเจ็บ</th>
-                <th @click="sortData('numdeath')">จำนวนผู้เสียชีวิต</th>
-                <th>วันเกิดเหตุ</th>
-                <th>จัดการ</th>
+                <th>{{ $t("no") }}</th>
+                <th>{{ $t("location") }}</th>
+                <th>{{ $t("latitude") }}</th>
+                <th>{{ $t("longitude") }}</th>
+                <th @click="sortData('numinjur')">{{ $t("injured") }}</th>
+                <th @click="sortData('numdeath')">{{ $t("death") }}</th>
+                <th>{{ $t("date") }}</th>
+                <th>{{ $t("manage") }}</th>
               </tr>
             </thead>
 
@@ -176,7 +178,7 @@
             </tbody>
           </b-tab>
 
-          <b-tab ref="crimeTab" title="อาชญากรรม">
+          <b-tab ref="crimeTab" :title="$t('crime')">
             <thead>
               <tr>
                 <th>
@@ -186,14 +188,14 @@
                     :checked="isAllCrimeSelected"
                   />
                 </th>
-                <th>ลำดับ</th>
-                <th>สถานที่เกิดเหตุ</th>
-                <th>ละติจูด</th>
-                <th>ลองจิจูด</th>
-                <th>จำนวนผู้บาดเจ็บ</th>
-                <th>จำนวนผู้เสียชีวิต</th>
-                <th>วันเกิดเหตุ</th>
-                <th>จัดการ</th>
+                <th>{{ $t("no") }}</th>
+                <th>{{ $t("location") }}</th>
+                <th>{{ $t("latitude") }}</th>
+                <th>{{ $t("longitude") }}</th>
+                <th>{{ $t("injured") }}</th>
+                <th>{{ $t("death") }}</th>
+                <th>{{ $t("date") }}</th>
+                <th>{{ $t("manage") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -238,7 +240,7 @@
             </tbody>
           </b-tab>
 
-          <b-tab ref="undefinedTab" title="ไม่ระบุรายละเอียด">
+          <b-tab ref="undefinedTab" :title="$t('unspecified')">
             <thead>
               <tr>
                 <th>
@@ -248,14 +250,14 @@
                     :checked="isAllUnspecifiedSelected"
                   />
                 </th>
-                <th>ลำดับ</th>
-                <th>สถานที่เกิดเหตุ</th>
-                <th>ละติจูด</th>
-                <th>ลองจิจูด</th>
-                <th>จำนวนผู้บาดเจ็บ</th>
-                <th>จำนวนผู้เสียชีวิต</th>
-                <th>วันเกิดเหตุ</th>
-                <th>จัดการ</th>
+                <th>{{ $t("no") }}</th>
+                <th>{{ $t("location") }}</th>
+                <th>{{ $t("latitude") }}</th>
+                <th>{{ $t("longitude") }}</th>
+                <th>{{ $t("injured") }}</th>
+                <th>{{ $t("death") }}</th>
+                <th>{{ $t("date") }}</th>
+                <th>{{ $t("manage") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -303,17 +305,17 @@
             </tbody>
           </b-tab>
 
-          <b-tab ref="unapproveTab" title="รออนุมัติ">
+          <b-tab ref="unapproveTab" :title="$t('unapproval')">
             <thead>
               <tr>
-                <th>ลำดับ</th>
-                <th>สถานที่เกิดเหตุ</th>
-                <th>ละติจูด</th>
-                <th>ลองจิจูด</th>
-                <th>จำนวนผู้บาดเจ็บ</th>
-                <th>จำนวนผู้เสียชีวิต</th>
-                <th>วันเกิดเหตุ</th>
-                <th>จัดการ</th>
+                <th>{{ $t("no") }}</th>
+                <th>{{ $t("location") }}</th>
+                <th>{{ $t("latitude") }}</th>
+                <th>{{ $t("longitude") }}</th>
+                <th>{{ $t("injured") }}</th>
+                <th>{{ $t("death") }}</th>
+                <th>{{ $t("date") }}</th>
+                <th>{{ $t("manage") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -364,11 +366,11 @@
     <b-modal
       hide-footer
       v-model="isInfoModalVisible"
-      title="รายละเอียดเหตุการณ์"
+      :title="$t('detail')"
       class="InfoModal"
     >
       <p>
-        <strong>สถานที่เกิดเหตุ: </strong>
+        <strong>{{ $t("location") }}: </strong>
         {{
           selectedItem.acclocation ||
           selectedItem.crimelocation ||
@@ -376,15 +378,15 @@
           "-"
         }}
       </p>
-      <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
-      <p><strong>ลองจิจูด: </strong> {{ selectedItem.longitude }}</p>
-      <p><strong>จำนวนผู้บาดเจ็บ: </strong> {{ selectedItem.numinjur }} คน</p>
+      <p><strong>{{ $t("latitude") }}: </strong> {{ selectedItem.latitude }}</p>
+      <p><strong>{{ $t("longitude") }}: </strong> {{ selectedItem.longitude }}</p>
+      <p><strong>{{ $t("injured") }}: </strong> {{ selectedItem.numinjur }} คน</p>
       <p>
-        <strong>จำนวนผู้เสียชีวิต: </strong>
+        <strong>{{ $t("death") }}: </strong>
         {{ selectedItem.numdeath }} คน
       </p>
       <p>
-        <strong>วันเกิดเหตุ: </strong>
+        <strong>{{ $t("date") }}: </strong>
         {{
           selectedItem.accdate
             ? formatDate(selectedItem.accdate)
@@ -396,7 +398,7 @@
         }}
       </p>
       <p>
-        <strong>รายละเอียด</strong><br />
+        <strong>{{ $t("info") }}</strong><br />
         <span>
           {{
             selectedItem.accinfo ||
@@ -410,7 +412,7 @@
 
     <b-modal
       v-model="isConfirmModalVisible"
-      title="รายละเอียดเหตุการณ์"
+      :title="$t('detail')"
       ok-title="ยืนยัน"
       cancel-title="ยกเลิก"
       ok-variant="success"
@@ -418,19 +420,19 @@
       @ok="confirmRiskType"
     >
       <p>
-        <strong>สถานที่เกิดเหตุ: </strong>
+        <strong>{{ $t("location") }}: </strong>
         {{
           selectedItem.unapprove_location
             ? selectedItem.unapprove_location
             : "-"
         }}
       </p>
-      <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
-      <p><strong>ลองจิจูด: </strong>{{ selectedItem.longitude }}</p>
-      <p><strong>จำนวนผู้บาดเจ็บ: </strong> {{ selectedItem.numinjur }} คน</p>
-      <p><strong>จำนวนผู้เสียชีวิต: </strong> {{ selectedItem.numdeath }} คน</p>
+      <p><strong>{{ $t("latitude") }}: </strong> {{ selectedItem.latitude }}</p>
+      <p><strong>{{ $t("longitude") }}: </strong>{{ selectedItem.longitude }}</p>
+      <p><strong>{{ $t("injured") }}: </strong> {{ selectedItem.numinjur }} คน</p>
+      <p><strong>{{ $t("death") }}: </strong> {{ selectedItem.numdeath }} คน</p>
       <p>
-        <strong>วันเกิดเหตุ: </strong>
+        <strong>{{ $t("date") }}: </strong>
         {{
           selectedItem.unapprove_date
             ? formatDate(selectedItem.unapprove_date)
@@ -438,10 +440,10 @@
         }}
       </p>
       <p>
-        <strong>รายละเอียด</strong><br />
+        <strong>{{ $t("info") }}</strong><br />
         <span>{{ selectedItem.unapprove_info || "-" }}</span>
       </p>
-      <p><strong>เลือกประเภทความเสี่ยง</strong></p>
+      <p><strong>{{ $t("category") }}</strong></p>
       <b-form-select
         v-model="selectedRisk.riskType"
         :options="riskOptions"
@@ -469,9 +471,9 @@ export default {
   data() {
     return {
       riskOptions: [
-        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
-        { value: "อาชญากรรม", text: "อาชญากรรม" },
-        { value: "ไม่ระบุรายละเอียด", text: "ไม่ระบุรายละเอียด" },
+        { value: "อุบัติเหตุ", text: this.$t("accident") },
+        { value: "อาชญากรรม", text: this.$t("crime") },
+        { value: "ไม่ระบุรายละเอียด", text: this.$t("unspecified") },
       ],
       selectedRisk: {
         riskType: "อุบัติเหตุ",
@@ -584,10 +586,12 @@ export default {
           ? this.filterUnapproveData
           : this.UnapproveData;
       data = data.filter((item) => {
-        const formattedDate = this.formatDate(item.unapprove_date );
+        const formattedDate = this.formatDate(item.unapprove_date);
         const matchesFilter =
           !this.filter ||
-          item.unapprove_location.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.unapprove_location
+            .toLowerCase()
+            .includes(this.filter.toLowerCase()) ||
           item.latitude.toString().includes(this.filter) ||
           item.longitude.toString().includes(this.filter) ||
           item.numinjur.toString().includes(this.filter) ||
@@ -724,7 +728,7 @@ export default {
             accinfo: this.selectedItem.unapprove_info,
           })
           .then(() => {
-            alert("เพิ่มข้อมูลเรียบร้อยแล้ว");
+            alert(this.$t("dataAddedSuccess"));
             axios
               .delete(
                 `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
@@ -739,12 +743,12 @@ export default {
               })
               .catch((error) => {
                 console.error("Error deleting unapproved data:", error);
-                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                alert(this.$t("failToDelete"));
               });
           })
           .catch((error) => {
             console.error("Error adding data to accidentdata:", error);
-            alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลอุบัติเหตุ");
+            alert(this.$t("failToAdd"));
           });
       } else if (this.selectedRisk.riskType === "อาชญากรรม") {
         axios
@@ -758,7 +762,7 @@ export default {
             crimeinfo: this.selectedItem.unapprove_info,
           })
           .then(() => {
-            alert("เพิ่มข้อมูลเรียบร้อยแล้ว");
+            alert(this.$t("dataAddedSuccess"));
             axios
               .delete(
                 `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
@@ -773,12 +777,12 @@ export default {
               })
               .catch((error) => {
                 console.error("Error deleting unapproved data:", error);
-                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                alert(this.$t("failToDelete"));
               });
           })
           .catch((error) => {
             console.error("Error adding data to accidentdata:", error);
-            alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลอุบัติเหตุ");
+            alert(this.$t("failToAdd"));
           });
       } else if (this.selectedRisk.riskType === "ไม่ระบุรายละเอียด") {
         axios
@@ -792,7 +796,7 @@ export default {
             info: this.selectedItem.unapprove_info,
           })
           .then(() => {
-            alert("เพิ่มข้อมูลเรียบร้อยแล้ว");
+            alert(this.$t("dataAddedSuccess"));
             axios
               .delete(
                 `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
@@ -807,12 +811,12 @@ export default {
               })
               .catch((error) => {
                 console.error("Error deleting unapproved data:", error);
-                alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                alert(this.$t("failToDelete"));
               });
           })
           .catch((error) => {
             console.error("Error adding data to accidentdata:", error);
-            alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลอุบัติเหตุ");
+            alert(this.$t("failToAdd"));
           });
       }
     },
@@ -922,12 +926,12 @@ export default {
 
     uploadToServer() {
       if (!this.isFileLoaded) {
-        alert("กรุณาอัปโหลดไฟล์");
+        alert(this.$t("UploadFile"));
         return;
       }
 
       if (this.accidentData.length === 0) {
-        alert("ไม่มีข้อมูลในไฟล์ที่จะอัปโหลด");
+        alert(this.$t("NoDataToUpload"));
         this.fetchAccidentData();
         return;
       }
@@ -939,7 +943,7 @@ export default {
           },
         })
         .then(() => {
-          alert("อัปโหลดข้อมูลเสร็จสิ้น");
+          alert(this.$t("dataUploadSuccess"));
           this.fetchAccidentData();
           this.fetchCrimeData();
           this.fetchUnspecifiedData();
@@ -1002,7 +1006,7 @@ export default {
         dataToExport = this.UnspecifiedData;
       }
       if (dataToExport.length === 0) {
-        alert("ไม่มีข้อมูลในแท็บนี้สำหรับนำออก");
+        alert(this.$t("noExport"));
         return;
       }
 
@@ -1016,7 +1020,7 @@ export default {
     // --------------------------------- ลบข้อมูล --------------------------------
 
     deleteData(id) {
-      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+      if (confirm(this.$t("ConfirmDelete"))) {
         axios
           .delete(`http://localhost:3000/api/accidentdata/${id}`)
           .then(() => {
@@ -1029,7 +1033,7 @@ export default {
     },
 
     deleteCrimeData(id) {
-      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+      if (confirm(this.$t("ConfirmDelete"))) {
         axios
           .delete(`http://localhost:3000/api/crimedata/${id}`)
           .then(() => {
@@ -1042,7 +1046,7 @@ export default {
     },
 
     deleteUnspecifiedData(id) {
-      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+      if (confirm(this.$t("ConfirmDelete"))) {
         axios
           .delete(`http://localhost:3000/api/Unspecifieddata/${id}`)
           .then(() => {
@@ -1055,7 +1059,7 @@ export default {
     },
 
     deleteUnapproveData(id) {
-      if (confirm("คุณต้องการลบข้อมูลนี้จริงหรือไม่?")) {
+      if (confirm(this.$t("ConfirmDelete"))) {
         axios
           .delete(`http://localhost:3000/api/Unapprovedata/${id}`)
           .then(() => {
@@ -1103,13 +1107,8 @@ export default {
         ? this.selectedUnspecifiedItems
         : this.selectedAccidentItems;
 
-      if (selectedItems.length === 0) {
-        alert("กรุณาเลือกข้อมูลที่ต้องการลบก่อน");
-        return;
-      }
-
       if (
-        confirm(`คุณต้องการลบ ${selectedItems.length} รายการนี้จริงหรือไม่?`)
+        confirm(this.$t('ConfirmDelete', { count: selectedItems.length }))
       ) {
         const deletePromises = selectedItems.map((id) =>
           axios.delete(
@@ -1135,7 +1134,7 @@ export default {
             }
           })
           .catch((error) => {
-            console.error("เกิดข้อผิดพลาดในการลบข้อมูล!", error);
+            console.error(this.$t("failToDelete"), error);
           });
       }
     },
