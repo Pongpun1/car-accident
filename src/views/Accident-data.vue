@@ -29,17 +29,15 @@
           ></b-form-input>
         </b-input-group>
 
-        <b-form-datepicker
-          v-model="selectedDate"
-          locale="th"
-          placeholder="เลือกวันที่เกิดเหตุ"
-          reset-button
-          today-button
-          reset-value=""
-          class="ml-2"
-          style="width: 280px; border-radius: 20px 20px 20px 20px"
-        ></b-form-datepicker>
-
+        <DatePicker
+          v-model="selectedDateRange"
+          range
+          format="DD/MM/YYYY"
+          placeholder="เลือกช่วงวันที่เกิดเหตุ"
+          style="width: 300px; border-radius: 20px"
+          @change="filterByDateRange"
+          @clear="clearDateRange"
+        />
         <b-button
           v-if="selectedItemCount > 0"
           @click="deleteSelected"
@@ -146,7 +144,7 @@
                   />
                 </td>
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.acclocation ? item.acclocation : '-'  }}</td>
+                <td>{{ item.acclocation ? item.acclocation : "-" }}</td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -209,7 +207,7 @@
                   />
                 </td>
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.crimelocation ? item.crimelocation : '-' }}</td>
+                <td>{{ item.crimelocation ? item.crimelocation : "-" }}</td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -274,7 +272,7 @@
                   />
                 </td>
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.location ? item.location : '-' }}</td>
+                <td>{{ item.location ? item.location : "-" }}</td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -322,7 +320,9 @@
             <tbody>
               <tr v-for="(item, index) in paginatedUnapproveData" :key="index">
                 <td>{{ (currentPage - 1) * rowsPerPage + index + 1 }}</td>
-                <td>{{ item.unapprove_location ? item.unapprove_location : '-' }}</td>
+                <td>
+                  {{ item.unapprove_location ? item.unapprove_location : "-" }}
+                </td>
                 <td>{{ item.latitude }}</td>
                 <td>{{ item.longitude }}</td>
                 <td>{{ item.numinjur }}</td>
@@ -373,7 +373,8 @@
         {{
           selectedItem.acclocation ||
           selectedItem.crimelocation ||
-          selectedItem.location || "-"
+          selectedItem.location ||
+          "-"
         }}
       </p>
       <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
@@ -419,7 +420,11 @@
     >
       <p>
         <strong>สถานที่เกิดเหตุ: </strong>
-        {{ selectedItem.unapprove_location ? selectedItem.unapprove_location : '-' }}
+        {{
+          selectedItem.unapprove_location
+            ? selectedItem.unapprove_location
+            : "-"
+        }}
       </p>
       <p><strong>ละติจูด: </strong> {{ selectedItem.latitude }}</p>
       <p><strong>ลองจิจูด: </strong>{{ selectedItem.longitude }}</p>
@@ -453,10 +458,13 @@ import * as XLSX from "xlsx";
 import axios from "axios";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
+import DatePicker from "vue2-datepicker";
+import "vue2-datepicker/index.css";
 
 export default {
   components: {
     NavTopBar,
+    DatePicker,
   },
 
   data() {
@@ -483,6 +491,11 @@ export default {
       sortKey: "",
       fileName: "",
       selectedDate: "",
+      selectedDateRange: [],
+      filteredAccidentData: [],
+      filteredCrimeData: [],
+      filteredUnspecifiedData: [],
+      filteredUnapproveData: [],
       accidentData: [],
       crimeData: [],
       UnspecifiedData: [],
@@ -497,27 +510,47 @@ export default {
 
   computed: {
     paginatedAccidentData() {
-      const start = (this.currentPage - 1) * this.rowsPerPage;
-      const end = start + this.rowsPerPage;
-      return this.filterAccidentData.slice(start, end);
+      const data =
+        this.selectedDateRange && this.selectedDateRange.length === 2
+          ? this.filteredAccidentData
+          : this.accidentData;
+      return data.slice(
+        (this.currentPage - 1) * this.rowsPerPage,
+        this.currentPage * this.rowsPerPage
+      );
     },
 
     paginatedCrimeData() {
-      const start = (this.currentPage - 1) * this.rowsPerPage;
-      const end = start + this.rowsPerPage;
-      return this.filterCrimeData.slice(start, end);
+      const data =
+        this.selectedDateRange && this.selectedDateRange.length === 2
+          ? this.filteredCrimeData
+          : this.crimeData;
+      return data.slice(
+        (this.currentPage - 1) * this.rowsPerPage,
+        this.currentPage * this.rowsPerPage
+      );
     },
 
     paginatedUnspecifiedData() {
-      const start = (this.currentPage - 1) * this.rowsPerPage;
-      const end = start + this.rowsPerPage;
-      return this.filterUnspecifiedData.slice(start, end);
+      const data =
+        this.selectedDateRange && this.selectedDateRange.length === 2
+          ? this.filteredUnspecifiedData
+          : this.UnspecifiedData;
+      return data.slice(
+        (this.currentPage - 1) * this.rowsPerPage,
+        this.currentPage * this.rowsPerPage
+      );
     },
 
     paginatedUnapproveData() {
-      const start = (this.currentPage - 1) * this.rowsPerPage;
-      const end = start + this.rowsPerPage;
-      return this.filterUnapproveData.slice(start, end);
+      const data =
+        this.selectedDateRange && this.selectedDateRange.length === 2
+          ? this.filteredUnapproveData
+          : this.UnapproveData;
+      return data.slice(
+        (this.currentPage - 1) * this.rowsPerPage,
+        this.currentPage * this.rowsPerPage
+      );
     },
 
     totalRows() {
@@ -1086,6 +1119,43 @@ export default {
     formatDate(date) {
       const year = new Date(date).getFullYear() + 543;
       return format(new Date(date), `d MMMM ${year}`, { locale: th });
+    },
+
+    filterByDateRange() {
+      if (!this.selectedDateRange || this.selectedDateRange.length !== 2) {
+        this.filteredAccidentData = this.accidentData;
+        this.filteredCrimeData = this.crimeData;
+        this.filteredUnspecifiedData = this.UnspecifiedData;
+        this.filteredUnapproveData = this.UnapproveData;
+        return;
+      }
+
+      const startDate = format(this.selectedDateRange[0], "yyyy-MM-dd");
+      const endDate = format(this.selectedDateRange[1], "yyyy-MM-dd");
+
+      this.filteredAccidentData = this.accidentData.filter((item) => {
+        const itemDate = format(new Date(item.accdate), "yyyy-MM-dd");
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+
+      this.filteredCrimeData = this.crimeData.filter((item) => {
+        const itemDate = format(new Date(item.crimedate), "yyyy-MM-dd");
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+
+      this.filteredUnspecifiedData = this.UnspecifiedData.filter((item) => {
+        const itemDate = format(new Date(item.date), "yyyy-MM-dd");
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+
+      this.filteredUnapproveData = this.UnapproveData.filter((item) => {
+        const itemDate = format(new Date(item.unapprove_date), "yyyy-MM-dd");
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+    },
+
+    clearDateRange() {
+      this.selectedDateRange = [];
     },
 
     triggerFileUpload() {

@@ -17,7 +17,7 @@ Vue.use(BootstrapVueIcons);
 Vue.config.productionTip = false;
 Vue.use(VueGoogleMaps, {
   load: {
-    key: "AIzaSyC-ucYUMX0Ci1nUtBSOgZaJZHXZqHwRFeM",
+    key: "AIzaSyBpTaSCF5FB940suGM1mmn5oMhewau86PQ",
     libraries: "places",
   },
 });

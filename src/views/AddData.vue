@@ -84,13 +84,6 @@
           </b-input-group-append>
         </b-input-group>
 
-        <b-input-group size="lg" prepend="ประเภทความเสี่ยง" class="input">
-          <b-form-select
-            v-model="formData.category"
-            :options="categories"
-          ></b-form-select>
-        </b-input-group>
-
         <b-input-group size="lg" class="input">
           <b-form-textarea
             v-model="formData.accinfo"
@@ -140,7 +133,6 @@ export default {
   data() {
     return {
       formData: {
-        category: "อุบัติเหตุ",
         acclocation: "",
         latitude: "",
         longitude: "",
@@ -149,11 +141,6 @@ export default {
         accdate: "",
         accinfo: "",
       },
-      categories: [
-        { value: "อุบัติเหตุ", text: "อุบัติเหตุ" },
-        { value: "อาชญากรรม", text: "อาชญากรรม" },
-        { value: "ไม่ระบุ", text: "ไม่ระบุ" },
-      ],
       mapCenter: {
         lat: 13.736717,
         lng: 100.523186,
@@ -167,25 +154,6 @@ export default {
   },
 
   computed: {
-    formattedData() {
-      const isCrime = this.formData.category === "อาชญากรรม";
-      const isUnspecified = this.formData.category === "ไม่ระบุ";
-
-      return {
-        ...this.formData,
-        crimelocation: isCrime ? this.formData.acclocation : undefined,
-        crimedate: isCrime ? this.formData.accdate : undefined,
-        crimeinfo: isCrime ? this.formData.accinfo : undefined,
-        acclocation: !isCrime ? this.formData.acclocation : undefined,
-        accdate: !isCrime ? this.formData.accdate : undefined,
-        accinfo: !isCrime ? this.formData.accinfo : undefined,
-        location: isUnspecified
-          ? this.formData.acclocation
-          : undefined,
-        date: isUnspecified ? this.formData.accdate : undefined,
-        info: isUnspecified ? this.formData.accinfo : undefined,
-      };
-    },
     formattedAccdate() {
       if (this.formData.accdate) {
         const date = new Date(this.formData.accdate);
@@ -210,49 +178,130 @@ export default {
       }
 
       let apiEndpoint = "";
-      switch (this.formData.category) {
-        case "อุบัติเหตุ":
-          apiEndpoint = "http://localhost:3000/api/accidentdata/single";
-          break;
-        case "อาชญากรรม":
-          apiEndpoint = "http://localhost:3000/api/crimedata/single";
-          break;
-        case "ไม่ระบุ":
-          apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
-          break;
-        default:
-          alert("กรุณาเลือกประเภทความเสี่ยง");
-          return;
-      }
+      if (
+        this.formData.accinfo &&
+        (this.formData.accinfo.includes("รถชน") ||
+          this.formData.accinfo.includes("รถล้ม") ||
+          this.formData.accinfo.includes("รถคว่ำ") ||
+          this.formData.accinfo.includes("อุบัติเหตุ") ||
+          this.formData.accinfo.includes("ประสานงา") ||
+          this.formData.accinfo.includes("ชนท้าย") ||
+          this.formData.accinfo.includes("เสียหลัก"))
+      ) {
+        apiEndpoint = "http://localhost:3000/api/accidentdata/single";
+      } else if (
+        this.formData.accinfo &&
+        (this.formData.accinfo.includes("อาชญากรรม") ||
+          this.formData.accinfo.includes("โจร") ||
+          this.formData.accinfo.includes("ปล้น") ||
+          this.formData.accinfo.includes("จี้") ||
+          this.formData.accinfo.includes("ชิงทรัพย์") ||
+          this.formData.accinfo.includes("ขโมย") ||
+          this.formData.accinfo.includes("คนร้าย") ||
+          this.formData.accinfo.includes("ข่มขืน") ||
+          this.formData.accinfo.includes("ฆ่า") ||
+          this.formData.accinfo.includes("ฆาตกรรม") ||
+          this.formData.accinfo.includes("อนาจาร") ||
+          this.formData.accinfo.includes("ก่อเหตุความไม่สงบ") ||
+          this.formData.accinfo.includes("ยาเสพติด") ||
+          this.formData.accinfo.includes("ลักพาตัว"))
+      ) {
+        apiEndpoint = "http://localhost:3000/api/crimedata/single";
 
-      const formattedDate = new Date(this.formData.accdate).toISOString();
+        const crimeData = {
+          crimedate: new Date(this.formData.accdate).toISOString(),
+          crimelocation: this.formData.acclocation,
+          latitude: this.formData.latitude,
+          longitude: this.formData.longitude,
+          numinjur: this.formData.numinjur,
+          numdeath: this.formData.numdeath,
+          crimeinfo: this.formData.accinfo,
+        };
 
-      axios
-        .post(
-          apiEndpoint,
-          {
-            ...this.formattedData,
-            accdate: formattedDate,
-          },
-          {
+        axios
+          .post(apiEndpoint, crimeData, {
             headers: {
               "Content-Type": "application/json",
             },
-          }
-        )
-        .then(() => {
-          alert("บันทึกข้อมูลสำเร็จ");
-          this.$router.push("/data");
-          this.resetForm();
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 400) {
-            alert(error.response.data.message);
-          } else {
-            console.error("เกิดข้อผิดพลาด:", error);
-            alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
-          }
-        });
+          })
+          .then(() => {
+            alert("บันทึกข้อมูลสำเร็จ");
+            this.$router.push("/data");
+            this.resetForm();
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 400) {
+              alert(error.response.data.message);
+            } else {
+              console.error("เกิดข้อผิดพลาด:", error);
+              alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+            }
+          });
+        return;
+      } else if (!this.formData.accinfo) {
+        apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
+
+        const unspecifiedData = {
+          date: new Date(this.formData.accdate).toISOString(),
+          location: this.formData.acclocation,
+          latitude: this.formData.latitude,
+          longitude: this.formData.longitude,
+          numinjur: this.formData.numinjur,
+          numdeath: this.formData.numdeath,
+          info: this.formData.accinfo,
+        };
+
+        axios
+          .post(apiEndpoint, unspecifiedData, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          .then(() => {
+            alert("บันทึกข้อมูลสำเร็จ");
+            this.$router.push("/data");
+            this.resetForm();
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 400) {
+              alert(error.response.data.message);
+            } else {
+              console.error("เกิดข้อผิดพลาด:", error);
+              alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+            }
+          });
+        return;
+      } else {
+        apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
+
+        const formattedDate = new Date(this.formData.accdate).toISOString();
+
+        axios
+          .post(
+            apiEndpoint,
+            {
+              date: formattedDate,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then(() => {
+            alert("บันทึกข้อมูลสำเร็จ");
+            this.$router.push("/data");
+            this.resetForm();
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 400) {
+              alert(error.response.data.message);
+            } else {
+              console.error("เกิดข้อผิดพลาด:", error);
+              alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+            }
+          });
+      }
     },
 
     resetForm() {
@@ -263,7 +312,7 @@ export default {
         numinjur: 0,
         numdeath: 0,
         accdate: "",
-        category: "ไม่ระบุ",
+        accinfo: "",
       };
     },
 

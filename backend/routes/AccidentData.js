@@ -10,6 +10,9 @@ manager.addDocument("th", "รถชน", "accident");
 manager.addDocument("th", "รถล้ม", "accident");
 manager.addDocument("th", "รถคว่ำ", "accident");
 manager.addDocument("th", "ประสานงา", "accident");
+manager.addDocument("th", "ชนท้าย", "accident");
+manager.addDocument("th", "เสียหลัก", "accident");
+
 
 (async () => {
   await manager.train();
