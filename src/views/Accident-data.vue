@@ -24,7 +24,6 @@
             v-model="filter"
             type="search"
             placeholder="ค้นหา"
-            @input="handleFilterInput"
             style="border-radius: 0px 20px 20px 0px"
           ></b-form-input>
         </b-input-group>
@@ -510,47 +509,93 @@ export default {
 
   computed: {
     paginatedAccidentData() {
-      const data =
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      let data =
         this.selectedDateRange && this.selectedDateRange.length === 2
           ? this.filteredAccidentData
           : this.accidentData;
-      return data.slice(
-        (this.currentPage - 1) * this.rowsPerPage,
-        this.currentPage * this.rowsPerPage
-      );
+      data = data.filter((item) => {
+        const formattedDate = this.formatDate(item.accdate);
+        const matchesFilter =
+          !this.filter ||
+          item.acclocation.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          formattedDate.includes(this.filter);
+        return matchesFilter;
+      });
+      return data.slice(start, end);
     },
 
     paginatedCrimeData() {
-      const data =
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      let data =
         this.selectedDateRange && this.selectedDateRange.length === 2
           ? this.filteredCrimeData
           : this.crimeData;
-      return data.slice(
-        (this.currentPage - 1) * this.rowsPerPage,
-        this.currentPage * this.rowsPerPage
-      );
+      data = data.filter((item) => {
+        const formattedDate = this.formatDate(item.crimedate);
+        const matchesFilter =
+          !this.filter ||
+          item.crimelocation
+            .toLowerCase()
+            .includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          formattedDate.includes(this.filter);
+        return matchesFilter;
+      });
+      return data.slice(start, end);
     },
 
     paginatedUnspecifiedData() {
-      const data =
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      let data =
         this.selectedDateRange && this.selectedDateRange.length === 2
           ? this.filteredUnspecifiedData
           : this.UnspecifiedData;
-      return data.slice(
-        (this.currentPage - 1) * this.rowsPerPage,
-        this.currentPage * this.rowsPerPage
-      );
+      data = data.filter((item) => {
+        const formattedDate = this.formatDate(item.date);
+        const matchesFilter =
+          !this.filter ||
+          item.location.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          formattedDate.includes(this.filter);
+        return matchesFilter;
+      });
+      return data.slice(start, end);
     },
 
     paginatedUnapproveData() {
-      const data =
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      const end = start + this.rowsPerPage;
+      let data =
         this.selectedDateRange && this.selectedDateRange.length === 2
-          ? this.filteredUnapproveData
+          ? this.filterUnapproveData
           : this.UnapproveData;
-      return data.slice(
-        (this.currentPage - 1) * this.rowsPerPage,
-        this.currentPage * this.rowsPerPage
-      );
+      data = data.filter((item) => {
+        const formattedDate = this.formatDate(item.unapprove_date );
+        const matchesFilter =
+          !this.filter ||
+          item.unapprove_location.toLowerCase().includes(this.filter.toLowerCase()) ||
+          item.latitude.toString().includes(this.filter) ||
+          item.longitude.toString().includes(this.filter) ||
+          item.numinjur.toString().includes(this.filter) ||
+          item.numdeath.toString().includes(this.filter) ||
+          formattedDate.includes(this.filter);
+        return matchesFilter;
+      });
+      return data.slice(start, end);
     },
 
     totalRows() {
@@ -588,7 +633,6 @@ export default {
     filterAccidentData() {
       return this.accidentData.filter((item) => {
         const formattedDate = this.formatDate(item.accdate);
-
         const matchesFilter =
           !this.filter ||
           item.acclocation.toLowerCase().includes(this.filter.toLowerCase()) ||
@@ -597,11 +641,9 @@ export default {
           item.numinjur.toString().includes(this.filter) ||
           item.numdeath.toString().includes(this.filter) ||
           formattedDate.includes(this.filter);
-
         const matchesDate =
           !this.selectedDate ||
           formattedDate === this.formatDate(this.selectedDate);
-
         return matchesFilter && matchesDate;
       });
     },
@@ -609,7 +651,6 @@ export default {
     filterCrimeData() {
       return this.crimeData.filter((item) => {
         const formattedDate = this.formatDate(item.crimedate);
-
         const matchesFilter =
           !this.filter ||
           item.crimelocation
@@ -620,7 +661,6 @@ export default {
           item.numinjur.toString().includes(this.filter) ||
           item.numdeath.toString().includes(this.filter) ||
           formattedDate.includes(this.filter);
-
         const matchesDate =
           !this.selectedDate ||
           formattedDate === this.formatDate(this.selectedDate);
@@ -640,7 +680,6 @@ export default {
           item.numinjur.toString().includes(this.filter) ||
           item.numdeath.toString().includes(this.filter) ||
           formattedDate.includes(this.filter);
-
         const matchesDate =
           !this.selectedDate ||
           formattedDate === this.formatDate(this.selectedDate);
@@ -662,7 +701,6 @@ export default {
           item.numinjur.toString().includes(this.filter) ||
           item.numdeath.toString().includes(this.filter) ||
           formattedDate.includes(this.filter);
-
         const matchesDate =
           !this.selectedDate ||
           formattedDate === this.formatDate(this.selectedDate);
