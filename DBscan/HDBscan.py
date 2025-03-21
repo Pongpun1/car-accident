@@ -18,6 +18,7 @@ def to_meters(locations):
 
 def format_grouped_data(grouped_data):
     formatted_data = []
+    total_records = 0  # ตัวแปรเพื่อเก็บจำนวนข้อมูล
     for cluster_id, group in grouped_data.items():
         first_location = group['locations'][0]
         formatted_data.append({
@@ -31,7 +32,8 @@ def format_grouped_data(grouped_data):
             "accdate": datetime.utcnow().isoformat() + "Z", 
             "accinfo": "กลุ่มอุบัติเหตุที่ {cluster_id}"
         })
-    return formatted_data
+        total_records += 1  # เพิ่มจำนวนข้อมูลที่ได้รับ
+    return formatted_data, total_records
 
 
 # ฟังก์ชันรวมข้อมูลกลุ่ม
@@ -83,9 +85,9 @@ def run_hdbscan():
     hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=2, min_samples=2, metric='haversine')
     hdbscan_labels = hdbscan_model.fit_predict(np.radians(locations))
     hdbscan_grouped = group_data_by_clusters(hdbscan_labels, locations, numinjur, numdeath)
-    formatted_data = format_grouped_data(hdbscan_grouped)
+    formatted_data, total_records = format_grouped_data(hdbscan_grouped)
 
-    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "data": formatted_data})
+    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "total_records": total_records, "data": formatted_data})
 
 # API สำหรับ ST-DBSCAN ไม่อ้างอิงเวลา
 @app.route('/api/st-dbscan', methods=['GET'])
@@ -100,9 +102,9 @@ def run_st_dbscan():
     st_dbscan_model = ST_DBSCAN(eps1=70, min_samples=2)  # ไม่ใช้ eps2
     st_dbscan_model.fit(np.column_stack((locations_meters, np.zeros(len(locations)))) )
     st_dbscan_grouped = group_data_by_clusters(st_dbscan_model.labels, locations, numinjur, numdeath)
-    formatted_data = format_grouped_data(st_dbscan_grouped)
+    formatted_data, total_records = format_grouped_data(st_dbscan_grouped)
 
-    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "data": formatted_data})
+    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "total_records": total_records, "data": formatted_data})
 
 
 # API สำหรับ ST-DBSCAN (กลางวัน)
@@ -125,9 +127,9 @@ def run_st_dbscan_day():
     st_dbscan_model = ST_DBSCAN(eps1=70, eps2=1, min_samples=2)
     st_dbscan_model.fit(np.column_stack((locations_meters, np.zeros(len(daytime_indices)))))
     st_dbscan_grouped = group_data_by_clusters(st_dbscan_model.labels, daytime_locations, daytime_numinjur, daytime_numdeath)
-    formatted_data = format_grouped_data(st_dbscan_grouped)
+    formatted_data, total_records = format_grouped_data(st_dbscan_grouped)
 
-    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "data": formatted_data})
+    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "total_records": total_records, "data": formatted_data})
 
 # API สำหรับ ST-DBSCAN (กลางคืน)
 @app.route('/api/st-dbscan/night', methods=['GET'])
@@ -149,9 +151,9 @@ def run_st_dbscan_night():
     st_dbscan_model = ST_DBSCAN(eps1=70, eps2=1, min_samples=2)
     st_dbscan_model.fit(np.column_stack((locations_meters, np.ones(len(nighttime_indices)))))
     st_dbscan_grouped = group_data_by_clusters(st_dbscan_model.labels, nighttime_locations, nighttime_numinjur, nighttime_numdeath)
-    formatted_data = format_grouped_data(st_dbscan_grouped)
+    formatted_data, total_records = format_grouped_data(st_dbscan_grouped)
 
-    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "data": formatted_data})
+    return jsonify({"message": "เรียกข้อมูลสำเร็จ", "total_records": total_records, "data": formatted_data})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
