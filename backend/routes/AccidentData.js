@@ -3,29 +3,15 @@ const conn = require("../config");
 const router = express.Router();
 const { NlpManager } = require("node-nlp");
 
-const manager = new NlpManager({ languages: ["th", "en"] });
+const manager = new NlpManager({ languages: ["th"] });
 
-const accidentTermsTh = [
-  "อุบัติเหตุ",
-  "รถชน",
-  "รถล้ม",
-  "รถคว่ำ",
-  "ประสานงา",
-  "ชนท้าย",
-  "เสียหลัก",
-];
-
-const accidentTermsEn = [
-  "accident",
-  "crash",
-  "fall",
-  "overturn",
-  "collision",
-  "lost of control",
-];
-
-accidentTermsTh.forEach((term) => manager.addDocument("th", term, "crime"));
-accidentTermsEn.forEach((term) => manager.addDocument("en", term, "crime"));
+manager.addDocument("th", "อุบัติเหตุ", "accident");
+manager.addDocument("th", "รถชน", "accident");
+manager.addDocument("th", "รถล้ม", "accident");
+manager.addDocument("th", "รถคว่ำ", "accident");
+manager.addDocument("th", "ประสานงา", "accident");
+manager.addDocument("th", "ชนท้าย", "accident");
+manager.addDocument("th", "เสียหลัก", "accident");
 
 (async () => {
   await manager.train();
@@ -42,9 +28,12 @@ router.post("/", async (req, res) => {
   }
 
   const filteredData = [];
+
   for (const row of excelData) {
     const accinfo = row.รายละเอียด || "";
-    const language = manager.getLanguage(accinfo) || "th";
+
+    const language = "th";
+
     const response = await manager.process(language, accinfo);
 
     if (response.intent === "accident") {

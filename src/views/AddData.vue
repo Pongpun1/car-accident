@@ -42,7 +42,6 @@
           <b-form-input
             v-model="formData.numinjur"
             type="number"
-            :placeholder="ระบุจำนวนผู้บาดเจ็บ"
           ></b-form-input>
         </b-input-group>
 
@@ -54,7 +53,6 @@
           <b-form-input
             v-model="formData.numdeath"
             type="number"
-            placeholder="ระบุจำนวนผู้เสียชีวิต"
           ></b-form-input>
         </b-input-group>
 

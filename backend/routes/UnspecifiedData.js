@@ -35,6 +35,7 @@ router.post("/", async (req, res) => {
   const filteredData = [];
   for (const row of excelData) {
     const info = row.รายละเอียด || "";
+
     const response = await manager.process("th", info);
 
     if (response.intent !== "accident" && response.intent !== "crime") {

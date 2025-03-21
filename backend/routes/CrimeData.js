@@ -3,41 +3,23 @@ const conn = require("../config");
 const router = express.Router();
 const { NlpManager } = require("node-nlp");
 
-const manager = new NlpManager({ languages: ["th", "en"] });
+const manager = new NlpManager({ languages: ["th"] });
 
-const crimeTermsTh = [
-  "ปล้น",
-  "ชิงทรัพย์",
-  "โจร",
-  "จี้",
-  "ขโมย",
-  "คนร้าย",
-  "ฆ่า",
-  "ข่มขืน",
-  "อนาจาร",
-  "ก่อเหตุความไม่สงบ",
-  "ยาเสพติด",
-  "ลักพาตัว",
-  "อาชญากรรม",
-  "ฆาตกรรม",
-];
+manager.addDocument("th", "ปล้น", "crime");
+manager.addDocument("th", "ชิงทรัพย์", "crime");
+manager.addDocument("th", "โจร", "crime");
+manager.addDocument("th", "จี้", "crime");
+manager.addDocument("th", "ขโมย", "crime");
+manager.addDocument("th", "คนร้าย", "crime");
+manager.addDocument("th", "ฆ่า", "crime");
+manager.addDocument("th", "ข่มขืน", "crime");
+manager.addDocument("th", "อนาจาร", "crime");
+manager.addDocument("th", "ก่อเหตุความไม่สงบ", "crime");
+manager.addDocument("th", "ยาเสพติด", "crime");
+manager.addDocument("th", "ลักพาตัว", "crime");
+manager.addDocument("th", "อาชญากรรม", "crime");
+manager.addDocument("th", "ฆาตกรรม", "crime");
 
-const crimeTermsEn = [
-  "Robbery",
-  "Thief",
-  "Hijacking",
-  "Criminal",
-  "Murder",
-  "Rape",
-  "Indecent assault",
-  "Causing unrest",
-  "Drugs",
-  "Kidnapping",
-  "Crime",
-];
-
-crimeTermsTh.forEach((term) => manager.addDocument("th", term, "crime"));
-crimeTermsEn.forEach((term) => manager.addDocument("en", term, "crime"));
 (async () => {
   await manager.train();
   manager.save();
@@ -51,10 +33,14 @@ router.post("/", async (req, res) => {
   if (!Array.isArray(excelData) || excelData.length === 0) {
     return res.status(400).send({ message: "No data received" });
   }
+
   const filteredData = [];
+
   for (const row of excelData) {
     const crimeinfo = row.รายละเอียด || "";
-    const language = manager.getLanguage(crimeinfo) || "th";
+
+    const language = "th";
+
     const response = await manager.process(language, crimeinfo);
 
     if (response.intent === "crime") {
@@ -71,9 +57,7 @@ router.post("/", async (req, res) => {
   }
 
   if (filteredData.length === 0) {
-    return res
-      .status(400)
-      .send({ message: "No valid crime data to insert" });
+    return res.status(400).send({ message: "No valid crime data to insert" });
   }
 
   const insertOrUpdateQuery = `
@@ -149,7 +133,14 @@ router.post("/single", (req, res) => {
 
     conn.execute(
       checkQuery,
-      [crimelocation, validLatitude, validLongitude, numinjur, numdeath, crimedate],
+      [
+        crimelocation,
+        validLatitude,
+        validLongitude,
+        numinjur,
+        numdeath,
+        crimedate,
+      ],
       (err, results) => {
         if (err) {
           console.error("Error checking data:", err.message);
