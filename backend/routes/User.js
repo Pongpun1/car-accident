@@ -101,5 +101,22 @@ router.post("/login", async (req, res) => {
       });
     }
   });
+
+  // ------------------------------------------แสดงข้อมูล-------------------------------------------
+router.get("/", async (req, res) => {
+  let sql = "SELECT * FROM user";
+  await conn.execute(sql, (err, result) => {
+    if (err) {
+      res.status(500).json({
+        message: err.message,
+      });
+      return;
+    }
+    res.status(200).json({
+      message: "เรียกข้อมูลสำเร็จ",
+      data: result,
+    });
+  });
+});
   
   module.exports = router;
