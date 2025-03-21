@@ -74,7 +74,7 @@ export default {
       }
 
       try {
-        const response = await axios.post("http://34.126.127.208/:3000/users/login", {
+        const response = await axios.post("http://34.126.127.208:3000/users/login", {
           username: this.username,
           password: this.password,
         });
