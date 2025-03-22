@@ -34,6 +34,6 @@ app.use("/users", UserRoutes);
 const GeoRoutes = require("./routes/Geo");
 app.use("/geocode", GeoRoutes);
 
-app.listen(3000, () => {
+app.listen(3000, '0.0.0.0/0', () => {
   console.log("Server is running on port 3000");
 });
