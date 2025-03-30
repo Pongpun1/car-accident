@@ -123,6 +123,7 @@
 </template>
 
 <script>
+import { API_URL } from "@/config";
 import NavTopBar from "../components/TopNavBar.vue";
 import axios from "axios";
 import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
@@ -174,7 +175,7 @@ export default {
     showAccidentSingleData() {
       const id = this.$route.params.id;
       axios
-        .get(`http://localhost:3000/api/accidentdata/${id}`)
+        .get(`${API_URL}/api/accidentdata/${id}`)
         .then((response) => {
           this.formData = response.data.data[0];
           if (!this.formData.category) {
@@ -190,11 +191,9 @@ export default {
     updateData() {
       const id = this.$route.params.id;
 
-      if (
-        this.formData.category === "อุบัติเหตุ"
-      ) {
+      if (this.formData.category === "อุบัติเหตุ") {
         axios
-          .put(`http://localhost:3000/api/accidentdata/${id}`, this.formData)
+          .put(`${API_URL}/api/accidentdata/${id}`, this.formData)
           .then(() => {
             alert(this.$t("dataUpdated"));
             this.$router.push("/data");
@@ -203,11 +202,9 @@ export default {
             console.error("Error updating data:", error);
             alert(this.$t("dataExists"));
           });
-      } else if (
-        this.formData.category === "อาชญากรรม"
-      ) {
+      } else if (this.formData.category === "อาชญากรรม") {
         axios
-          .delete(`http://localhost:3000/api/accidentdata/${id}`)
+          .delete(`${API_URL}/api/accidentdata/${id}`)
           .then(() => {
             const newData = { ...this.formData };
 
@@ -218,21 +215,17 @@ export default {
             delete newData.accdate;
             delete newData.accinfo;
 
-            axios
-              .post("http://localhost:3000/api/crimedata/single", newData)
-              .then(() => {
-                this.$router.push("/data");
-              });
+            axios.post(`${API_URL}/api/crimedata/single`, newData).then(() => {
+              this.$router.push("/data");
+            });
           })
           .catch((error) => {
             console.error("Error moving data:", error);
             alert(this.$t("errorMovingData"));
           });
-      } else if (
-        this.formData.category === "ไม่ระบุรายละเอียด"
-      ) {
+      } else if (this.formData.category === "ไม่ระบุรายละเอียด") {
         axios
-          .delete(`http://localhost:3000/api/accidentdata/${id}`)
+          .delete(`${API_URL}/api/accidentdata/${id}`)
           .then(() => {
             const newData = { ...this.formData };
 
@@ -244,7 +237,7 @@ export default {
             delete newData.accinfo;
 
             axios
-              .post("http://localhost:3000/api/unspecifieddata/single", newData)
+              .post(`${API_URL}/api/unspecifieddata/single`, newData)
               .then(() => {
                 this.$router.push("/data");
               });
@@ -267,7 +260,7 @@ export default {
     async searchLocation() {
       const location = this.formData.acclocation;
       if (location) {
-        const geocodeUrl = `http://localhost:3000/geocode?address=${encodeURIComponent(
+        const geocodeUrl = `${API_URL}/geocode?address=${encodeURIComponent(
           location
         )}&language=th`;
 
@@ -295,7 +288,7 @@ export default {
       this.formData.latitude = parseFloat(lat);
       this.formData.longitude = parseFloat(lng);
 
-      const geocodeUrl = `http://localhost:3000/geocode?lat=${lat}&lng=${lng}&language=th`;
+      const geocodeUrl = `${API_URL}/geocode?lat=${lat}&lng=${lng}&language=th`;
       try {
         const response = await axios.get(geocodeUrl);
         if (response.data.results.length) {

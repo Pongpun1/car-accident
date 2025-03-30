@@ -4,7 +4,9 @@
       <NavTopBar />
     </div>
 
-    <h2 class="AddHeader"><strong>{{ $t("addData") }}</strong></h2>
+    <h2 class="AddHeader">
+      <strong>{{ $t("addData") }}</strong>
+    </h2>
     <div class="input-form-container">
       <div class="input-form">
         <b-input-group size="lg" :prepend="$t('location')" class="input">
@@ -34,22 +36,14 @@
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group
-          size="lg"
-          :prepend="$t('injured')"
-          class="input"
-        >
+        <b-input-group size="lg" :prepend="$t('injured')" class="input">
           <b-form-input
             v-model="formData.numinjur"
             type="number"
           ></b-form-input>
         </b-input-group>
 
-        <b-input-group
-          size="lg"
-          :prepend="$t('death')"
-          class="input"
-        >
+        <b-input-group size="lg" :prepend="$t('death')" class="input">
           <b-form-input
             v-model="formData.numdeath"
             type="number"
@@ -90,7 +84,9 @@
         </b-input-group>
 
         <b-button-group size="lg" class="Addbutton">
-          <b-button variant="primary" @click="AddData">{{ $t("editSave") }}</b-button>
+          <b-button variant="primary" @click="AddData">{{
+            $t("editSave")
+          }}</b-button>
         </b-button-group>
       </div>
 
@@ -118,6 +114,7 @@
 import NavTopBar from "../components/TopNavBar.vue";
 import axios from "axios";
 import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
+import { API_URL } from "@/config";
 
 export default {
   components: {
@@ -184,7 +181,7 @@ export default {
           this.formData.accinfo.includes("ชนท้าย") ||
           this.formData.accinfo.includes("เสียหลัก"))
       ) {
-        apiEndpoint = "http://localhost:3000/api/accidentdata/single";
+        apiEndpoint = `${API_URL}/api/accidentdata/single`;
       } else if (
         this.formData.accinfo &&
         (this.formData.accinfo.includes("อาชญากรรม") ||
@@ -202,7 +199,7 @@ export default {
           this.formData.accinfo.includes("ยาเสพติด") ||
           this.formData.accinfo.includes("ลักพาตัว"))
       ) {
-        apiEndpoint = "http://localhost:3000/api/crimedata/single";
+        apiEndpoint = `${API_URL}/api/crimedata/single`;
 
         const crimeData = {
           crimedate: new Date(this.formData.accdate).toISOString(),
@@ -234,7 +231,7 @@ export default {
           });
         return;
       } else if (!this.formData.accinfo) {
-        apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
+        apiEndpoint = `${API_URL}/api/unspecifieddata/single`;
 
         const unspecifiedData = {
           date: new Date(this.formData.accdate).toISOString(),
@@ -266,7 +263,7 @@ export default {
           });
         return;
       } else {
-        apiEndpoint = "http://localhost:3000/api/unspecifieddata/single";
+        apiEndpoint = `${API_URL}/api/unspecifieddata/single`;
 
         const formattedDate = new Date(this.formData.accdate).toISOString();
 
@@ -321,7 +318,7 @@ export default {
     async searchLocation() {
       const location = this.formData.acclocation;
       if (location) {
-        const geocodeUrl = `http://localhost:3000/geocode?address=${encodeURIComponent(
+        const geocodeUrl = `${API_URL}/geocode?address=${encodeURIComponent(
           location
         )}&language=th`;
 
@@ -350,7 +347,7 @@ export default {
       this.formData.latitude = parseFloat(lat);
       this.formData.longitude = parseFloat(lng);
 
-      const geocodeUrl = `http://localhost:3000/geocode?lat=${lat}&lng=${lng}&language=th`;
+      const geocodeUrl = `${API_URL}/geocode?lat=${lat}&lng=${lng}&language=th`;
       try {
         const response = await axios.get(geocodeUrl);
         if (response.data.results.length) {

@@ -126,6 +126,7 @@
 import NavTopBar from "../components/TopNavBar.vue";
 import axios from "axios";
 import { Map, Marker as GoogleMapMarker } from "vue2-google-maps";
+import { API_URL } from "@/config";
 
 export default {
   components: {
@@ -174,7 +175,7 @@ export default {
     showAccidentSingleData() {
       const id = this.$route.params.id;
       axios
-        .get(`http://localhost:3000/api/unspecifieddata/${id}`)
+        .get(`${API_URL}/api/unspecifieddata/${id}`)
         .then((response) => {
           this.formData = response.data.data[0];
           if (!this.formData.category) {
@@ -192,7 +193,7 @@ export default {
 
       if (this.formData.category === "ไม่ระบุ") {
         axios
-          .put(`http://localhost:3000/api/unspecifieddata/${id}`, this.formData)
+          .put(`${API_URL}/api/unspecifieddata/${id}`, this.formData)
           .then(() => {
             alert(this.$t("dataUpdated"));
             this.$router.push("/data");
@@ -203,7 +204,7 @@ export default {
           });
       } else {
         axios
-          .delete(`http://localhost:3000/api/unspecifieddata/${id}`)
+          .delete(`${API_URL}/api/unspecifieddata/${id}`)
           .then(() => {
             const newData = { ...this.formData };
 
@@ -216,7 +217,7 @@ export default {
               delete newData.info;
 
               axios
-                .post("http://localhost:3000/api/accidentdata/single", newData)
+                .post(`${API_URL}/api/accidentdata/single`, newData)
                 .then(() => {
                   this.$router.push("/data");
                 });
@@ -229,7 +230,7 @@ export default {
               delete newData.info;
 
               axios
-                .post("http://localhost:3000/api/crimedata/single", newData)
+                .post(`${API_URL}/api/crimedata/single`, newData)
                 .then(() => {
                   this.$router.push("/data");
                 });
@@ -253,7 +254,7 @@ export default {
     async searchLocation() {
       const location = this.formData.location;
       if (location) {
-        const geocodeUrl = `http://localhost:3000/geocode?address=${encodeURIComponent(
+        const geocodeUrl = `${API_URL}/geocode?address=${encodeURIComponent(
           location
         )}&language=th`;
 
@@ -281,7 +282,7 @@ export default {
       this.formData.latitude = parseFloat(lat);
       this.formData.longitude = parseFloat(lng);
 
-      const geocodeUrl = `http://localhost:3000/geocode?lat=${lat}&lng=${lng}&language=th`;
+      const geocodeUrl = `${API_URL}/geocode?lat=${lat}&lng=${lng}&language=th`;
       try {
         const response = await axios.get(geocodeUrl);
         if (response.data.results.length) {

@@ -41,6 +41,7 @@ import NavTopBar from "../components/TopNavBar.vue";
 import BarChart from "../components/AccidentBarChart.vue";
 import PieChart from "../components/AccidentPieChart.vue";
 import axios from "axios";
+import { API_URL } from "@/config";
 
 export default {
   components: {
@@ -70,7 +71,7 @@ export default {
   methods: {
     fetchStatistics() {
       axios
-        .get("http://localhost:3000/api/accidentdata/")
+        .get(`${API_URL}/api/accidentdata/`)
         .then((response) => {
           const accidents = response.data.data;
           const accidents2024 = accidents.filter((accident) => {
@@ -234,7 +235,6 @@ export default {
   text-align: center;
   width: 100%;
 }
-
 
 .stat-box span {
   font-size: 1.7rem;

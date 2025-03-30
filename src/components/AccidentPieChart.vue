@@ -15,6 +15,7 @@ import { Pie } from "vue-chartjs";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
+import { API_URL } from "@/config";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, ChartDataLabels);
 
@@ -33,7 +34,7 @@ export default {
             backgroundColor: [
               "rgba(244, 67, 54, 0.6)",
               "rgba(33, 150, 243, 0.6)",
-              "rgba(255, 152, 0, 0.6)"  ,
+              "rgba(255, 152, 0, 0.6)",
               "rgba(76, 175, 80, 0.6)",
             ],
             borderColor: "#fff", // สีขอบเป็นสีขาว
@@ -63,7 +64,7 @@ export default {
   methods: {
     fetchData() {
       axios
-        .get("http://localhost:3000/api/accidentdata/")
+        .get(`${API_URL}/api/accidentdata/`)
         .then((response) => {
           const accidents = response.data.data;
 

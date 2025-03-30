@@ -114,7 +114,7 @@
           nav-wrapper-class="h-50"
           v-model="activeTab"
         >
-        <b-tab ref="accidentTab" :title="$t('accident')">
+          <b-tab ref="accidentTab" :title="$t('accident')">
             <thead>
               <tr>
                 <th>
@@ -378,9 +378,15 @@
           "-"
         }}
       </p>
-      <p><strong>{{ $t("latitude") }}: </strong> {{ selectedItem.latitude }}</p>
-      <p><strong>{{ $t("longitude") }}: </strong> {{ selectedItem.longitude }}</p>
-      <p><strong>{{ $t("injured") }}: </strong> {{ selectedItem.numinjur }} คน</p>
+      <p>
+        <strong>{{ $t("latitude") }}: </strong> {{ selectedItem.latitude }}
+      </p>
+      <p>
+        <strong>{{ $t("longitude") }}: </strong> {{ selectedItem.longitude }}
+      </p>
+      <p>
+        <strong>{{ $t("injured") }}: </strong> {{ selectedItem.numinjur }} คน
+      </p>
       <p>
         <strong>{{ $t("death") }}: </strong>
         {{ selectedItem.numdeath }} คน
@@ -398,7 +404,8 @@
         }}
       </p>
       <p>
-        <strong>{{ $t("info") }}</strong><br />
+        <strong>{{ $t("info") }}</strong
+        ><br />
         <span>
           {{
             selectedItem.accinfo ||
@@ -427,10 +434,18 @@
             : "-"
         }}
       </p>
-      <p><strong>{{ $t("latitude") }}: </strong> {{ selectedItem.latitude }}</p>
-      <p><strong>{{ $t("longitude") }}: </strong>{{ selectedItem.longitude }}</p>
-      <p><strong>{{ $t("injured") }}: </strong> {{ selectedItem.numinjur }} คน</p>
-      <p><strong>{{ $t("death") }}: </strong> {{ selectedItem.numdeath }} คน</p>
+      <p>
+        <strong>{{ $t("latitude") }}: </strong> {{ selectedItem.latitude }}
+      </p>
+      <p>
+        <strong>{{ $t("longitude") }}: </strong>{{ selectedItem.longitude }}
+      </p>
+      <p>
+        <strong>{{ $t("injured") }}: </strong> {{ selectedItem.numinjur }} คน
+      </p>
+      <p>
+        <strong>{{ $t("death") }}: </strong> {{ selectedItem.numdeath }} คน
+      </p>
       <p>
         <strong>{{ $t("date") }}: </strong>
         {{
@@ -440,10 +455,13 @@
         }}
       </p>
       <p>
-        <strong>{{ $t("info") }}</strong><br />
+        <strong>{{ $t("info") }}</strong
+        ><br />
         <span>{{ selectedItem.unapprove_info || "-" }}</span>
       </p>
-      <p><strong>{{ $t("category") }}</strong></p>
+      <p>
+        <strong>{{ $t("category") }}</strong>
+      </p>
       <b-form-select
         v-model="selectedRisk.riskType"
         :options="riskOptions"
@@ -461,6 +479,7 @@ import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
+import { API_URL } from "@/config";
 
 export default {
   components: {
@@ -718,7 +737,7 @@ export default {
     confirmRiskType() {
       if (this.selectedRisk.riskType === "อุบัติเหตุ") {
         axios
-          .post("http://localhost:3000/api/accidentdata/single", {
+          .post(`${API_URL}/api/accidentdata/single`, {
             acclocation: this.selectedItem.unapprove_location,
             latitude: this.selectedItem.latitude,
             longitude: this.selectedItem.longitude,
@@ -730,9 +749,7 @@ export default {
           .then(() => {
             alert(this.$t("dataAddedSuccess"));
             axios
-              .delete(
-                `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
-              )
+              .delete(`${API_URL}/api/unapprovedata/${this.selectedItem.id}`)
               .then(() => {
                 this.fetchAccidentData();
                 this.fetchCrimeData();
@@ -752,7 +769,7 @@ export default {
           });
       } else if (this.selectedRisk.riskType === "อาชญากรรม") {
         axios
-          .post("http://localhost:3000/api/crimedata/single", {
+          .post(`${API_URL}/api/crimedata/single`, {
             crimelocation: this.selectedItem.unapprove_location,
             latitude: this.selectedItem.latitude,
             longitude: this.selectedItem.longitude,
@@ -764,9 +781,7 @@ export default {
           .then(() => {
             alert(this.$t("dataAddedSuccess"));
             axios
-              .delete(
-                `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
-              )
+              .delete(`${API_URL}/api/unapprovedata/${this.selectedItem.id}`)
               .then(() => {
                 this.fetchAccidentData();
                 this.fetchCrimeData();
@@ -786,7 +801,7 @@ export default {
           });
       } else if (this.selectedRisk.riskType === "ไม่ระบุรายละเอียด") {
         axios
-          .post("http://localhost:3000/api/unspecifieddata/single", {
+          .post(`${API_URL}/api/unspecifieddata/single`, {
             location: this.selectedItem.unapprove_location,
             latitude: this.selectedItem.latitude,
             longitude: this.selectedItem.longitude,
@@ -798,9 +813,7 @@ export default {
           .then(() => {
             alert(this.$t("dataAddedSuccess"));
             axios
-              .delete(
-                `http://localhost:3000/api/unapprovedata/${this.selectedItem.id}`
-              )
+              .delete(`${API_URL}/api/unapprovedata/${this.selectedItem.id}`)
               .then(() => {
                 this.fetchAccidentData();
                 this.fetchCrimeData();
@@ -845,7 +858,7 @@ export default {
     fetchAccidentData() {
       this.isLoading = true;
       axios
-        .get("http://localhost:3000/api/accidentdata")
+        .get(`${API_URL}/api/accidentdata`)
         .then((response) => {
           this.accidentData = response.data.data;
           this.isLoading = false;
@@ -859,7 +872,7 @@ export default {
     fetchCrimeData() {
       this.isLoading = true;
       axios
-        .get("http://localhost:3000/api/crimedata")
+        .get(`${API_URL}/api/crimedata`)
         .then((response) => {
           this.crimeData = response.data.data;
           this.isLoading = false;
@@ -873,7 +886,7 @@ export default {
     fetchUnspecifiedData() {
       this.isLoading = true;
       axios
-        .get("http://localhost:3000/api/Unspecifieddata")
+        .get(`${API_URL}/api/Unspecifieddata`)
         .then((response) => {
           this.UnspecifiedData = response.data.data;
           this.isLoading = false;
@@ -887,7 +900,7 @@ export default {
     fetchUnapproveData() {
       this.isLoading = true;
       axios
-        .get("http://localhost:3000/api/Unapprovedata")
+        .get(`${API_URL}/api/Unapprovedata`)
         .then((response) => {
           this.UnapproveData = response.data.data;
           this.isLoading = false;
@@ -936,8 +949,7 @@ export default {
         return;
       }
       axios
-        .post("http://localhost:3000/api/accidentdata", this.accidentData, {
-          withCredentials: true,
+        .post(`${API_URL}/api/accidentdata`, this.accidentData, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -955,8 +967,7 @@ export default {
         });
 
       axios
-        .post("http://localhost:3000/api/crimedata", this.accidentData, {
-          withCredentials: true,
+        .post(`${API_URL}/api/crimedata`, this.accidentData, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -971,8 +982,7 @@ export default {
         });
 
       axios
-        .post("http://localhost:3000/api/unspecifieddata", this.accidentData, {
-          withCredentials: true,
+        .post(`${API_URL}/api/unspecifieddata`, this.accidentData, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -1022,7 +1032,7 @@ export default {
     deleteData(id) {
       if (confirm(this.$t("ConfirmDelete"))) {
         axios
-          .delete(`http://localhost:3000/api/accidentdata/${id}`)
+          .delete(`${API_URL}/api/accidentdata/${id}`)
           .then(() => {
             this.fetchAccidentData();
           })
@@ -1035,7 +1045,7 @@ export default {
     deleteCrimeData(id) {
       if (confirm(this.$t("ConfirmDelete"))) {
         axios
-          .delete(`http://localhost:3000/api/crimedata/${id}`)
+          .delete(`${API_URL}/api/crimedata/${id}`)
           .then(() => {
             this.fetchCrimeData();
           })
@@ -1048,7 +1058,7 @@ export default {
     deleteUnspecifiedData(id) {
       if (confirm(this.$t("ConfirmDelete"))) {
         axios
-          .delete(`http://localhost:3000/api/Unspecifieddata/${id}`)
+          .delete(`${API_URL}/api/Unspecifieddata/${id}`)
           .then(() => {
             this.fetchUnspecifiedData();
           })
@@ -1061,7 +1071,7 @@ export default {
     deleteUnapproveData(id) {
       if (confirm(this.$t("ConfirmDelete"))) {
         axios
-          .delete(`http://localhost:3000/api/Unapprovedata/${id}`)
+          .delete(`${API_URL}/api/Unapprovedata/${id}`)
           .then(() => {
             this.fetchUnapproveData();
           })
@@ -1107,16 +1117,14 @@ export default {
         ? this.selectedUnspecifiedItems
         : this.selectedAccidentItems;
 
-      if (
-        confirm(this.$t('ConfirmDelete', { count: selectedItems.length }))
-      ) {
+      if (confirm(this.$t("ConfirmDelete", { count: selectedItems.length }))) {
         const deletePromises = selectedItems.map((id) =>
           axios.delete(
             isCrimeTab
-              ? `http://localhost:3000/api/crimedata/${id}`
+              ? `${API_URL}/api/crimedata/${id}`
               : isUnspecifiedTab
-              ? `http://localhost:3000/api/unspecifieddata/${id}`
-              : `http://localhost:3000/api/accidentdata/${id}`
+              ? `${API_URL}/api/unspecifieddata/${id}`
+              : `${API_URL}/api/accidentdata/${id}`
           )
         );
 

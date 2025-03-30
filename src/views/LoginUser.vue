@@ -48,6 +48,7 @@
 
 <script>
 import axios from "axios";
+import { API_URL } from "../config"; // Import API_URL
 
 export default {
   name: "LoginUser",
@@ -74,7 +75,7 @@ export default {
       }
 
       try {
-        const response = await axios.post("http://35.198.205.161:3000/users/login", {
+        const response = await axios.post(`${API_URL}/users/login`, {
           username: this.username,
           password: this.password,
         });
@@ -82,9 +83,8 @@ export default {
         if (response.data.message === "เข้าสู่ระบบสำเร็จ") {
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("username", response.data.user.username);
-          this.$store.dispatch("initializeStore");  
+          this.$store.dispatch("initializeStore");
           await this.$router.push("/data");
-          
         } else {
           this.errorMessage = "การเข้าสู่ระบบล้มเหลว";
         }

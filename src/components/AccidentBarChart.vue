@@ -1,6 +1,8 @@
 <template>
   <div>
-    <p style="text-align: center; font-weight: bold;">{{ $t("staticAccident") }}</p>
+    <p style="text-align: center; font-weight: bold">
+      {{ $t("staticAccident") }}
+    </p>
     <Bar
       :key="'accident-' + accidentChartData.labels.join('-')"
       :data="accidentChartData"
@@ -24,6 +26,7 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
+import { API_URL } from "@/config";
 
 ChartJS.register(
   Title,
@@ -100,65 +103,68 @@ export default {
   },
   methods: {
     fetchAccidentData() {
-  axios
-    .get("http://localhost:3000/api/accidentdata/")
-    .then((response) => {
-      const accidents = response.data.data;
+      axios
+        .get(`${API_URL}0/api/accidentdata/`)
+        .then((response) => {
+          const accidents = response.data.data;
 
-      const aggregatedData = {};
+          const aggregatedData = {};
 
-      accidents.forEach((accident) => {
-        const numdeath = accident.numdeath || 0;
-        const numinjur = accident.numinjur || 0;
+          accidents.forEach((accident) => {
+            const numdeath = accident.numdeath || 0;
+            const numinjur = accident.numinjur || 0;
 
-        if (aggregatedData[accident.acclocation]) {
-          aggregatedData[accident.acclocation].numdeath += numdeath;
-          aggregatedData[accident.acclocation].numinjur += numinjur;
-        } else {
-          aggregatedData[accident.acclocation] = {
-            numdeath: numdeath,
-            numinjur: numinjur,
-          };
-        }
-      });
+            if (aggregatedData[accident.acclocation]) {
+              aggregatedData[accident.acclocation].numdeath += numdeath;
+              aggregatedData[accident.acclocation].numinjur += numinjur;
+            } else {
+              aggregatedData[accident.acclocation] = {
+                numdeath: numdeath,
+                numinjur: numinjur,
+              };
+            }
+          });
 
-      const sortedData = Object.entries(aggregatedData).sort(
-        (a, b) => (b[1].numdeath + b[1].numinjur) - (a[1].numdeath + a[1].numinjur)
-      );
+          const sortedData = Object.entries(aggregatedData).sort(
+            (a, b) =>
+              b[1].numdeath + b[1].numinjur - (a[1].numdeath + a[1].numinjur)
+          );
 
-      const top4 = sortedData.slice(0, 4); // 4 อันดับแรก
-      const others = sortedData.slice(4); // ข้อมูลที่เหลือ
+          const top4 = sortedData.slice(0, 4); // 4 อันดับแรก
+          const others = sortedData.slice(4); // ข้อมูลที่เหลือ
 
-      // รวมข้อมูลของ "พื้นที่อื่นๆ"
-      const othersData = others.reduce(
-        (acc, data) => {
-          acc.numdeath += data[1].numdeath;
-          acc.numinjur += data[1].numinjur;
-          return acc;
-        },
-        { numdeath: 0, numinjur: 0 }
-      );
+          // รวมข้อมูลของ "พื้นที่อื่นๆ"
+          const othersData = others.reduce(
+            (acc, data) => {
+              acc.numdeath += data[1].numdeath;
+              acc.numinjur += data[1].numinjur;
+              return acc;
+            },
+            { numdeath: 0, numinjur: 0 }
+          );
 
-      // สร้าง Labels และ Data
-      const labels = [...top4.map(([location]) => location), "พื้นที่อื่นๆ"];
-      const deathData = [
-        ...top4.map((data) => data[1].numdeath),
-        othersData.numdeath,
-      ];
-      const injuryData = [
-        ...top4.map((data) => data[1].numinjur),
-        othersData.numinjur,
-      ];
+          // สร้าง Labels และ Data
+          const labels = [
+            ...top4.map(([location]) => location),
+            "พื้นที่อื่นๆ",
+          ];
+          const deathData = [
+            ...top4.map((data) => data[1].numdeath),
+            othersData.numdeath,
+          ];
+          const injuryData = [
+            ...top4.map((data) => data[1].numinjur),
+            othersData.numinjur,
+          ];
 
-      this.accidentChartData.labels = labels;
-      this.accidentChartData.datasets[0].data = deathData;
-      this.accidentChartData.datasets[1].data = injuryData;
-    })
-    .catch((error) => {
-      console.error("Error fetching accident data:", error);
-    });
-},
-
+          this.accidentChartData.labels = labels;
+          this.accidentChartData.datasets[0].data = deathData;
+          this.accidentChartData.datasets[1].data = injuryData;
+        })
+        .catch((error) => {
+          console.error("Error fetching accident data:", error);
+        });
+    },
   },
 };
 </script>
