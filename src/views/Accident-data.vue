@@ -948,55 +948,41 @@ export default {
         this.fetchAccidentData();
         return;
       }
-      axios
-        .post(`${API_URL}/api/accidentdata`, this.accidentData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then(() => {
-          alert(this.$t("dataUploadSuccess"));
-          this.fetchAccidentData();
-          this.fetchCrimeData();
-          this.fetchUnspecifiedData();
-          this.clearFileInput();
-          this.fileName = "";
-        })
-        .catch((error) => {
-          console.error("There was an error uploading the data!", error);
-        });
 
-      axios
-        .post(`${API_URL}/api/crimedata`, this.accidentData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then(() => {
-          this.fetchCrimeData();
-          this.clearFileInput();
-          this.fileName = "";
-        })
-        .catch((error) => {
-          console.error("There was an error uploading to Crimedata!", error);
-        });
+      const requests = [
+        axios.post(`${API_URL}/api/accidentdata`, this.accidentData, {
+          headers: { "Content-Type": "application/json" },
+        }),
+        axios.post(`${API_URL}/api/crimedata`, this.accidentData, {
+          headers: { "Content-Type": "application/json" },
+        }),
+        axios.post(`${API_URL}/api/unspecifieddata`, this.accidentData, {
+          headers: { "Content-Type": "application/json" },
+        }),
+      ];
 
-      axios
-        .post(`${API_URL}/api/unspecifieddata`, this.accidentData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then(() => {
-          this.fetchCrimeData();
-          this.clearFileInput();
-          this.fileName = "";
+      Promise.allSettled(requests)
+        .then((results) => {
+          const success = results.filter(
+            (r) => r.status === "fulfilled"
+          ).length;
+          const failed = results.filter((r) => r.status === "rejected").length;
+
+          if (success > 0) {
+            alert(this.$t("dataUploadSuccess"));
+            this.fetchAccidentData();
+            this.fetchCrimeData();
+            this.fetchUnspecifiedData();
+            this.clearFileInput();
+            this.fileName = "";
+          }
+
+          if (failed > 0) {
+            console.error(`Some uploads failed: ${failed} errors.`);
+          }
         })
         .catch((error) => {
-          console.error(
-            "There was an error uploading to UnspecifiedData!",
-            error
-          );
+          console.error("Unexpected error during upload!", error);
         });
     },
 
@@ -1134,8 +1120,8 @@ export default {
               this.fetchCrimeData();
               this.selectedCrimeItems = [];
             } else if (isUnspecifiedTab) {
-              this.fetchUnspecificData();
-              this.selectedUnspecificItems = [];
+              this.fetchUnspecifiedData();
+              this.selectedUnspecifiedItems = [];
             } else {
               this.fetchAccidentData();
               this.selectedAccidentItems = [];

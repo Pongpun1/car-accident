@@ -5,6 +5,7 @@ const { NlpManager } = require("node-nlp");
 
 const manager = new NlpManager({ languages: ["th"] });
 
+manager.addDocument("th", "อาชญากรรม", "crime");
 manager.addDocument("th", "ปล้น", "crime");
 manager.addDocument("th", "ชิงทรัพย์", "crime");
 manager.addDocument("th", "โจร", "crime");
@@ -14,10 +15,8 @@ manager.addDocument("th", "คนร้าย", "crime");
 manager.addDocument("th", "ฆ่า", "crime");
 manager.addDocument("th", "ข่มขืน", "crime");
 manager.addDocument("th", "อนาจาร", "crime");
-manager.addDocument("th", "ก่อเหตุความไม่สงบ", "crime");
 manager.addDocument("th", "ยาเสพติด", "crime");
 manager.addDocument("th", "ลักพาตัว", "crime");
-manager.addDocument("th", "อาชญากรรม", "crime");
 manager.addDocument("th", "ฆาตกรรม", "crime");
 
 (async () => {

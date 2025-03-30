@@ -7,16 +7,24 @@ const manager = new NlpManager({ languages: ["th"] });
 
 manager.addDocument("th", "อุบัติเหตุ", "accident");
 manager.addDocument("th", "รถชน", "accident");
-manager.addDocument("th", "เหตุการณ์อันตราย", "accident");
 manager.addDocument("th", "รถล้ม", "accident");
 manager.addDocument("th", "รถคว่ำ", "accident");
 manager.addDocument("th", "ประสานงา", "accident");
+manager.addDocument("th", "ชนท้าย", "accident");
+manager.addDocument("th", "เสียหลัก", "accident");
+manager.addDocument("th", "อาชญากรรม", "crime");
 manager.addDocument("th", "ปล้น", "crime");
 manager.addDocument("th", "ชิงทรัพย์", "crime");
 manager.addDocument("th", "โจร", "crime");
 manager.addDocument("th", "จี้", "crime");
 manager.addDocument("th", "ขโมย", "crime");
 manager.addDocument("th", "คนร้าย", "crime");
+manager.addDocument("th", "ฆ่า", "crime");
+manager.addDocument("th", "ข่มขืน", "crime");
+manager.addDocument("th", "อนาจาร", "crime");
+manager.addDocument("th", "ยาเสพติด", "crime");
+manager.addDocument("th", "ลักพาตัว", "crime");
+manager.addDocument("th", "ฆาตกรรม", "crime");
 
 (async () => {
   await manager.train();
