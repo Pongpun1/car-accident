@@ -37,19 +37,26 @@ router.post("/", async (req, res) => {
 
   for (const row of excelData) {
     const crimeinfo = row.รายละเอียด || "";
-
     const language = "th";
 
     const response = await manager.process(language, crimeinfo);
 
     if (response.intent === "crime") {
+
+      let crimedate = row.วันเกิดเหตุ;
+      if (crimedate) {
+        let [day, month, year] = crimedate.split("-");
+        year = parseInt(year) - 543;
+        crimedate = `${year}-${month}-${day}`;
+      }
+
       filteredData.push([
         row.สถานที่เกิดเหตุ,
         row.ละติจูด,
         row.ลองจิจูด,
         row.จำนวนผู้บาดเจ็บ,
         row.จำนวนผู้เสียชีวิต,
-        row.วันเกิดเหตุ,
+        crimedate,
         crimeinfo,
       ]);
     }

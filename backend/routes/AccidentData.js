@@ -31,19 +31,26 @@ router.post("/", async (req, res) => {
 
   for (const row of excelData) {
     const accinfo = row.รายละเอียด || "";
-
     const language = "th";
 
     const response = await manager.process(language, accinfo);
 
     if (response.intent === "accident") {
+
+      let accdate = row.วันเกิดเหตุ;
+      if (accdate) {
+        let [day, month, year] = accdate.split("-");
+        year = parseInt(year) - 543;
+        accdate = `${year}-${month}-${day}`;
+      }
+
       filteredData.push([
         row.สถานที่เกิดเหตุ,
         row.ละติจูด,
         row.ลองจิจูด,
         row.จำนวนผู้บาดเจ็บ,
         row.จำนวนผู้เสียชีวิต,
-        row.วันเกิดเหตุ,
+        accdate,
         accinfo,
       ]);
     }

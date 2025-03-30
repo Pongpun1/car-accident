@@ -1,442 +1,85 @@
 {
   "settings": {
-    "languages": [
-      "th"
-    ],
+    "languages": ["th"],
     "tag": "nlp",
     "threshold": 0.5,
     "autoLoad": true,
     "autoSave": true,
     "modelFileName": "model.nlp",
-    "executeActionsBeforeAnswers": false,
     "calculateSentiment": true
   },
   "nluManager": {
-    "settings": {
-      "tag": "nlu-manager"
-    },
-    "locales": [
-      "th"
-    ],
-    "languageNames": {},
+    "locales": ["th"],
     "domainManagers": {
       "th": {
         "settings": {
           "locale": "th",
           "trainByDomain": false,
-          "tag": "domain-manager-th",
-          "nluByDomain": {
-            "default": {
-              "className": "NeuralNlu",
-              "settings": {}
-            }
-          },
           "useStemDict": true
         },
         "stemDict": {
-          "กร,รม,อาชญา": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "ปล้น": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "ชิง,ทรัพย์": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "โจร": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "จี้": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "ขโมย": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "คน,ร้าย": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "ฆ่า": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "ขืน,ข่ม": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "อนาจาร": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "ติด,ยา,เสพ": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "ตัว,พา,ลัก": {
-            "intent": "crime",
-            "domain": "default"
-          },
-          "กร,ฆาต,รม": {
-            "intent": "crime",
-            "domain": "default"
-          }
-        },
-        "intentDict": {
-          "crime": "default"
+          "อุบัติเหตุ": "accident",
+          "รถชน": "accident",
+          "รถล้ม": "accident",
+          "รถคว่ำ": "accident",
+          "ประสานงา": "accident",
+          "ชนท้าย": "accident",
+          "เสียหลัก": "accident",
+          "อาชญากรรม": "crime",
+          "ปล้น": "crime",
+          "ชิงทรัพย์": "crime",
+          "โจร": "crime",
+          "จี้": "crime",
+          "ขโมย": "crime",
+          "คนร้าย": "crime",
+          "ฆ่า": "crime",
+          "ข่มขืน": "crime",
+          "อนาจาร": "crime",
+          "ยาเสพติด": "crime",
+          "ลักพาตัว": "crime",
+          "ฆาตกรรม": "crime"
         },
         "sentences": [
-          {
-            "domain": "default",
-            "utterance": "อาชญากรรม",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ปล้น",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ชิงทรัพย์",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "โจร",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "จี้",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ขโมย",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "คนร้าย",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ฆ่า",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ข่มขืน",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "อนาจาร",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ยาเสพติด",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ลักพาตัว",
-            "intent": "crime"
-          },
-          {
-            "domain": "default",
-            "utterance": "ฆาตกรรม",
-            "intent": "crime"
-          }
-        ],
-        "domains": {
-          "master_domain": {
-            "settings": {
-              "locale": "th",
-              "tag": "nlu-th",
-              "keepStopwords": true,
-              "nonefeatureValue": 1,
-              "nonedeltaMultiplier": 1.2,
-              "spellCheck": false,
-              "spellCheckDistance": 1,
-              "filterZeros": true,
-              "log": true
-            },
-            "features": {
-              "อาชญา": 1,
-              "กร": 1,
-              "รม": 1,
-              "ปล้น": 1,
-              "ชิง": 1,
-              "ทรัพย์": 1,
-              "โจร": 1,
-              "จี้": 1,
-              "ขโมย": 1,
-              "คน": 1,
-              "ร้าย": 1,
-              "ฆ่า": 1,
-              "ข่ม": 1,
-              "ขืน": 1,
-              "อนาจาร": 1,
-              "ยา": 1,
-              "เสพ": 1,
-              "ติด": 1,
-              "ลัก": 1,
-              "พา": 1,
-              "ตัว": 1,
-              "ฆาต": 1
-            },
-            "intents": {
-              "crime": 1
-            },
-            "intentFeatures": {
-              "crime": {
-                "อาชญา": 1,
-                "กร": 1,
-                "รม": 1,
-                "ปล้น": 1,
-                "ชิง": 1,
-                "ทรัพย์": 1,
-                "โจร": 1,
-                "จี้": 1,
-                "ขโมย": 1,
-                "คน": 1,
-                "ร้าย": 1,
-                "ฆ่า": 1,
-                "ข่ม": 1,
-                "ขืน": 1,
-                "อนาจาร": 1,
-                "ยา": 1,
-                "เสพ": 1,
-                "ติด": 1,
-                "ลัก": 1,
-                "พา": 1,
-                "ตัว": 1,
-                "ฆาต": 1
-              }
-            },
-            "featuresToIntent": {
-              "อาชญา": [
-                "crime"
-              ],
-              "กร": [
-                "crime"
-              ],
-              "รม": [
-                "crime"
-              ],
-              "ปล้น": [
-                "crime"
-              ],
-              "ชิง": [
-                "crime"
-              ],
-              "ทรัพย์": [
-                "crime"
-              ],
-              "โจร": [
-                "crime"
-              ],
-              "จี้": [
-                "crime"
-              ],
-              "ขโมย": [
-                "crime"
-              ],
-              "คน": [
-                "crime"
-              ],
-              "ร้าย": [
-                "crime"
-              ],
-              "ฆ่า": [
-                "crime"
-              ],
-              "ข่ม": [
-                "crime"
-              ],
-              "ขืน": [
-                "crime"
-              ],
-              "อนาจาร": [
-                "crime"
-              ],
-              "ยา": [
-                "crime"
-              ],
-              "เสพ": [
-                "crime"
-              ],
-              "ติด": [
-                "crime"
-              ],
-              "ลัก": [
-                "crime"
-              ],
-              "พา": [
-                "crime"
-              ],
-              "ตัว": [
-                "crime"
-              ],
-              "ฆาต": [
-                "crime"
-              ]
-            },
-            "neuralNetwork": {
-              "settings": {
-                "locale": "th",
-                "tag": "nlu-th",
-                "keepStopwords": true,
-                "nonefeatureValue": 1,
-                "nonedeltaMultiplier": 1.2,
-                "spellCheck": false,
-                "spellCheckDistance": 1,
-                "filterZeros": true,
-                "log": true
-              },
-              "features": [
-                "อาชญา",
-                "กร",
-                "รม",
-                "ปล้น",
-                "ชิง",
-                "ทรัพย์",
-                "โจร",
-                "จี้",
-                "ขโมย",
-                "คน",
-                "ร้าย",
-                "ฆ่า",
-                "ข่ม",
-                "ขืน",
-                "อนาจาร",
-                "ยา",
-                "เสพ",
-                "ติด",
-                "ลัก",
-                "พา",
-                "ตัว",
-                "ฆาต"
-              ],
-              "intents": [
-                "crime"
-              ],
-              "perceptrons": [
-                [
-                  0.5513578653335571,
-                  1.0962350368499756,
-                  1.0962350368499756,
-                  2.7410242557525635,
-                  1.419354796409607,
-                  1.419354796409607,
-                  2.7075886726379395,
-                  2.678144693374634,
-                  2.6481356620788574,
-                  1.4043110609054565,
-                  1.4043110609054565,
-                  2.609522819519043,
-                  1.3983994722366333,
-                  1.3983994722366333,
-                  2.5686755180358887,
-                  0.9132626056671143,
-                  0.9132626056671143,
-                  0.9132626056671143,
-                  0.9143674969673157,
-                  0.9143674969673157,
-                  0.9143674969673157,
-                  0.5468567609786987,
-                  11.557237610329901
-                ]
-              ]
-            }
-          }
-        }
+          {"utterance": "อุบัติเหตุ", "intent": "accident"},
+          {"utterance": "รถชน", "intent": "accident"},
+          {"utterance": "รถล้ม", "intent": "accident"},
+          {"utterance": "รถคว่ำ", "intent": "accident"},
+          {"utterance": "ประสานงา", "intent": "accident"},
+          {"utterance": "ชนท้าย", "intent": "accident"},
+          {"utterance": "เสียหลัก", "intent": "accident"},
+          {"utterance": "อาชญากรรม", "intent": "crime"},
+          {"utterance": "ปล้น", "intent": "crime"},
+          {"utterance": "ชิงทรัพย์", "intent": "crime"},
+          {"utterance": "โจร", "intent": "crime"},
+          {"utterance": "จี้", "intent": "crime"},
+          {"utterance": "ขโมย", "intent": "crime"},
+          {"utterance": "คนร้าย", "intent": "crime"},
+          {"utterance": "ฆ่า", "intent": "crime"},
+          {"utterance": "ข่มขืน", "intent": "crime"},
+          {"utterance": "อนาจาร", "intent": "crime"},
+          {"utterance": "ยาเสพติด", "intent": "crime"},
+          {"utterance": "ลักพาตัว", "intent": "crime"},
+          {"utterance": "ฆาตกรรม", "intent": "crime"}
+        ]
       }
-    },
-    "intentDomains": {},
-    "extraSentences": [
-      [
-        "th",
-        "อาชญากรรม"
-      ],
-      [
-        "th",
-        "ปล้น"
-      ],
-      [
-        "th",
-        "ชิงทรัพย์"
-      ],
-      [
-        "th",
-        "โจร"
-      ],
-      [
-        "th",
-        "จี้"
-      ],
-      [
-        "th",
-        "ขโมย"
-      ],
-      [
-        "th",
-        "คนร้าย"
-      ],
-      [
-        "th",
-        "ฆ่า"
-      ],
-      [
-        "th",
-        "ข่มขืน"
-      ],
-      [
-        "th",
-        "อนาจาร"
-      ],
-      [
-        "th",
-        "ยาเสพติด"
-      ],
-      [
-        "th",
-        "ลักพาตัว"
-      ],
-      [
-        "th",
-        "ฆาตกรรม"
-      ]
-    ]
+    }
   },
   "ner": {
     "settings": {
       "tag": "ner",
       "entityPreffix": "%",
       "entitySuffix": "%"
-    },
-    "rules": {}
+    }
   },
   "nlgManager": {
     "settings": {
       "tag": "nlg-manager"
-    },
-    "responses": {}
+    }
   },
   "actionManager": {
     "settings": {
       "tag": "action-manager"
-    },
-    "actions": {}
+    }
   },
   "slotManager": {}
 }

@@ -949,6 +949,7 @@ export default {
         return;
       }
 
+      
       const requests = [
         axios.post(`${API_URL}/api/accidentdata`, this.accidentData, {
           headers: { "Content-Type": "application/json" },
@@ -966,7 +967,6 @@ export default {
           const success = results.filter(
             (r) => r.status === "fulfilled"
           ).length;
-          const failed = results.filter((r) => r.status === "rejected").length;
 
           if (success > 0) {
             alert(this.$t("dataUploadSuccess"));
@@ -977,9 +977,7 @@ export default {
             this.fileName = "";
           }
 
-          if (failed > 0) {
-            console.error(`Some uploads failed: ${failed} errors.`);
-          }
+
         })
         .catch((error) => {
           console.error("Unexpected error during upload!", error);
