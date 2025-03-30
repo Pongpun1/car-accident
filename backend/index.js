@@ -2,19 +2,13 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-const allowedOrigins = ["http://localhost:8080", "http://10.203.70.26:8080", "http://35.198.205.161:8080", "http://10.0.3.5:8080", "*"];
+app.use(cors());
+
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "DELETE", "PUT"],
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   })
 );
 
