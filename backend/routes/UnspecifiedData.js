@@ -32,8 +32,22 @@ manager.addDocument("th", "ฆาตกรรม", "crime");
 })();
 
 // ------------------------------------------เพิ่มข้อมูลแบบไฟล์---------------------------------------
+const convertDateFormat = (dateStr) => {
+  if (!dateStr) return null;
+
+  const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  const match = dateStr.match(regex);
+
+  if (!match) return dateStr;
+
+  const day = match[1].padStart(2, "0");
+  const month = match[2].padStart(2, "0");
+  const year = match[3];
+
+  return `${year}-${month}-${day}`;
+};
+
 router.post("/", async (req, res) => {
-  console.log("Received body:", req.body);
   const excelData = req.body;
 
   if (!Array.isArray(excelData) || excelData.length === 0) {
@@ -54,7 +68,7 @@ router.post("/", async (req, res) => {
         row.ลองจิจูด,
         row.จำนวนผู้บาดเจ็บ,
         row.จำนวนผู้เสียชีวิต,
-        row.วันเกิดเหตุ,
+        convertDateFormat(row.วันเกิดเหตุ),
         info,
       ]);
     }
