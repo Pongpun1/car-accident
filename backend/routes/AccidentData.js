@@ -19,6 +19,19 @@ manager.addDocument("th", "เสียหลัก", "accident");
 })();
 
 // ------------------------------------------เพิ่มข้อมูลแบบไฟล์---------------------------------------
+
+function convertToCE(dateStr) {
+  if (!dateStr) return null;
+  const parts = dateStr.split("/");
+  if (parts.length === 3) {
+    const day = parts[0];
+    const month = parts[1];
+    const year = parseInt(parts[2]) - 543; // แปลง พ.ศ. → ค.ศ.
+    return `${year}-${month}-${day}`; // คืนค่าเป็น YYYY-MM-DD
+  }
+  return null;
+}
+
 router.post("/", async (req, res) => {
   console.log("Received body:", req.body);
   const excelData = req.body;
@@ -36,6 +49,7 @@ router.post("/", async (req, res) => {
     const response = await manager.process(language, accinfo);
 
     if (response.intent === "accident") {
+      const accDate = convertToCE(row.วันเกิดเหตุ); 
 
       filteredData.push([
         row.สถานที่เกิดเหตุ,
@@ -43,7 +57,7 @@ router.post("/", async (req, res) => {
         row.ลองจิจูด,
         row.จำนวนผู้บาดเจ็บ,
         row.จำนวนผู้เสียชีวิต,
-        row.วันเกิดเหตุ,
+        accDate,
         accinfo,
       ]);
     }
