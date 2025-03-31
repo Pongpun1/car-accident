@@ -98,12 +98,12 @@
     </div>
 
     <div class="table-container">
-      <b-skeleton-table
+      <b-table
         v-if="isLoading"
         :rows="10"
         :columns="9"
         animation="Fade"
-      ></b-skeleton-table>
+      ></b-table>
 
       <table v-else class="table">
         <b-tabs
@@ -351,7 +351,7 @@
         </b-tabs>
       </table>
 
-      <div class="pagination-controls">
+      <div class="pagination-controls" v-if="totalRows > 0">
         <b-pagination
           v-model="currentPage"
           :total-rows="totalRows"
