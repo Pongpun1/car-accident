@@ -626,8 +626,10 @@ export default {
         return this.filterAccidentData.length;
       } else if (this.activeTab === 1) {
         return this.filterCrimeData.length;
-      } else {
+      } else if (this.activeTab === 2) {
         return this.filterUnspecifiedData.length;
+      } else {
+        return this.filterUnapproveData.length;
       }
     },
 

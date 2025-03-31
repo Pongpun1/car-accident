@@ -104,7 +104,7 @@ export default {
   methods: {
     fetchAccidentData() {
       axios
-        .get(`${API_URL}0/api/accidentdata/`)
+        .get(`${API_URL}/api/accidentdata/`)
         .then((response) => {
           const accidents = response.data.data;
 
@@ -130,10 +130,9 @@ export default {
               b[1].numdeath + b[1].numinjur - (a[1].numdeath + a[1].numinjur)
           );
 
-          const top4 = sortedData.slice(0, 4); // 4 อันดับแรก
-          const others = sortedData.slice(4); // ข้อมูลที่เหลือ
+          const top4 = sortedData.slice(0, 4);
+          const others = sortedData.slice(4);
 
-          // รวมข้อมูลของ "พื้นที่อื่นๆ"
           const othersData = others.reduce(
             (acc, data) => {
               acc.numdeath += data[1].numdeath;
