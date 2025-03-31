@@ -48,20 +48,13 @@ router.post("/", async (req, res) => {
 
     if (response.intent !== "accident" && response.intent !== "crime") {
 
-      let date = row.วันเกิดเหตุ;
-      if (date) {
-        let [day, month, year] = date.split("-");
-        year = parseInt(year) - 543;
-        date = `${year}-${month}-${day}`;
-      }
-
       filteredData.push([
         row.สถานที่เกิดเหตุ,
         row.ละติจูด,
         row.ลองจิจูด,
         row.จำนวนผู้บาดเจ็บ,
         row.จำนวนผู้เสียชีวิต,
-        date,
+        row.วันเกิดเหตุ,
         info,
       ]);
     }
