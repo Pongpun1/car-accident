@@ -940,51 +940,60 @@ export default {
     },
 
     uploadToServer() {
-      if (!this.isFileLoaded) {
-        alert(this.$t("UploadFile"));
-        return;
-      }
+  if (!this.isFileLoaded) {
+    alert(this.$t("UploadFile"));
+    return;
+  }
 
-      if (this.accidentData.length === 0) {
-        alert(this.$t("NoDataToUpload"));
+  if (this.accidentData.length === 0) {
+    alert(this.$t("NoDataToUpload"));
+    this.fetchAccidentData();
+    return;
+  }
+
+  // ฟังก์ชันแปลงวันที่เป็น 'YYYY-MM-DD'
+  const formatDate = (dateStr) => {
+    if (!dateStr) return null;
+    const dateObj = new Date(dateStr);
+    if (isNaN(dateObj)) return null;
+    return dateObj.toISOString().split("T")[0];
+  };
+
+  // แปลงวันที่ใน this.accidentData
+  const formattedData = this.accidentData.map((row) => ({
+    ...row,
+    วันเกิดเหตุ: formatDate(row.วันเกิดเหตุ),
+  }));
+
+  const requests = [
+    axios.post(`${API_URL}/api/accidentdata`, formattedData, {
+      headers: { "Content-Type": "application/json" },
+    }),
+    axios.post(`${API_URL}/api/crimedata`, formattedData, {
+      headers: { "Content-Type": "application/json" },
+    }),
+    axios.post(`${API_URL}/api/unspecifieddata`, formattedData, {
+      headers: { "Content-Type": "application/json" },
+    }),
+  ];
+
+  Promise.allSettled(requests)
+    .then((results) => {
+      const success = results.filter((r) => r.status === "fulfilled").length;
+
+      if (success > 0) {
+        alert(this.$t("dataUploadSuccess"));
         this.fetchAccidentData();
-        return;
+        this.fetchCrimeData();
+        this.fetchUnspecifiedData();
+        this.clearFileInput();
+        this.fileName = "";
       }
-
-      
-      const requests = [
-        axios.post(`${API_URL}/api/accidentdata`, this.accidentData, {
-          headers: { "Content-Type": "application/json" },
-        }),
-        axios.post(`${API_URL}/api/crimedata`, this.accidentData, {
-          headers: { "Content-Type": "application/json" },
-        }),
-        axios.post(`${API_URL}/api/unspecifieddata`, this.accidentData, {
-          headers: { "Content-Type": "application/json" },
-        }),
-      ];
-
-      Promise.allSettled(requests)
-        .then((results) => {
-          const success = results.filter(
-            (r) => r.status === "fulfilled"
-          ).length;
-
-          if (success > 0) {
-            alert(this.$t("dataUploadSuccess"));
-            this.fetchAccidentData();
-            this.fetchCrimeData();
-            this.fetchUnspecifiedData();
-            this.clearFileInput();
-            this.fileName = "";
-          }
-
-
-        })
-        .catch((error) => {
-          console.error("Unexpected error during upload!", error);
-        });
-    },
+    })
+    .catch((error) => {
+      console.error("Unexpected error during upload!", error);
+    });
+},
 
     clearFileInput() {
       this.$refs.fileInput.value = null;

@@ -22,6 +22,14 @@ manager.addDocument("th", "เสียหลัก", "accident");
 const convertDateFormat = (dateStr) => {
   if (!dateStr) return null;
 
+  if (dateStr instanceof Date) {
+    return dateStr.toISOString().split("T")[0];
+  }
+
+  if (!isNaN(Date.parse(dateStr))) {
+    return new Date(dateStr).toISOString().split("T")[0];
+  }
+
   const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
   const match = dateStr.match(regex);
 
@@ -57,7 +65,7 @@ router.post("/", async (req, res) => {
         row.ลองจิจูด,
         row.จำนวนผู้บาดเจ็บ,
         row.จำนวนผู้เสียชีวิต,
-        convertDateFormat(row.วันเกิดเหตุ), // แปลงวันที่ก่อนนำเข้า DB
+        convertDateFormat(row.วันเกิดเหตุ),
         accinfo,
       ]);
       console.log(filteredData);
