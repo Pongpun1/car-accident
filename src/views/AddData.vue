@@ -189,6 +189,26 @@ export default {
           this.formData.accinfo.includes("เสียหลัก"))
       ) {
         apiEndpoint = `${API_URL}/api/accidentdata/single`;
+        axios
+          .post(apiEndpoint, this.formData, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          .then(() => {
+            alert(this.$t("saveSuccess"));
+            this.$router.push("/data");
+            this.resetForm();
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 400) {
+              alert(error.response.data.message);
+            } else {
+              alert(this.$t("saveFail"));
+            }
+          });
+        return;
+
       } else if (
          this.formData.accinfo &&
         (this.formData.accinfo.includes("อาชญากรรม") ||
