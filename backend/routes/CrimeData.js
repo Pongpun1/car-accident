@@ -313,7 +313,7 @@ router.put("/:id", (req, res) => {
       }
 
       const updateQuery = `
-      UPDATE crimeidentdata
+      UPDATE crimedata
       SET crimelocation = ?, latitude = ?, longitude = ?, numinjur = ?, numdeath = ?, crimedate = ?, crimeinfo = ?
       WHERE id = ?
     `;

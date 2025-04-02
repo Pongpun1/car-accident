@@ -191,6 +191,9 @@ export default {
     updateData() {
       const id = this.$route.params.id;
 
+      this.formData.latitude = parseFloat(this.formData.latitude);
+      this.formData.longitude = parseFloat(this.formData.longitude);
+
       const formatDate = (dateStr) => {
         if (!dateStr) return null;
         const dateObj = new Date(dateStr);
@@ -225,6 +228,7 @@ export default {
             delete newData.accinfo;
 
             axios.post(`${API_URL}/api/crimedata/single`, newData).then(() => {
+              alert(this.$t("dataUpdated"));
               this.$router.push("/data");
             });
           })
@@ -248,6 +252,7 @@ export default {
             axios
               .post(`${API_URL}/api/unspecifieddata/single`, newData)
               .then(() => {
+                alert(this.$t("dataUpdated"));
                 this.$router.push("/data");
               });
           })

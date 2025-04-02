@@ -191,15 +191,19 @@ export default {
     updateData() {
       const id = this.$route.params.id;
 
+      this.formData.latitude = parseFloat(this.formData.latitude);
+      this.formData.longitude = parseFloat(this.formData.longitude);
+
       const formatDate = (dateStr) => {
         if (!dateStr) return null;
         const dateObj = new Date(dateStr);
-        if (isNaN(dateObj.getTime())) return null; // เช็ค Invalid Date
-        return dateObj.toISOString().split("T")[0]; // แปลงเป็น YYYY-MM-DD
+        if (isNaN(dateObj.getTime())) return null;
+        return dateObj.toISOString().split("T")[0];
       };
 
       if (this.formData.category === "ไม่ระบุรายละเอียด") {
-        
+        this.formData.date = formatDate(this.formData.date);
+
         axios
           .put(`${API_URL}/api/unspecifieddata/${id}`, this.formData)
           .then(() => {

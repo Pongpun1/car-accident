@@ -190,15 +190,19 @@ export default {
 
     updateData() {
       const id = this.$route.params.id;
+
+      this.formData.latitude = parseFloat(this.formData.latitude);
+      this.formData.longitude = parseFloat(this.formData.longitude);
+
       const formatDate = (dateStr) => {
         if (!dateStr) return null;
         const dateObj = new Date(dateStr);
         if (isNaN(dateObj)) return null;
         return dateObj.toISOString().split("T")[0];
       };
-
+      this.formData.crimedate = formatDate(this.formData.crimedate);
+      
       if (this.formData.category === "อาชญากรรม") {
-        this.formData.crimedate = formatDate(this.formData.crimedate);
         axios
           .put(`${API_URL}/api/crimedata/${id}`, this.formData)
           .then(() => {
@@ -226,6 +230,7 @@ export default {
               axios
                 .post(`${API_URL}/api/accidentdata/single`, newData)
                 .then(() => {
+                  alert(this.$t("dataUpdated"));
                   this.$router.push("/data");
                 });
             } else if (this.formData.category === "ไม่ระบุรายละเอียด") {
@@ -239,6 +244,7 @@ export default {
               axios
                 .post(`${API_URL}/api/unspecifieddata/single`, newData)
                 .then(() => {
+                alert(this.$t("dataUpdated"));
                   this.$router.push("/data");
                 });
             }
