@@ -43,7 +43,6 @@ const convertDateFormat = (dateStr) => {
 };
 
 router.post("/", async (req, res) => {
-  console.log("Received from front-end:", req.body);
   const excelData = req.body;
 
   if (!Array.isArray(excelData) || excelData.length === 0) {
@@ -68,7 +67,6 @@ router.post("/", async (req, res) => {
         convertDateFormat(row.วันเกิดเหตุ),
         accinfo,
       ]);
-      console.log(filteredData);
     }
   }
 

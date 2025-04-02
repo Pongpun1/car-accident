@@ -35,11 +35,12 @@
             :placeholder="$t('longitudeHolder')"
           ></b-form-input>
         </b-input-group>
-
         <b-input-group size="lg" :prepend="$t('injured')" class="input">
           <b-form-input
             v-model="formData.numinjur"
             type="number"
+            :min="0"
+            :placeholder="'0'"
           ></b-form-input>
         </b-input-group>
 
@@ -47,31 +48,18 @@
           <b-form-input
             v-model="formData.numdeath"
             type="number"
+            :min="0"
+            :placeholder="'0'"
           ></b-form-input>
         </b-input-group>
 
         <b-input-group size="lg" :prepend="$t('date')" class="input">
           <b-form-input
             id="example-input"
-            v-model="formattedAccdate"
-            type="text"
+            v-model="formData.accdate"
+            type="date"
             :placeholder="$t('dateHolder')"
-            autocomplete="off"
           ></b-form-input>
-          <b-input-group-append>
-            <b-form-datepicker
-              v-model="formData.accdate"
-              button-only
-              right
-              locale="th"
-              aria-controls="example-input"
-              :date-format-options="{
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              }"
-            ></b-form-datepicker>
-          </b-input-group-append>
         </b-input-group>
 
         <b-input-group size="lg" class="input">
@@ -129,8 +117,8 @@ export default {
         acclocation: "",
         latitude: "",
         longitude: "",
-        numinjur: 0,
-        numdeath: 0,
+        numinjur: null,
+        numdeath: null,
         accdate: "",
         accinfo: "",
       },
@@ -208,9 +196,8 @@ export default {
             }
           });
         return;
-
       } else if (
-         this.formData.accinfo &&
+        this.formData.accinfo &&
         (this.formData.accinfo.includes("อาชญากรรม") ||
           this.formData.accinfo.includes("โจร") ||
           this.formData.accinfo.includes("ปล้น") ||
@@ -254,8 +241,7 @@ export default {
             }
           });
         return;
-      } 
-      else if (!this.formData.accinfo) {
+      } else if (!this.formData.accinfo) {
         apiEndpoint = `${API_URL}/api/unspecifieddata/single`;
         const unspecifiedData = {
           location: this.formData.acclocation,

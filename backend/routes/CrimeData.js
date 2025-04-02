@@ -28,6 +28,14 @@ manager.addDocument("th", "ฆาตกรรม", "crime");
 const convertDateFormat = (dateStr) => {
   if (!dateStr) return null;
 
+  if (dateStr instanceof Date) {
+    return dateStr.toISOString().split("T")[0];
+  }
+
+  if (!isNaN(Date.parse(dateStr))) {
+    return new Date(dateStr).toISOString().split("T")[0];
+  }
+
   const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
   const match = dateStr.match(regex);
 
@@ -106,7 +114,6 @@ router.post("/", async (req, res) => {
 
 // ------------------------------------------เพิ่มข้อมูลแยกตัว---------------------------------------
 router.post("/single", (req, res) => {
-  console.log("📌 Data received:", req.body);
   const {
     crimelocation,
     latitude,
@@ -180,7 +187,7 @@ router.post("/single", (req, res) => {
           ],
           (err, result) => {
             if (err) {
-              console.error("Error inserting data:", err.message);
+              console.error("🚨 SQL Error:", err);
               return res.status(500).json({ message: "Error inserting data" });
             }
             res.status(200).json({ message: "บันทึกข้อมูลสำเร็จ" });
