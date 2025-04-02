@@ -250,8 +250,15 @@ router.get("/:id", async (req, res) => {
 // ------------------------------------------อัพเดทข้อมูล-------------------------------------------
 router.put("/:id", (req, res) => {
   const { id } = req.params;
-  const { location, latitude, longitude, numinjur, numdeath, date, info } =
-    req.body;
+  const {
+    location,
+    latitude,
+    longitude,
+    numinjur,
+    numdeath,
+    date,
+    info,
+  } = req.body;
 
   if (
     !location ||
@@ -266,53 +273,66 @@ router.put("/:id", (req, res) => {
     });
   }
   const checkQuery = `
-    SELECT * FROM identdata WHERE latitude = ? AND longitude = ? AND date = ? AND id != ?
+    SELECT * FROM unspecified_data WHERE latitude = ? AND longitude = ? AND id != ?
   `;
 
-  conn.execute(checkQuery, [latitude, longitude, date, id], (err, results) => {
-    if (err) {
-      console.error("Error checking data:", err.message);
-      return res.status(500).json({
-        message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล",
-      });
-    }
+  conn.execute(
+    checkQuery,
+    [latitude, longitude, date, id],
+    (err, results) => {
+      if (err) {
+        console.error("Error checking data:", err.message);
+        return res.status(500).json({
+          message: "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล",
+        });
+      }
 
-    if (results.length > 0) {
-      return res.status(400).json({
-        message: "ข้อมูลนี้มีอยู่แล้ว",
-      });
-    }
+      if (results.length > 0) {
+        return res.status(400).json({
+          message: "ข้อมูลนี้มีอยู่แล้ว",
+        });
+      }
 
-    const updateQuery = `
-      UPDATE identdata
+      const updateQuery = `
+      UPDATE unspecified_data
       SET location = ?, latitude = ?, longitude = ?, numinjur = ?, numdeath = ?, date = ?, info = ?
       WHERE id = ?
     `;
 
-    conn.execute(
-      updateQuery,
-      [location, latitude, longitude, numinjur, numdeath, date, info, id],
-      (err, result) => {
-        if (err) {
-          console.error("Error updating data:", err.message);
-          return res.status(500).json({
-            message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล",
-            error: err.message,
+      conn.execute(
+        updateQuery,
+        [
+          location,
+          latitude,
+          longitude,
+          numinjur,
+          numdeath,
+          date,
+          info,
+          id,
+        ],
+        (err, result) => {
+          if (err) {
+            console.error("Error updating data:", err.message);
+            return res.status(500).json({
+              message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล",
+              error: err.message,
+            });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({
+              message: `ไม่พบข้อมูลที่มี id ${id}`,
+            });
+          }
+
+          res.status(200).json({
+            message: `อัปเดตข้อมูลของ id ${id} สำเร็จแล้ว`,
           });
         }
-
-        if (result.affectedRows === 0) {
-          return res.status(404).json({
-            message: `ไม่พบข้อมูลที่มี id ${id}`,
-          });
-        }
-
-        res.status(200).json({
-          message: `อัปเดตข้อมูลของ id ${id} สำเร็จแล้ว`,
-        });
-      }
-    );
-  });
+      );
+    }
+  );
 });
 
 module.exports = router;

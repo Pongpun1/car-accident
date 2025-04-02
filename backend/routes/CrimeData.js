@@ -292,7 +292,7 @@ router.put("/:id", (req, res) => {
     });
   }
   const checkQuery = `
-    SELECT * FROM crimedata WHERE latitude = ? AND longitude = ? AND crimedate = ? AND id != ?
+    SELECT * FROM crimedata WHERE latitude = ? AND longitude = ? AND id != ?
   `;
 
   conn.execute(
@@ -313,7 +313,7 @@ router.put("/:id", (req, res) => {
       }
 
       const updateQuery = `
-      UPDATE crimedata
+      UPDATE crimeidentdata
       SET crimelocation = ?, latitude = ?, longitude = ?, numinjur = ?, numdeath = ?, crimedate = ?, crimeinfo = ?
       WHERE id = ?
     `;

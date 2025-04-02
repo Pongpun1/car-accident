@@ -190,8 +190,15 @@ export default {
 
     updateData() {
       const id = this.$route.params.id;
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const dateObj = new Date(dateStr);
+        if (isNaN(dateObj)) return null;
+        return dateObj.toISOString().split("T")[0];
+      };
 
       if (this.formData.category === "อาชญากรรม") {
+        this.formData.crimedate = formatDate(this.formData.crimedate);
         axios
           .put(`${API_URL}/api/crimedata/${id}`, this.formData)
           .then(() => {
@@ -208,22 +215,9 @@ export default {
           .then(() => {
             const newData = { ...this.formData };
 
-            if (this.formData.category === "ไม่ระบุรายละเอียด") {
-              newData.location = newData.crimelocation;
-              newData.date = newData.crimedate;
-              newData.info = newData.crimeinfo;
-              delete newData.crimelocation;
-              delete newData.crimedate;
-              delete newData.crimeinfo;
-
-              axios
-                .post(`${API_URL}/api/unspecifieddata/single`, newData)
-                .then(() => {
-                  this.$router.push("/data");
-                });
-            } else if (this.formData.category === "อุบัติเหตุ") {
+            if (this.formData.category === "อุบัติเหตุ") {
               newData.acclocation = newData.crimelocation;
-              newData.accdate = newData.crimedate;
+              newData.accdate = formatDate(newData.crimedate);
               newData.accinfo = newData.crimeinfo;
               delete newData.crimelocation;
               delete newData.crimedate;
@@ -231,6 +225,19 @@ export default {
 
               axios
                 .post(`${API_URL}/api/accidentdata/single`, newData)
+                .then(() => {
+                  this.$router.push("/data");
+                });
+            } else if (this.formData.category === "ไม่ระบุรายละเอียด") {
+              newData.location = newData.crimelocation;
+              newData.date = formatDate(newData.crimedate);
+              newData.info = newData.crimeinfo;
+              delete newData.crimelocation;
+              delete newData.crimedate;
+              delete newData.crimeinfo;
+
+              axios
+                .post(`${API_URL}/api/unspecifieddata/single`, newData)
                 .then(() => {
                   this.$router.push("/data");
                 });

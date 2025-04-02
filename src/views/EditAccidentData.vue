@@ -191,7 +191,16 @@ export default {
     updateData() {
       const id = this.$route.params.id;
 
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const dateObj = new Date(dateStr);
+        if (isNaN(dateObj)) return null;
+        return dateObj.toISOString().split("T")[0];
+      };
+
       if (this.formData.category === "อุบัติเหตุ") {
+        this.formData.accdate = formatDate(this.formData.accdate);
+
         axios
           .put(`${API_URL}/api/accidentdata/${id}`, this.formData)
           .then(() => {
@@ -209,7 +218,7 @@ export default {
             const newData = { ...this.formData };
 
             newData.crimelocation = newData.acclocation;
-            newData.crimedate = newData.accdate;
+            newData.crimedate = formatDate(newData.accdate);
             newData.crimeinfo = newData.accinfo;
             delete newData.acclocation;
             delete newData.accdate;
@@ -230,7 +239,7 @@ export default {
             const newData = { ...this.formData };
 
             newData.location = newData.acclocation;
-            newData.date = newData.accdate;
+            newData.date = formatDate(newData.accdate);
             newData.info = newData.accinfo;
             delete newData.acclocation;
             delete newData.accdate;

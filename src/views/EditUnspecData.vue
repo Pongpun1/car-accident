@@ -172,7 +172,7 @@ export default {
   },
 
   methods: {
-    showAccidentSingleData() {
+    showUnspecifiedSingleData() {
       const id = this.$route.params.id;
       axios
         .get(`${API_URL}/api/unspecifieddata/${id}`)
@@ -191,7 +191,15 @@ export default {
     updateData() {
       const id = this.$route.params.id;
 
-      if (this.formData.category === "ไม่ระบุ") {
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const dateObj = new Date(dateStr);
+        if (isNaN(dateObj.getTime())) return null; // เช็ค Invalid Date
+        return dateObj.toISOString().split("T")[0]; // แปลงเป็น YYYY-MM-DD
+      };
+
+      if (this.formData.category === "ไม่ระบุรายละเอียด") {
+        
         axios
           .put(`${API_URL}/api/unspecifieddata/${id}`, this.formData)
           .then(() => {
@@ -210,7 +218,7 @@ export default {
 
             if (this.formData.category === "อุบัติเหตุ") {
               newData.acclocation = newData.location;
-              newData.accdate = newData.date;
+              newData.accdate = formatDate(newData.date);
               newData.accinfo = newData.info;
               delete newData.location;
               delete newData.date;
@@ -219,11 +227,12 @@ export default {
               axios
                 .post(`${API_URL}/api/accidentdata/single`, newData)
                 .then(() => {
+                  alert(this.$t("dataUpdated"));
                   this.$router.push("/data");
                 });
-            } else if (this.formData.category === "ไม่ระบุ") {
+            } else if (this.formData.category === "อาชญากรรม") {
               newData.crimelocation = newData.location;
-              newData.crimedate = newData.date;
+              newData.crimedate = formatDate(newData.date);
               newData.crimeinfo = newData.info;
               delete newData.location;
               delete newData.date;
@@ -232,6 +241,7 @@ export default {
               axios
                 .post(`${API_URL}/api/crimedata/single`, newData)
                 .then(() => {
+                  alert(this.$t("dataUpdated"));
                   this.$router.push("/data");
                 });
             }
@@ -242,6 +252,7 @@ export default {
           });
       }
     },
+
     updateMapCenter() {
       if (this.formData.latitude && this.formData.longitude) {
         this.mapCenter = {
@@ -295,7 +306,7 @@ export default {
   },
 
   mounted() {
-    this.showAccidentSingleData();
+    this.showUnspecifiedSingleData();
   },
 };
 </script>

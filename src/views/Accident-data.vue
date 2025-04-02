@@ -737,6 +737,14 @@ export default {
 
   methods: {
     confirmRiskType() {
+
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const dateObj = new Date(dateStr);
+        if (isNaN(dateObj)) return null;
+        return dateObj.toISOString().split("T")[0];
+      };
+
       if (this.selectedRisk.riskType === "อุบัติเหตุ") {
         axios
           .post(`${API_URL}/api/accidentdata/single`, {
@@ -745,7 +753,7 @@ export default {
             longitude: this.selectedItem.longitude,
             numinjur: this.selectedItem.numinjur,
             numdeath: this.selectedItem.numdeath,
-            accdate: this.selectedItem.unapprove_date,
+            accdate: formatDate(this.selectedItem.unapprove_date),
             accinfo: this.selectedItem.unapprove_info,
           })
           .then(() => {
@@ -753,9 +761,6 @@ export default {
             axios
               .delete(`${API_URL}/api/unapprovedata/${this.selectedItem.id}`)
               .then(() => {
-                this.fetchAccidentData();
-                this.fetchCrimeData();
-                this.fetchUnspecifiedData();
                 this.fetchUnapproveData();
                 this.isConfirmModalVisible = false;
                 this.$emit("refreshData");
@@ -767,7 +772,7 @@ export default {
           })
           .catch((error) => {
             console.error("Error adding data to accidentdata:", error);
-            alert(this.$t("failToAdd"));
+            alert(this.$t("dataExists"));
           });
       } else if (this.selectedRisk.riskType === "อาชญากรรม") {
         axios
@@ -777,7 +782,7 @@ export default {
             longitude: this.selectedItem.longitude,
             numinjur: this.selectedItem.numinjur,
             numdeath: this.selectedItem.numdeath,
-            crimedate: this.selectedItem.unapprove_date,
+            crimedate: formatDate(this.selectedItem.unapprove_date),
             crimeinfo: this.selectedItem.unapprove_info,
           })
           .then(() => {
@@ -785,9 +790,6 @@ export default {
             axios
               .delete(`${API_URL}/api/unapprovedata/${this.selectedItem.id}`)
               .then(() => {
-                this.fetchAccidentData();
-                this.fetchCrimeData();
-                this.fetchUnspecifiedData();
                 this.fetchUnapproveData();
                 this.isConfirmModalVisible = false;
                 this.$emit("refreshData");
@@ -799,7 +801,7 @@ export default {
           })
           .catch((error) => {
             console.error("Error adding data to accidentdata:", error);
-            alert(this.$t("failToAdd"));
+            alert(this.$t("dataExists"));
           });
       } else if (this.selectedRisk.riskType === "ไม่ระบุรายละเอียด") {
         axios
@@ -809,7 +811,7 @@ export default {
             longitude: this.selectedItem.longitude,
             numinjur: this.selectedItem.numinjur,
             numdeath: this.selectedItem.numdeath,
-            date: this.selectedItem.unapprove_date,
+            date: formatDate(this.selectedItem.unapprove_date),
             info: this.selectedItem.unapprove_info,
           })
           .then(() => {
@@ -817,9 +819,6 @@ export default {
             axios
               .delete(`${API_URL}/api/unapprovedata/${this.selectedItem.id}`)
               .then(() => {
-                this.fetchAccidentData();
-                this.fetchCrimeData();
-                this.fetchUnspecifiedData();
                 this.fetchUnapproveData();
                 this.isConfirmModalVisible = false;
                 this.$emit("refreshData");
@@ -831,7 +830,7 @@ export default {
           })
           .catch((error) => {
             console.error("Error adding data to accidentdata:", error);
-            alert(this.$t("failToAdd"));
+            alert(this.$t("dataExists"));
           });
       }
     },
@@ -849,6 +848,7 @@ export default {
       }
       this.isInfoModalVisible = true;
     },
+
     confirmDataModal(item) {
       if (this.activeTab === 3) {
         this.selectedItem = item;
@@ -940,58 +940,60 @@ export default {
     },
 
     uploadToServer() {
-  if (!this.isFileLoaded) {
-    alert(this.$t("UploadFile"));
-    return;
-  }
-
-  if (this.accidentData.length === 0) {
-    alert(this.$t("NoDataToUpload"));
-    this.fetchAccidentData();
-    return;
-  }
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return null;
-    const dateObj = new Date(dateStr);
-    if (isNaN(dateObj)) return null;
-    return dateObj.toISOString().split("T")[0];
-  };
-
-  const formattedData = this.accidentData.map((row) => ({
-    ...row,
-    วันเกิดเหตุ: formatDate(row.วันเกิดเหตุ),
-  }));
-
-  const requests = [
-    axios.post(`${API_URL}/api/accidentdata`, formattedData, {
-      headers: { "Content-Type": "application/json" },
-    }),
-    axios.post(`${API_URL}/api/crimedata`, formattedData, {
-      headers: { "Content-Type": "application/json" },
-    }),
-    axios.post(`${API_URL}/api/unspecifieddata`, formattedData, {
-      headers: { "Content-Type": "application/json" },
-    }),
-  ];
-
-  Promise.allSettled(requests)
-    .then((results) => {
-      const success = results.filter((r) => r.status === "fulfilled").length;
-
-      if (success > 0) {
-        alert(this.$t("dataUploadSuccess"));
-        this.fetchAccidentData();
-        this.fetchCrimeData();
-        this.fetchUnspecifiedData();
-        this.clearFileInput();
-        this.fileName = "";
+      if (!this.isFileLoaded) {
+        alert(this.$t("UploadFile"));
+        return;
       }
-    })
-    .catch((error) => {
-      console.error("Unexpected error during upload!", error);
-    });
-},
+
+      if (this.accidentData.length === 0) {
+        alert(this.$t("NoDataToUpload"));
+        this.fetchAccidentData();
+        return;
+      }
+
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const dateObj = new Date(dateStr);
+        if (isNaN(dateObj)) return null;
+        return dateObj.toISOString().split("T")[0];
+      };
+
+      const formattedData = this.accidentData.map((row) => ({
+        ...row,
+        วันเกิดเหตุ: formatDate(row.วันเกิดเหตุ),
+      }));
+
+      const requests = [
+        axios.post(`${API_URL}/api/accidentdata`, formattedData, {
+          headers: { "Content-Type": "application/json" },
+        }),
+        axios.post(`${API_URL}/api/crimedata`, formattedData, {
+          headers: { "Content-Type": "application/json" },
+        }),
+        axios.post(`${API_URL}/api/unspecifieddata`, formattedData, {
+          headers: { "Content-Type": "application/json" },
+        }),
+      ];
+
+      Promise.allSettled(requests)
+        .then((results) => {
+          const success = results.filter(
+            (r) => r.status === "fulfilled"
+          ).length;
+
+          if (success > 0) {
+            alert(this.$t("dataUploadSuccess"));
+            this.fetchAccidentData();
+            this.fetchCrimeData();
+            this.fetchUnspecifiedData();
+            this.clearFileInput();
+            this.fileName = "";
+          }
+        })
+        .catch((error) => {
+          console.error("Unexpected error during upload!", error);
+        });
+    },
 
     clearFileInput() {
       this.$refs.fileInput.value = null;

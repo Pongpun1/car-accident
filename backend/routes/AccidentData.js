@@ -279,7 +279,7 @@ router.put("/:id", (req, res) => {
     });
   }
   const checkQuery = `
-    SELECT * FROM accidentdata WHERE latitude = ? AND longitude = ? AND accdate = ? AND id != ?
+    SELECT * FROM accidentdata WHERE latitude = ? AND longitude = ? AND id != ?
   `;
 
   conn.execute(
