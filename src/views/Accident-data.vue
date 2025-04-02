@@ -951,7 +951,6 @@ export default {
     return;
   }
 
-  // ฟังก์ชันแปลงวันที่เป็น 'YYYY-MM-DD'
   const formatDate = (dateStr) => {
     if (!dateStr) return null;
     const dateObj = new Date(dateStr);
@@ -959,7 +958,6 @@ export default {
     return dateObj.toISOString().split("T")[0];
   };
 
-  // แปลงวันที่ใน this.accidentData
   const formattedData = this.accidentData.map((row) => ({
     ...row,
     วันเกิดเหตุ: formatDate(row.วันเกิดเหตุ),

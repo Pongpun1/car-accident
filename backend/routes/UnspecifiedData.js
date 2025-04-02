@@ -61,7 +61,6 @@ router.post("/", async (req, res) => {
     const response = await manager.process("th", info);
 
     if (response.intent !== "accident" && response.intent !== "crime") {
-
       filteredData.push([
         row.สถานที่เกิดเหตุ,
         row.ละติจูด,

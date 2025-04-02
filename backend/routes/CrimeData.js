@@ -106,6 +106,7 @@ router.post("/", async (req, res) => {
 
 // ------------------------------------------เพิ่มข้อมูลแยกตัว---------------------------------------
 router.post("/single", (req, res) => {
+  console.log("📌 Data received:", req.body);
   const {
     crimelocation,
     latitude,
@@ -116,16 +117,8 @@ router.post("/single", (req, res) => {
     crimeinfo,
   } = req.body;
 
-  const validLatitude = parseFloat(latitude);
-  const validLongitude = parseFloat(longitude);
-  const validCrimedate = new Date(crimedate);
-
-  if (
-    isNaN(validLatitude) ||
-    isNaN(validLongitude) ||
-    isNaN(validCrimedate.getTime())
-  ) {
-    console.log("Invalid or missing required fields");
+  if (!latitude || !longitude || !crimedate) {
+    console.log("Missing required fields");
     return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }
 
@@ -149,8 +142,8 @@ router.post("/single", (req, res) => {
       checkQuery,
       [
         crimelocation,
-        validLatitude,
-        validLongitude,
+        latitude,
+        longitude,
         numinjur,
         numdeath,
         crimedate,
@@ -169,19 +162,20 @@ router.post("/single", (req, res) => {
 
         const insertQuery = `
           INSERT INTO crimedata 
-          (crimelocation, latitude, longitude, numinjur, numdeath, crimedate, crimeinfo) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+          (id, crimelocation, latitude, longitude, numinjur, numdeath, crimedate, crimeinfo) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         conn.execute(
           insertQuery,
           [
+            newId,
             crimelocation,
-            validLatitude,
-            validLongitude,
+            latitude,
+            longitude,
             numinjur,
             numdeath,
-            validCrimedate.toISOString(),
+            crimedate,
             crimeinfo || null,
           ],
           (err, result) => {

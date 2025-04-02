@@ -170,6 +170,13 @@ export default {
         return;
       }
 
+      const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const dateObj = new Date(dateStr);
+        if (isNaN(dateObj)) return null;
+        return dateObj.toISOString().split("T")[0];
+      };
+
       let apiEndpoint = "";
       if (
         this.formData.accinfo &&
@@ -183,7 +190,7 @@ export default {
       ) {
         apiEndpoint = `${API_URL}/api/accidentdata/single`;
       } else if (
-        this.formData.accinfo &&
+         this.formData.accinfo &&
         (this.formData.accinfo.includes("อาชญากรรม") ||
           this.formData.accinfo.includes("โจร") ||
           this.formData.accinfo.includes("ปล้น") ||
@@ -195,22 +202,19 @@ export default {
           this.formData.accinfo.includes("ฆ่า") ||
           this.formData.accinfo.includes("ฆาตกรรม") ||
           this.formData.accinfo.includes("อนาจาร") ||
-          this.formData.accinfo.includes("ก่อเหตุความไม่สงบ") ||
           this.formData.accinfo.includes("ยาเสพติด") ||
           this.formData.accinfo.includes("ลักพาตัว"))
       ) {
         apiEndpoint = `${API_URL}/api/crimedata/single`;
-
         const crimeData = {
-          crimedate: new Date(this.formData.accdate).toISOString(),
           crimelocation: this.formData.acclocation,
           latitude: this.formData.latitude,
           longitude: this.formData.longitude,
           numinjur: this.formData.numinjur,
           numdeath: this.formData.numdeath,
+          crimedate: formatDate(this.formData.accdate),
           crimeinfo: this.formData.accinfo,
         };
-
         axios
           .post(apiEndpoint, crimeData, {
             headers: {
@@ -230,19 +234,18 @@ export default {
             }
           });
         return;
-      } else if (!this.formData.accinfo) {
+      } 
+      else if (!this.formData.accinfo) {
         apiEndpoint = `${API_URL}/api/unspecifieddata/single`;
-
         const unspecifiedData = {
-          date: new Date(this.formData.accdate).toISOString(),
           location: this.formData.acclocation,
           latitude: this.formData.latitude,
           longitude: this.formData.longitude,
           numinjur: this.formData.numinjur,
           numdeath: this.formData.numdeath,
+          date: formatDate(this.formData.accdate),
           info: this.formData.accinfo,
         };
-
         axios
           .post(apiEndpoint, unspecifiedData, {
             headers: {
@@ -262,35 +265,6 @@ export default {
             }
           });
         return;
-      } else {
-        apiEndpoint = `${API_URL}/api/unspecifieddata/single`;
-
-        const formattedDate = new Date(this.formData.accdate).toISOString();
-
-        axios
-          .post(
-            apiEndpoint,
-            {
-              date: formattedDate,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-          .then(() => {
-            alert(this.$t("saveSuccess"));
-            this.$router.push("/data");
-            this.resetForm();
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 400) {
-              alert(error.response.data.message);
-            } else {
-              alert(this.$t("saveFail"));
-            }
-          });
       }
     },
 
